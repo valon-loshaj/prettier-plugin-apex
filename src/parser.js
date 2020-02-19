@@ -180,6 +180,8 @@ const identityFunction = location => location;
 // If we keep those locations, a comment might be duplicated since it is
 // attached to one WhereCompoundOp, and that operator is printed multiple times.
 const removeFunction = () => null;
+locationGenerationHandler[apexTypes.PARSER_OUTPUT] = identityFunction;
+locationGenerationHandler[apexTypes.CLASS_DECLARATION_UNIT] = identityFunction;
 locationGenerationHandler[apexTypes.QUERY] = identityFunction;
 locationGenerationHandler[apexTypes.VARIABLE_EXPRESSION] = identityFunction;
 locationGenerationHandler[apexTypes.INNER_CLASS_MEMBER] = identityFunction;
@@ -275,7 +277,22 @@ function handleNodeLocation(node, sourceCode, commentNodes) {
     }
   });
 
-  const apexClass = node["@class"];
+  let apexClass = node["@class"];
+  if (
+    node.unit &&
+    node.internalErrors &&
+    node.parseErrors &&
+    node.hiddenTokenMap
+  ) {
+    // This is Parser Output node, which does not have a "@class" property,
+    // but we still want to give it a location.
+    apexClass = apexTypes.PARSER_OUTPUT;
+  }
+  if (node[apexTypes.PARSER_OUTPUT]) {
+    // This is a top level node, which does not have a "@class" property,
+    // so we will pretend that it's the Parser Output node.
+    apexClass = apexTypes.PARSER_OUTPUT;
+  }
   let handlerFn;
   if (apexClass) {
     const separatorIndex = apexClass.indexOf("$");
