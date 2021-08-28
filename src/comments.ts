@@ -1,5 +1,6 @@
 /* eslint no-param-reassign: 0, no-plusplus: 0, no-else-return: 0, consistent-return: 0 */
 
+// @ts-expect-error ts-migrate(6200) FIXME: Definitions of the following identifiers conflict ... Remove this comment to see the full error message
 const prettier = require("prettier");
 
 const { concat, join, lineSuffix, hardline } = prettier.doc.builders;
@@ -10,22 +11,25 @@ const {
   hasNewlineInRange,
   skipWhitespace,
 } = prettier.util;
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'constants'... Remove this comment to see the full error message
 const constants = require("./constants");
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'isApexDocC... Remove this comment to see the full error message
 const { isApexDocComment } = require("./util");
 
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apexTypes'... Remove this comment to see the full error message
 const apexTypes = constants.APEX_TYPES;
 
 /**
  * Print ApexDoc comment. This is straight from prettier handling of JSDoc
  * @param comment the comment to print.
  */
-function printApexDocComment(comment) {
+function printApexDocComment(comment: any) {
   const lines = comment.value.split("\n");
   return concat([
     join(
       hardline,
       lines.map(
-        (commentLine, index) =>
+        (commentLine: any, index: any) =>
           (index > 0 ? " " : "") +
           (index < lines.length - 1
             ? commentLine.trim()
@@ -35,7 +39,7 @@ function printApexDocComment(comment) {
   ]);
 }
 
-function printComment(path) {
+function printComment(path: any) {
   // This handles both Inline and Block Comments.
   // We don't just pass through the value because unlike other string literals,
   // this should not be escaped
@@ -54,7 +58,7 @@ function printComment(path) {
   return result;
 }
 
-function printDanglingComment(commentPath, options) {
+function printDanglingComment(commentPath: any, options: any) {
   const sourceCode = options.originalText;
   const comment = commentPath.getValue(commentPath);
   const loc = comment.location;
@@ -91,7 +95,7 @@ function printDanglingComment(commentPath, options) {
  * @param node The current node
  * @returns {boolean} whether a comment can be attached to this node or not.
  */
-function canAttachComment(node) {
+function canAttachComment(node: any) {
   return (
     node.loc &&
     node["@class"] &&
@@ -107,7 +111,7 @@ function canAttachComment(node) {
  * @param comment The current comment node.
  * @returns {boolean} whether it is a block comment.
  */
-function isBlockComment(comment) {
+function isBlockComment(comment: any) {
   return comment["@class"] === apexTypes.BLOCK_COMMENT;
 }
 
@@ -117,16 +121,16 @@ function isBlockComment(comment) {
  * certain nodes.
  * @returns {boolean} whether or not we will print the comment on this node manually.
  */
-function willPrintOwnComments(path) {
+function willPrintOwnComments(path: any) {
   const node = path.getValue();
   return !node || !node["@class"] || node["@class"] === apexTypes.ANNOTATION;
 }
 
-function getTrailingComments(node) {
-  return node.comments.filter((comment) => comment.trailing);
+function getTrailingComments(node: any) {
+  return node.comments.filter((comment: any) => comment.trailing);
 }
 
-function handleDanglingComment(comment) {
+function handleDanglingComment(comment: any) {
   const { enclosingNode } = comment;
   if (
     enclosingNode &&
@@ -160,7 +164,7 @@ function handleDanglingComment(comment) {
  * }
  * ```
  */
-function handleInBetweenConditionalComment(comment, sourceCode) {
+function handleInBetweenConditionalComment(comment: any, sourceCode: any) {
   const { enclosingNode, precedingNode, followingNode } = comment;
   if (
     enclosingNode &&
@@ -222,7 +226,7 @@ function handleInBetweenConditionalComment(comment, sourceCode) {
  * }
  * ```
  */
-function handleInBetweenTryCatchFinallyComment(comment) {
+function handleInBetweenTryCatchFinallyComment(comment: any) {
   const { enclosingNode, precedingNode, followingNode } = comment;
   if (
     !enclosingNode ||
@@ -269,7 +273,7 @@ function handleInBetweenTryCatchFinallyComment(comment) {
  *   AND Name = 'Another Name'
  * ```
  */
-function handleWhereExpression(comment, sourceCode) {
+function handleWhereExpression(comment: any, sourceCode: any) {
   const { enclosingNode, precedingNode, followingNode } = comment;
   if (
     !enclosingNode ||
@@ -312,7 +316,7 @@ function handleWhereExpression(comment, sourceCode) {
  *   .toString();
  * ```
  */
-function handleLongChainComment(comment) {
+function handleLongChainComment(comment: any) {
   const { enclosingNode, precedingNode, followingNode } = comment;
   if (
     !enclosingNode ||
@@ -333,7 +337,7 @@ function handleLongChainComment(comment) {
   return false;
 }
 
-function isPrettierIgnore(comment) {
+function isPrettierIgnore(comment: any) {
   let content;
   if (comment.leading === false) {
     return false;
@@ -357,7 +361,7 @@ function isPrettierIgnore(comment) {
  * ignored is the modifier itself, not the expression surrounding it (which is
  * more likely what the user wants).
  */
-function handleModifierPrettierIgnoreComment(comment) {
+function handleModifierPrettierIgnoreComment(comment: any) {
   const { enclosingNode, followingNode } = comment;
   if (
     !isPrettierIgnore(comment) ||
@@ -382,7 +386,7 @@ function handleModifierPrettierIgnoreComment(comment) {
  * node. If `true` is returned, Prettier will no longer try to attach this
  * comment based on its internal heuristic.
  */
-function handleOwnLineComment(comment, sourceCode) {
+function handleOwnLineComment(comment: any, sourceCode: any) {
   return (
     handleDanglingComment(comment) ||
     handleInBetweenConditionalComment(comment, sourceCode) ||
@@ -403,7 +407,7 @@ function handleOwnLineComment(comment, sourceCode) {
  * node. If `true` is returned, Prettier will no longer try to attach this
  * comment based on its internal heuristic.
  */
-function handleEndOfLineComment(comment, sourceCode) {
+function handleEndOfLineComment(comment: any, sourceCode: any) {
   return (
     handleDanglingComment(comment) ||
     handleInBetweenConditionalComment(comment, sourceCode) ||
@@ -424,7 +428,7 @@ function handleEndOfLineComment(comment, sourceCode) {
  * node. If `true` is returned, Prettier will no longer try to attach this
  * comment based on its internal heuristic.
  */
-function handleRemainingComment(comment, sourceCode) {
+function handleRemainingComment(comment: any, sourceCode: any) {
   return (
     handleInBetweenConditionalComment(comment, sourceCode) ||
     handleInBetweenTryCatchFinallyComment(comment) ||
@@ -440,7 +444,7 @@ function handleRemainingComment(comment, sourceCode) {
  * @param path The FastPath object.
  * @returns {boolean} Whether the path should be formatted.
  */
-function hasPrettierIgnore(path) {
+function hasPrettierIgnore(path: any) {
   const node = path.getValue();
   return (
     node &&

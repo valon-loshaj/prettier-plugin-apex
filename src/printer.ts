@@ -1,5 +1,6 @@
 /* eslint no-underscore-dangle: 0 */
 
+// @ts-expect-error ts-migrate(6200) FIXME: Definitions of the following identifiers conflict ... Remove this comment to see the full error message
 const prettier = require("prettier");
 
 const docBuilders = prettier.doc.builders;
@@ -15,44 +16,47 @@ const {
   printDanglingComment,
 } = require("./comments");
 const {
+  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'checkIfPar... Remove this comment to see the full error message
   checkIfParentIsDottedExpression,
+  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'getPrecede... Remove this comment to see the full error message
   getPrecedence,
+  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'isBinaryis... Remove this comment to see the full error message
   isBinaryish,
 } = require("./util");
 const constants = require("./constants");
 
 const apexTypes = constants.APEX_TYPES;
 
-function indentConcat(docs) {
+function indentConcat(docs: any) {
   return indent(concat(docs));
 }
 
-function groupConcat(docs) {
+function groupConcat(docs: any) {
   return group(concat(docs));
 }
 
-function groupIndentConcat(docs) {
+function groupIndentConcat(docs: any) {
   return group(indent(concat(docs)));
 }
 
-function _handlePassthroughCall(...names) {
-  return (path, print) => path.call(print, ...names);
+function _handlePassthroughCall(...names: any[]) {
+  return (path: any, print: any) => path.call(print, ...names);
 }
 
-function _pushIfExist(parts, doc, postDocs, preDocs) {
+function _pushIfExist(parts: any, doc: any, postDocs: any, preDocs: any) {
   if (doc) {
     if (preDocs) {
-      preDocs.forEach((preDoc) => parts.push(preDoc));
+      preDocs.forEach((preDoc: any) => parts.push(preDoc));
     }
     parts.push(doc);
     if (postDocs) {
-      postDocs.forEach((postDoc) => parts.push(postDoc));
+      postDocs.forEach((postDoc: any) => parts.push(postDoc));
     }
   }
   return parts;
 }
 
-function _escapeString(text) {
+function _escapeString(text: any) {
   // Code from https://stackoverflow.com/a/11716317/477761
   return text
     .replace(/\\/g, "\\\\")
@@ -64,7 +68,7 @@ function _escapeString(text) {
     .replace(/'/g, "\\'");
 }
 
-function handleReturnStatement(path, print) {
+function handleReturnStatement(path: any, print: any) {
   const node = path.getValue();
   const docs = [];
   docs.push("return");
@@ -80,14 +84,14 @@ function handleReturnStatement(path, print) {
   return groupConcat(docs);
 }
 
-function getOperator(node) {
+function getOperator(node: any) {
   if (node.op["@class"] === apexTypes.BOOLEAN_OPERATOR) {
     return constants.BOOLEAN[node.op.$];
   }
   return constants.BINARY[node.op.$];
 }
 
-function handleBinaryishExpression(path, print) {
+function handleBinaryishExpression(path: any, print: any) {
   const node = path.getValue();
   const nodeOp = getOperator(node);
   const nodePrecedence = getPrecedence(nodeOp);
@@ -176,7 +180,7 @@ function handleBinaryishExpression(path, print) {
   return groupConcat(docs);
 }
 
-function handleAssignmentExpression(path, print) {
+function handleAssignmentExpression(path: any, print: any) {
   const node = path.getValue();
   const docs = [];
 
@@ -196,7 +200,7 @@ function handleAssignmentExpression(path, print) {
   return groupConcat(docs);
 }
 
-function shouldDottedExpressionBreak(path) {
+function shouldDottedExpressionBreak(path: any) {
   const node = path.getValue();
   // #62 - `super` cannot  be followed any white spaces
   if (node.dottedExpr.value["@class"] === apexTypes.SUPER_VARIABLE_EXPRESSION) {
@@ -222,7 +226,7 @@ function shouldDottedExpressionBreak(path) {
   return node.dottedExpr.value;
 }
 
-function handleDottedExpression(path, print) {
+function handleDottedExpression(path: any, print: any) {
   const node = path.getValue();
   const dottedExpressionParts = [];
   const dottedExpressionDoc = path.call(print, "dottedExpr", "value");
@@ -241,7 +245,7 @@ function handleDottedExpression(path, print) {
   return "";
 }
 
-function handleArrayExpressionIndex(path, print, withGroup = true) {
+function handleArrayExpressionIndex(path: any, print: any, withGroup = true) {
   const node = path.getValue();
   let parts;
   if (node.index["@class"] === apexTypes.LITERAL_EXPRESSION) {
@@ -254,7 +258,7 @@ function handleArrayExpressionIndex(path, print, withGroup = true) {
   return withGroup ? groupIndentConcat(parts) : concat(parts);
 }
 
-function handleVariableExpression(path, print) {
+function handleVariableExpression(path: any, print: any) {
   const node = path.getValue();
   const parentNode = path.getParentNode();
   const nodeName = path.getName();
@@ -297,7 +301,7 @@ function handleVariableExpression(path, print) {
     parentNode["@class"] === apexTypes.ARRAY_EXPRESSION &&
     nodeName === "expr"
   ) {
-    path.callParent((innerPath) => {
+    path.callParent((innerPath: any) => {
       const withGroup = isParentDottedExpression || dottedExpressionDoc;
 
       parts.push(handleArrayExpressionIndex(innerPath, print, withGroup));
@@ -309,14 +313,14 @@ function handleVariableExpression(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleJavaVariableExpression(path, print) {
+function handleJavaVariableExpression(path: any, print: any) {
   const parts = [];
   parts.push("java:");
   parts.push(join(".", path.map(print, "names")));
   return concat(parts);
 }
 
-function handleLiteralExpression(path, print, options) {
+function handleLiteralExpression(path: any, print: any, options: any) {
   const node = path.getValue();
   const literalType = path.call(print, "type", "$");
   if (literalType === "NULL") {
@@ -364,32 +368,33 @@ function handleLiteralExpression(path, print, options) {
   return literalDoc;
 }
 
-function handleBinaryOperation(path) {
+function handleBinaryOperation(path: any) {
   const node = path.getValue();
   return constants.BINARY[node.$];
 }
 
-function handleBooleanOperation(path) {
+function handleBooleanOperation(path: any) {
   const node = path.getValue();
   return constants.BOOLEAN[node.$];
 }
 
-function handleAssignmentOperation(path) {
+function handleAssignmentOperation(path: any) {
   const node = path.getValue();
   return constants.ASSIGNMENT[node.$];
 }
 
-function _getDanglingCommentDocs(path, print, options) {
+function _getDanglingCommentDocs(path: any, print: any, options: any) {
   const node = path.getValue();
   if (!node.comments) {
     return [];
   }
   node.danglingComments = node.comments.filter(
-    (comment) => !comment.leading && !comment.trailing,
+    (comment: any) => !comment.leading && !comment.trailing,
   );
-  const danglingCommentParts = [];
-  path.each((commentPath) => {
+  const danglingCommentParts: any = [];
+  path.each((commentPath: any) => {
     danglingCommentParts.push(
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 3.
       printDanglingComment(commentPath, options, print),
     );
   }, "danglingComments");
@@ -397,13 +402,13 @@ function _getDanglingCommentDocs(path, print, options) {
   return danglingCommentParts;
 }
 
-function handleAnonymousBlockUnit(path, print) {
+function handleAnonymousBlockUnit(path: any, print: any) {
   // Unlike other compilation units, Anonymous Unit cannot have dangling comments,
   // so we don't have to handle them here.
   const parts = [];
-  const memberParts = path.map(print, "members").filter((member) => member);
+  const memberParts = path.map(print, "members").filter((member: any) => member);
 
-  const memberDocs = memberParts.map((memberDoc, index, allMemberDocs) => {
+  const memberDocs = memberParts.map((memberDoc: any, index: any, allMemberDocs: any) => {
     if (index !== allMemberDocs.length - 1) {
       return concat([memberDoc, hardline]);
     }
@@ -415,7 +420,7 @@ function handleAnonymousBlockUnit(path, print) {
   return concat(parts);
 }
 
-function handleTriggerDeclarationUnit(path, print, options) {
+function handleTriggerDeclarationUnit(path: any, print: any, options: any) {
   const usageDocs = path.map(print, "usages");
   const targetDocs = path.map(print, "target");
   const danglingCommentDocs = _getDanglingCommentDocs(path, print, options);
@@ -439,9 +444,9 @@ function handleTriggerDeclarationUnit(path, print, options) {
   parts.push(")");
   parts.push(" ");
   parts.push("{");
-  const memberParts = path.map(print, "members").filter((member) => member);
+  const memberParts = path.map(print, "members").filter((member: any) => member);
 
-  const memberDocs = memberParts.map((memberDoc, index, allMemberDocs) => {
+  const memberDocs = memberParts.map((memberDoc: any, index: any, allMemberDocs: any) => {
     if (index !== allMemberDocs.length - 1) {
       return concat([memberDoc, hardline]);
     }
@@ -456,15 +461,15 @@ function handleTriggerDeclarationUnit(path, print, options) {
   return concat(parts);
 }
 
-function handleInterfaceDeclaration(path, print, options) {
+function handleInterfaceDeclaration(path: any, print: any, options: any) {
   const node = path.getValue();
 
   const superInterface = path.call(print, "superInterface", "value");
   const modifierDocs = path.map(print, "modifiers");
-  const memberParts = path.map(print, "members").filter((member) => member);
+  const memberParts = path.map(print, "members").filter((member: any) => member);
   const danglingCommentDocs = _getDanglingCommentDocs(path, print, options);
 
-  const memberDocs = memberParts.map((memberDoc, index, allMemberDocs) => {
+  const memberDocs = memberParts.map((memberDoc: any, index: any, allMemberDocs: any) => {
     if (index !== allMemberDocs.length - 1) {
       return concat([memberDoc, hardline]);
     }
@@ -501,15 +506,15 @@ function handleInterfaceDeclaration(path, print, options) {
   return concat(parts);
 }
 
-function handleClassDeclaration(path, print, options) {
+function handleClassDeclaration(path: any, print: any, options: any) {
   const node = path.getValue();
 
   const superClass = path.call(print, "superClass", "value");
   const modifierDocs = path.map(print, "modifiers");
-  const memberParts = path.map(print, "members").filter((member) => member);
+  const memberParts = path.map(print, "members").filter((member: any) => member);
   const danglingCommentDocs = _getDanglingCommentDocs(path, print, options);
 
-  const memberDocs = memberParts.map((memberDoc, index, allMemberDocs) => {
+  const memberDocs = memberParts.map((memberDoc: any, index: any, allMemberDocs: any) => {
     if (index !== allMemberDocs.length - 1) {
       return concat([memberDoc, hardline]);
     }
@@ -553,10 +558,10 @@ function handleClassDeclaration(path, print, options) {
   return concat(parts);
 }
 
-function handleAnnotation(path, print) {
+function handleAnnotation(path: any, print: any) {
   const node = path.getValue();
   const parts = [];
-  const trailingParts = [];
+  const trailingParts: any = [];
   const parameterParts = [];
   const parameterDocs = path.map(print, "parameters");
   if (node.comments) {
@@ -568,7 +573,7 @@ function handleAnnotation(path, print) {
     // // Trailing Comment
     // void method() {}
     // ```
-    path.each((innerPath) => {
+    path.each((innerPath: any) => {
       const commentNode = innerPath.getValue();
       // This can only be a trailing comment, because if it is a leading one,
       // it will be attached to the Annotation's parent node (e.g. MethodDecl)
@@ -593,7 +598,7 @@ function handleAnnotation(path, print) {
   return concat(parts);
 }
 
-function handleAnnotationKeyValue(path, print) {
+function handleAnnotationKeyValue(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "key", "value"));
   parts.push("=");
@@ -601,7 +606,7 @@ function handleAnnotationKeyValue(path, print) {
   return concat(parts);
 }
 
-function handleAnnotationValue(childClass, path, print) {
+function handleAnnotationValue(childClass: any, path: any, print: any) {
   const parts = [];
   switch (childClass) {
     case "TrueAnnotationValue":
@@ -623,7 +628,7 @@ function handleAnnotationValue(childClass, path, print) {
   return concat(parts);
 }
 
-function handleAnnotationString(path, print) {
+function handleAnnotationString(path: any, print: any) {
   const parts = [];
   parts.push("'");
   parts.push(path.call(print, "value"));
@@ -631,7 +636,7 @@ function handleAnnotationString(path, print) {
   return concat(parts);
 }
 
-function handleClassTypeRef(path, print) {
+function handleClassTypeRef(path: any, print: any) {
   const parts = [];
   parts.push(join(".", path.map(print, "names")));
   const typeArgumentDocs = path.map(print, "typeArguments");
@@ -643,22 +648,22 @@ function handleClassTypeRef(path, print) {
   return concat(parts);
 }
 
-function handleArrayTypeRef(path, print) {
+function handleArrayTypeRef(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "heldType"));
   parts.push("[]");
   return concat(parts);
 }
 
-function handleJavaTypeRef(path, print) {
+function handleJavaTypeRef(path: any, print: any) {
   const parts = [];
   parts.push("java:");
   parts.push(join(".", path.map(print, "names")));
   return concat(parts);
 }
 
-function _handleStatementBlockMember(modifier) {
-  return (path, print) => {
+function _handleStatementBlockMember(modifier: any) {
+  return (path: any, print: any) => {
     const statementDoc = path.call(print, "stmnt");
 
     const parts = [];
@@ -666,12 +671,13 @@ function _handleStatementBlockMember(modifier) {
       parts.push(modifier);
       parts.push(" ");
     }
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
     _pushIfExist(parts, statementDoc);
     return concat(parts);
   };
 }
 
-function handlePropertyDeclaration(path, print) {
+function handlePropertyDeclaration(path: any, print: any) {
   const modifierDocs = path.map(print, "modifiers");
   const getterDoc = path.call(print, "getter", "value");
   const setterDoc = path.call(print, "setter", "value");
@@ -695,14 +701,15 @@ function handlePropertyDeclaration(path, print) {
       innerParts.push(dedent(line));
     }
   }
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
   _pushIfExist(innerParts, setterDoc, [dedent(line)]);
   parts.push(groupIndentConcat(innerParts));
   parts.push("}");
   return groupConcat(parts);
 }
 
-function _handlePropertyGetterSetter(action) {
-  return (path, print) => {
+function _handlePropertyGetterSetter(action: any) {
+  return (path: any, print: any) => {
     const statementDoc = path.call(print, "stmnt", "value");
 
     const parts = [];
@@ -718,7 +725,7 @@ function _handlePropertyGetterSetter(action) {
   };
 }
 
-function handleMethodDeclaration(path, print) {
+function handleMethodDeclaration(path: any, print: any) {
   const statementDoc = path.call(print, "stmnt", "value");
   const modifierDocs = path.map(print, "modifiers");
   const parameterDocs = path.map(print, "parameters");
@@ -730,6 +737,7 @@ function handleMethodDeclaration(path, print) {
     parts.push(concat(modifierDocs));
   }
   // Return type
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
   _pushIfExist(parts, path.call(print, "type", "value"), [" "]);
   // Method name
   parts.push(path.call(print, "name"));
@@ -750,7 +758,7 @@ function handleMethodDeclaration(path, print) {
   return concat(parts);
 }
 
-function handleModifierParameterRef(path, print) {
+function handleModifierParameterRef(path: any, print: any) {
   const parts = [];
   // Modifiers
   parts.push(join("", path.map(print, "modifiers")));
@@ -762,7 +770,7 @@ function handleModifierParameterRef(path, print) {
   return concat(parts);
 }
 
-function handleEmptyModifierParameterRef(path, print) {
+function handleEmptyModifierParameterRef(path: any, print: any) {
   const parts = [];
   // Type
   parts.push(path.call(print, "typeRef"));
@@ -772,7 +780,7 @@ function handleEmptyModifierParameterRef(path, print) {
   return concat(parts);
 }
 
-function handleStatement(childClass, path, print) {
+function handleStatement(childClass: any, path: any, print: any) {
   let doc;
   switch (childClass) {
     case "DmlInsertStmnt":
@@ -808,7 +816,7 @@ function handleStatement(childClass, path, print) {
   return groupConcat(parts);
 }
 
-function handleDmlMergeStatement(path, print) {
+function handleDmlMergeStatement(path: any, print: any) {
   const parts = [];
   parts.push("merge");
   parts.push(" ");
@@ -819,12 +827,13 @@ function handleDmlMergeStatement(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleEnumDeclaration(path, print, options) {
+function handleEnumDeclaration(path: any, print: any, options: any) {
   const modifierDocs = path.map(print, "modifiers");
   const memberDocs = path.map(print, "members");
   const danglingCommentDocs = _getDanglingCommentDocs(path, print, options);
 
-  const parts = [];
+  const parts: any = [];
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, join("", modifierDocs));
   parts.push("enum");
   parts.push(" ");
@@ -842,7 +851,7 @@ function handleEnumDeclaration(path, print, options) {
   return concat(parts);
 }
 
-function handleSwitchStatement(path, print) {
+function handleSwitchStatement(path: any, print: any) {
   const whenBlocks = path.map(print, "whenBlocks");
 
   const parts = [];
@@ -857,7 +866,7 @@ function handleSwitchStatement(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleValueWhen(path, print) {
+function handleValueWhen(path: any, print: any) {
   const whenCaseDocs = path.map(print, "whenCases");
   const statementDoc = path.call(print, "stmnt");
 
@@ -867,11 +876,12 @@ function handleValueWhen(path, print) {
   const whenCaseGroup = group(indent(join(concat([",", line]), whenCaseDocs)));
   parts.push(whenCaseGroup);
   parts.push(" ");
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, statementDoc);
   return concat(parts);
 }
 
-function handleElseWhen(path, print) {
+function handleElseWhen(path: any, print: any) {
   const statementDoc = path.call(print, "stmnt");
 
   const parts = [];
@@ -879,11 +889,12 @@ function handleElseWhen(path, print) {
   parts.push(" ");
   parts.push("else");
   parts.push(" ");
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, statementDoc);
   return concat(parts);
 }
 
-function handleTypeWhen(path, print) {
+function handleTypeWhen(path: any, print: any) {
   const statementDoc = path.call(print, "stmnt");
 
   const parts = [];
@@ -893,15 +904,16 @@ function handleTypeWhen(path, print) {
   parts.push(" ");
   parts.push(path.call(print, "name"));
   parts.push(" ");
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, statementDoc);
   return concat(parts);
 }
 
-function handleEnumCase(path, print) {
+function handleEnumCase(path: any, print: any) {
   return join(".", path.map(print, "identifiers"));
 }
 
-function handleRunAsBlock(path, print) {
+function handleRunAsBlock(path: any, print: any) {
   const paramDocs = path.map(print, "inputParameters");
   const statementDoc = path.call(print, "stmnt");
 
@@ -911,11 +923,12 @@ function handleRunAsBlock(path, print) {
   parts.push(join(concat([",", line]), paramDocs));
   parts.push(")");
   parts.push(" ");
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, statementDoc);
   return concat(parts);
 }
 
-function handleBlockStatement(path, print, options) {
+function handleBlockStatement(path: any, print: any, options: any) {
   const parts = [];
   const danglingCommentDocs = _getDanglingCommentDocs(path, print, options);
   const statementDocs = path.map(print, "stmnts");
@@ -932,7 +945,7 @@ function handleBlockStatement(path, print, options) {
   return groupIndentConcat(parts);
 }
 
-function handleTryCatchFinallyBlock(path, print) {
+function handleTryCatchFinallyBlock(path: any, print: any) {
   const tryStatementDoc = path.call(print, "tryBlock");
   const catchBlockDocs = path.map(print, "catchBlocks");
   const finallyBlockDoc = path.call(print, "finallyBlock", "value");
@@ -940,6 +953,7 @@ function handleTryCatchFinallyBlock(path, print) {
   const parts = [];
   parts.push("try");
   parts.push(" ");
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, tryStatementDoc);
   if (catchBlockDocs.length > 0) {
     // Can't use _pushIfExist here because it doesn't check for Array type
@@ -950,7 +964,7 @@ function handleTryCatchFinallyBlock(path, print) {
   return concat(parts);
 }
 
-function handleCatchBlock(path, print) {
+function handleCatchBlock(path: any, print: any) {
   const parts = [];
   parts.push("catch");
   parts.push(" ");
@@ -958,19 +972,21 @@ function handleCatchBlock(path, print) {
   parts.push(path.call(print, "parameter"));
   parts.push(")");
   parts.push(" ");
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "stmnt"));
   return concat(parts);
 }
 
-function handleFinallyBlock(path, print) {
+function handleFinallyBlock(path: any, print: any) {
   const parts = [];
   parts.push("finally");
   parts.push(" ");
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "stmnt"));
   return concat(parts);
 }
 
-function handleVariableDeclarations(path, print) {
+function handleVariableDeclarations(path: any, print: any) {
   const modifierDocs = path.map(print, "modifiers");
 
   const parts = [];
@@ -991,7 +1007,7 @@ function handleVariableDeclarations(path, print) {
   return groupConcat(parts);
 }
 
-function handleVariableDeclaration(path, print) {
+function handleVariableDeclaration(path: any, print: any) {
   const node = path.getValue();
   const parts = [];
   let resultDoc;
@@ -1016,7 +1032,7 @@ function handleVariableDeclaration(path, print) {
   return resultDoc;
 }
 
-function handleNewStandard(path, print) {
+function handleNewStandard(path: any, print: any) {
   const paramDocs = path.map(print, "inputParameters");
   const parts = [];
   // Type
@@ -1032,7 +1048,7 @@ function handleNewStandard(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleNewKeyValue(path, print) {
+function handleNewKeyValue(path: any, print: any) {
   const keyValueDocs = path.map(print, "keyValues");
 
   const parts = [];
@@ -1047,7 +1063,7 @@ function handleNewKeyValue(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleNameValueParameter(path, print) {
+function handleNameValueParameter(path: any, print: any) {
   const node = path.getValue();
 
   const parts = [];
@@ -1065,7 +1081,7 @@ function handleNameValueParameter(path, print) {
   return concat(parts);
 }
 
-function handleThisMethodCallExpression(path, print) {
+function handleThisMethodCallExpression(path: any, print: any) {
   const parts = [];
   parts.push("this");
   parts.push("(");
@@ -1077,7 +1093,7 @@ function handleThisMethodCallExpression(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleSuperMethodCallExpression(path, print) {
+function handleSuperMethodCallExpression(path: any, print: any) {
   const parts = [];
   parts.push("super");
   parts.push("(");
@@ -1089,7 +1105,7 @@ function handleSuperMethodCallExpression(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleMethodCallExpression(path, print) {
+function handleMethodCallExpression(path: any, print: any) {
   const node = path.getValue();
   const parentNode = path.getParentNode();
   const nodeName = path.getName();
@@ -1150,7 +1166,7 @@ function handleMethodCallExpression(path, print) {
     parentNode["@class"] === apexTypes.ARRAY_EXPRESSION &&
     nodeName === "expr"
   ) {
-    path.callParent((innerPath) => {
+    path.callParent((innerPath: any) => {
       const withGroup = isParentDottedExpression || dottedExpressionDoc;
 
       arrayIndexDoc = handleArrayExpressionIndex(innerPath, print, withGroup);
@@ -1225,7 +1241,7 @@ function handleMethodCallExpression(path, print) {
   return resultDoc;
 }
 
-function handleJavaMethodCallExpression(path, print) {
+function handleJavaMethodCallExpression(path: any, print: any) {
   const parts = [];
   parts.push("java:");
   parts.push(join(".", path.map(print, "names")));
@@ -1237,7 +1253,7 @@ function handleJavaMethodCallExpression(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleNestedExpression(path, print) {
+function handleNestedExpression(path: any, print: any) {
   const parts = [];
   parts.push("(");
   parts.push(path.call(print, "expr"));
@@ -1245,7 +1261,7 @@ function handleNestedExpression(path, print) {
   return concat(parts);
 }
 
-function handleNewSetInit(path, print) {
+function handleNewSetInit(path: any, print: any) {
   const parts = [];
   const expressionDoc = path.call(print, "expr", "value");
 
@@ -1261,7 +1277,7 @@ function handleNewSetInit(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleNewSetLiteral(path, print) {
+function handleNewSetLiteral(path: any, print: any) {
   const valueDocs = path.map(print, "values");
 
   const parts = [];
@@ -1281,7 +1297,7 @@ function handleNewSetLiteral(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleNewListInit(path, print) {
+function handleNewListInit(path: any, print: any) {
   // We can declare lists in the following ways:
   // new Object[size];
   // new Object[] { value, ... };
@@ -1315,7 +1331,7 @@ function handleNewListInit(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleNewMapInit(path, print) {
+function handleNewMapInit(path: any, print: any) {
   const parts = [];
   const expressionDoc = path.call(print, "expr", "value");
 
@@ -1331,7 +1347,7 @@ function handleNewMapInit(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleNewMapLiteral(path, print) {
+function handleNewMapLiteral(path: any, print: any) {
   const valueDocs = path.map(print, "pairs");
 
   const parts = [];
@@ -1351,7 +1367,7 @@ function handleNewMapLiteral(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleMapLiteralKeyValue(path, print) {
+function handleMapLiteralKeyValue(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "key"));
   parts.push(" ");
@@ -1361,7 +1377,7 @@ function handleMapLiteralKeyValue(path, print) {
   return concat(parts);
 }
 
-function handleNewListLiteral(path, print) {
+function handleNewListLiteral(path: any, print: any) {
   const valueDocs = path.map(print, "values");
 
   const parts = [];
@@ -1380,7 +1396,7 @@ function handleNewListLiteral(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleNewExpression(path, print) {
+function handleNewExpression(path: any, print: any) {
   const parts = [];
   parts.push("new");
   parts.push(" ");
@@ -1388,7 +1404,7 @@ function handleNewExpression(path, print) {
   return concat(parts);
 }
 
-function handleIfElseBlock(path, print) {
+function handleIfElseBlock(path: any, print: any) {
   const node = path.getValue();
   const parts = [];
   const ifBlockDocs = path.map(print, "ifBlocks");
@@ -1402,10 +1418,10 @@ function handleIfElseBlock(path, print) {
   //   b = 2;
   // }
   const ifBlockContainsBlockStatement = node.ifBlocks.map(
-    (ifBlock) => ifBlock.stmnt["@class"] === apexTypes.BLOCK_STATEMENT,
+    (ifBlock: any) => ifBlock.stmnt["@class"] === apexTypes.BLOCK_STATEMENT,
   );
 
-  ifBlockDocs.forEach((ifBlockDoc, index) => {
+  ifBlockDocs.forEach((ifBlockDoc: any, index: any) => {
     if (index > 0) {
       parts.push(
         concat([
@@ -1427,7 +1443,7 @@ function handleIfElseBlock(path, print) {
   return groupConcat(parts);
 }
 
-function handleIfBlock(path, print) {
+function handleIfBlock(path: any, print: any) {
   const statementType = path.call(print, "stmnt", "@class");
   const statementDoc = path.call(print, "stmnt");
 
@@ -1445,14 +1461,16 @@ function handleIfBlock(path, print) {
   // Body block
   if (statementType === apexTypes.BLOCK_STATEMENT) {
     parts.push(" ");
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
     _pushIfExist(parts, statementDoc);
   } else {
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
     _pushIfExist(parts, group(indent(concat([hardline, statementDoc]))));
   }
   return concat(parts);
 }
 
-function handleElseBlock(path, print) {
+function handleElseBlock(path: any, print: any) {
   const statementType = path.call(print, "stmnt", "@class");
   const statementDoc = path.call(print, "stmnt");
 
@@ -1461,14 +1479,16 @@ function handleElseBlock(path, print) {
   // Body block
   if (statementType === apexTypes.BLOCK_STATEMENT) {
     parts.push(" ");
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
     _pushIfExist(parts, statementDoc);
   } else {
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
     _pushIfExist(parts, group(indent(concat([hardline, statementDoc]))));
   }
   return concat(parts);
 }
 
-function handleTernaryExpression(path, print) {
+function handleTernaryExpression(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "condition"));
 
@@ -1498,7 +1518,7 @@ function handleTernaryExpression(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleInstanceOfExpression(path, print) {
+function handleInstanceOfExpression(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "expr"));
   parts.push(" ");
@@ -1508,14 +1528,14 @@ function handleInstanceOfExpression(path, print) {
   return concat(parts);
 }
 
-function handlePackageVersionExpression(path, print) {
+function handlePackageVersionExpression(path: any, print: any) {
   const parts = [];
   parts.push("Package.Version.");
   parts.push(path.call(print, "version"));
   return concat(parts);
 }
 
-function handleStructuredVersion(path, print) {
+function handleStructuredVersion(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "major"));
   parts.push(".");
@@ -1523,7 +1543,7 @@ function handleStructuredVersion(path, print) {
   return concat(parts);
 }
 
-function handleArrayExpression(path, print) {
+function handleArrayExpression(path: any, print: any) {
   const node = path.getValue();
   const parts = [];
   const expressionDoc = path.call(print, "expr");
@@ -1544,7 +1564,7 @@ function handleArrayExpression(path, print) {
   return groupConcat(parts);
 }
 
-function handleCastExpression(path, print) {
+function handleCastExpression(path: any, print: any) {
   const parts = [];
   parts.push("(");
   parts.push(path.call(print, "type"));
@@ -1554,7 +1574,7 @@ function handleCastExpression(path, print) {
   return concat(parts);
 }
 
-function handleExpressionStatement(path, print) {
+function handleExpressionStatement(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "expr"));
   parts.push(";");
@@ -1562,7 +1582,7 @@ function handleExpressionStatement(path, print) {
 }
 
 // SOSL
-function handleSoslExpression(path, print) {
+function handleSoslExpression(path: any, print: any) {
   const parts = [];
   parts.push("[");
   parts.push(softline);
@@ -1572,13 +1592,13 @@ function handleSoslExpression(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleFindClause(path, print) {
+function handleFindClause(path: any, print: any) {
   const parts = [];
   parts.push(indentConcat(["FIND", line, path.call(print, "search")]));
   return groupConcat(parts);
 }
 
-function handleFindValue(childClass, path, print) {
+function handleFindValue(childClass: any, path: any, print: any) {
   let doc;
   switch (childClass) {
     case "FindString":
@@ -1595,7 +1615,7 @@ function handleFindValue(childClass, path, print) {
   return doc;
 }
 
-function handleInClause(path, print) {
+function handleInClause(path: any, print: any) {
   const parts = [];
   parts.push("IN");
   parts.push(" ");
@@ -1605,14 +1625,14 @@ function handleInClause(path, print) {
   return concat(parts);
 }
 
-function handleDivisionClause(path, print) {
+function handleDivisionClause(path: any, print: any) {
   const parts = [];
   parts.push("WITH DIVISION = ");
   parts.push(path.call(print, "value"));
   return concat(parts);
 }
 
-function handleDivisionValue(childClass, path, print) {
+function handleDivisionValue(childClass: any, path: any, print: any) {
   let doc;
   switch (childClass) {
     case "DivisionLiteral":
@@ -1629,7 +1649,7 @@ function handleDivisionValue(childClass, path, print) {
   return doc;
 }
 
-function handleSearchWithClause(path, print) {
+function handleSearchWithClause(path: any, print: any) {
   const parts = [];
   parts.push("WITH");
   parts.push(" ");
@@ -1638,7 +1658,7 @@ function handleSearchWithClause(path, print) {
   return concat(parts);
 }
 
-function handleSearchWithClauseValue(childClass, path, print) {
+function handleSearchWithClauseValue(childClass: any, path: any, print: any) {
   const parts = [];
   let valueDocs;
   switch (childClass) {
@@ -1679,7 +1699,7 @@ function handleSearchWithClauseValue(childClass, path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleReturningClause(path, print) {
+function handleReturningClause(path: any, print: any) {
   const parts = [];
   parts.push(
     indentConcat([
@@ -1691,7 +1711,7 @@ function handleReturningClause(path, print) {
   return groupConcat(parts);
 }
 
-function handleReturningExpression(path, print) {
+function handleReturningExpression(path: any, print: any) {
   const selectDoc = path.call(print, "select", "value");
 
   const parts = [];
@@ -1704,32 +1724,45 @@ function handleReturningExpression(path, print) {
   return groupConcat(parts);
 }
 
-function handleReturningSelectExpression(path, print) {
+function handleReturningSelectExpression(path: any, print: any) {
   const fieldDocs = path.map(print, "fields");
 
   const parts = [];
   parts.push(join(concat([",", line]), fieldDocs));
 
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "where", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "using", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "orderBy", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "limit", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "offset", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "bind", "value"));
   return groupIndentConcat([softline, join(line, parts)]);
 }
 
-function handleSearch(path, print) {
+function handleSearch(path: any, print: any) {
   const withDocs = path.map(print, "withs");
 
   const parts = [];
   parts.push(path.call(print, "find"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "in", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "returning", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "division", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "dataCategory", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "limit", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "updateStats", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "using", "value"));
   if (withDocs.length > 0) {
     parts.push(join(line, withDocs));
@@ -1739,7 +1772,7 @@ function handleSearch(path, print) {
 }
 
 // SOQL
-function handleSoqlExpression(path, print) {
+function handleSoqlExpression(path: any, print: any) {
   const parts = [];
   parts.push("[");
   parts.push(softline);
@@ -1749,7 +1782,7 @@ function handleSoqlExpression(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleSelectInnerQuery(path, print) {
+function handleSelectInnerQuery(path: any, print: any) {
   const parts = [];
   parts.push("(");
   parts.push(softline);
@@ -1762,7 +1795,7 @@ function handleSelectInnerQuery(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleWhereInnerExpression(path, print) {
+function handleWhereInnerExpression(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "field"));
   parts.push(" ");
@@ -1776,28 +1809,38 @@ function handleWhereInnerExpression(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleQuery(path, print) {
+function handleQuery(path: any, print: any) {
   const withIdentifierDocs = path.map(print, "withIdentifiers");
   const parts = [];
   parts.push(path.call(print, "select"));
   parts.push(path.call(print, "from"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "where", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "with", "value"));
   if (withIdentifierDocs.length > 0) {
     parts.push(join(" ", withIdentifierDocs));
   }
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "groupBy", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "orderBy", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "limit", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "offset", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "bind", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "tracking", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "updateStats", "value"));
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "options", "value"));
   return join(line, parts);
 }
 
-function handleBindClause(path, print) {
+function handleBindClause(path: any, print: any) {
   const expressionDocs = path.map(print, "exprs");
   const parts = [];
   parts.push("BIND");
@@ -1806,7 +1849,7 @@ function handleBindClause(path, print) {
   return concat(parts);
 }
 
-function handleBindExpression(path, print) {
+function handleBindExpression(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "field"));
   parts.push(" ");
@@ -1816,7 +1859,7 @@ function handleBindExpression(path, print) {
   return concat(parts);
 }
 
-function handleCaseExpression(path, print) {
+function handleCaseExpression(path: any, print: any) {
   const parts = [];
   const whenBranchDocs = path.map(print, "whenBranches");
   const elseBranchDoc = path.call(print, "elseBranch", "value");
@@ -1834,7 +1877,7 @@ function handleCaseExpression(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleWhenExpression(path, print) {
+function handleWhenExpression(path: any, print: any) {
   const parts = [];
   parts.push("WHEN");
   parts.push(" ");
@@ -1848,7 +1891,7 @@ function handleWhenExpression(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleElseExpression(path, print) {
+function handleElseExpression(path: any, print: any) {
   const parts = [];
   parts.push("ELSE");
   parts.push(" ");
@@ -1858,7 +1901,7 @@ function handleElseExpression(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleColumnClause(path, print) {
+function handleColumnClause(path: any, print: any) {
   const parts = [];
   parts.push(
     indentConcat([
@@ -1870,14 +1913,14 @@ function handleColumnClause(path, print) {
   return groupConcat(parts);
 }
 
-function handleColumnExpression(path, print) {
+function handleColumnExpression(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "field"));
   _pushIfExist(parts, path.call(print, "alias", "value"), null, [" "]);
   return groupConcat(parts);
 }
 
-function handleFieldIdentifier(path, print) {
+function handleFieldIdentifier(path: any, print: any) {
   const parts = [];
   const entity = path.call(print, "entity", "value");
   if (entity) {
@@ -1888,12 +1931,14 @@ function handleFieldIdentifier(path, print) {
   return concat(parts);
 }
 
-function handleField(path, print) {
+function handleField(path: any, print: any) {
   const functionOneDoc = path.call(print, "function1", "value");
   const functionTwoDoc = path.call(print, "function2", "value");
 
-  const parts = [];
+  const parts: any = [];
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
   _pushIfExist(parts, functionOneDoc, ["(", softline]);
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
   _pushIfExist(parts, functionTwoDoc, ["(", softline]);
   parts.push(path.call(print, "field"));
   if (functionOneDoc) {
@@ -1907,7 +1952,7 @@ function handleField(path, print) {
   return groupConcat(parts);
 }
 
-function handleFromClause(path, print) {
+function handleFromClause(path: any, print: any) {
   const parts = [];
   parts.push(
     indentConcat(["FROM", line, join(", ", path.map(print, "exprs"))]),
@@ -1915,7 +1960,7 @@ function handleFromClause(path, print) {
   return groupConcat(parts);
 }
 
-function handleFromExpression(path, print) {
+function handleFromExpression(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "table"));
   _pushIfExist(parts, path.call(print, "alias", "value"), null, [" "]);
@@ -1928,13 +1973,13 @@ function handleFromExpression(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleWhereClause(path, print) {
+function handleWhereClause(path: any, print: any) {
   const parts = [];
   parts.push(indentConcat(["WHERE", line, path.call(print, "expr")]));
   return groupConcat(parts);
 }
 
-function handleSelectDistanceExpression(path, print) {
+function handleSelectDistanceExpression(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "expr"));
   parts.push(" ");
@@ -1942,7 +1987,7 @@ function handleSelectDistanceExpression(path, print) {
   return groupConcat(parts);
 }
 
-function handleWhereDistanceExpression(path, print) {
+function handleWhereDistanceExpression(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "distance"));
   parts.push(" ");
@@ -1952,7 +1997,7 @@ function handleWhereDistanceExpression(path, print) {
   return groupConcat(parts);
 }
 
-function handleDistanceFunctionExpression(path, print) {
+function handleDistanceFunctionExpression(path: any, print: any) {
   const parts = [];
   const distanceDocs = [];
   parts.push("DISTANCE");
@@ -1967,7 +2012,7 @@ function handleDistanceFunctionExpression(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleGeolocationLiteral(path, print) {
+function handleGeolocationLiteral(path: any, print: any) {
   const parts = [];
   const childParts = [];
   parts.push("GEOLOCATION");
@@ -1980,7 +2025,7 @@ function handleGeolocationLiteral(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleWithValue(path, print) {
+function handleWithValue(path: any, print: any) {
   const parts = [];
   parts.push("WITH");
   parts.push(" ");
@@ -1992,7 +2037,7 @@ function handleWithValue(path, print) {
   return concat(parts);
 }
 
-function handleWithDataCategories(path, print) {
+function handleWithDataCategories(path: any, print: any) {
   const parts = [];
   const categoryDocs = path.map(print, "categories");
   parts.push("WITH DATA CATEGORY");
@@ -2002,9 +2047,9 @@ function handleWithDataCategories(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleDataCategory(path, print) {
+function handleDataCategory(path: any, print: any) {
   const parts = [];
-  const categoryDocs = path.map(print, "categories").filter((doc) => doc);
+  const categoryDocs = path.map(print, "categories").filter((doc: any) => doc);
   parts.push(path.call(print, "type"));
   parts.push(" ");
   parts.push(path.call(print, "op"));
@@ -2021,11 +2066,11 @@ function handleDataCategory(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleDataCategoryOperator(childClass) {
+function handleDataCategoryOperator(childClass: any) {
   return constants.DATA_CATEGORY[childClass];
 }
 
-function handleWhereCalcExpression(path, print) {
+function handleWhereCalcExpression(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "field1"));
   parts.push(" ");
@@ -2039,7 +2084,7 @@ function handleWhereCalcExpression(path, print) {
   return groupConcat(parts);
 }
 
-function handleWhereOperationExpression(path, print) {
+function handleWhereOperationExpression(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "field"));
   parts.push(" ");
@@ -2049,7 +2094,7 @@ function handleWhereOperationExpression(path, print) {
   return groupConcat(parts);
 }
 
-function handleWhereOperationExpressions(path, print) {
+function handleWhereOperationExpressions(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "field"));
   parts.push(" ");
@@ -2067,7 +2112,7 @@ function handleWhereOperationExpressions(path, print) {
   return groupConcat(parts);
 }
 
-function escapeSoqlString(text, isInLikeExpression) {
+function escapeSoqlString(text: any, isInLikeExpression: any) {
   let escapedText = text;
   if (!isInLikeExpression) {
     // #340 - In a LIKE expression, the string emitted by jorje is already quoted,
@@ -2084,7 +2129,7 @@ function escapeSoqlString(text, isInLikeExpression) {
   return escapedText;
 }
 
-function handleWhereQueryLiteral(childClass, path, print, options) {
+function handleWhereQueryLiteral(childClass: any, path: any, print: any, options: any) {
   const node = path.getValue();
   const grandParentNode = path.getParentNode(1);
 
@@ -2131,7 +2176,7 @@ function handleWhereQueryLiteral(childClass, path, print, options) {
   return "";
 }
 
-function handleWhereCompoundExpression(path, print) {
+function handleWhereCompoundExpression(path: any, print: any) {
   const node = path.getValue();
   const parentNode = path.getParentNode();
   const isNestedExpression =
@@ -2155,7 +2200,7 @@ function handleWhereCompoundExpression(path, print) {
   return concat(parts);
 }
 
-function handleWhereUnaryExpression(path, print) {
+function handleWhereUnaryExpression(path: any, print: any) {
   const parentNode = path.getParentNode();
   const isNestedExpression =
     parentNode["@class"] === apexTypes.WHERE_COMPOUND_EXPRESSION ||
@@ -2173,14 +2218,14 @@ function handleWhereUnaryExpression(path, print) {
   return concat(parts);
 }
 
-function handleColonExpression(path, print) {
+function handleColonExpression(path: any, print: any) {
   const parts = [];
   parts.push(":");
   parts.push(path.call(print, "expr"));
   return concat(parts);
 }
 
-function handleOrderByClause(path, print) {
+function handleOrderByClause(path: any, print: any) {
   const parts = [];
   parts.push("ORDER BY");
   parts.push(
@@ -2189,7 +2234,7 @@ function handleOrderByClause(path, print) {
   return groupConcat(parts);
 }
 
-function handleOrderByExpression(childClass, path, print) {
+function handleOrderByExpression(childClass: any, path: any, print: any) {
   const parts = [];
   let expressionField;
   switch (childClass) {
@@ -2219,7 +2264,7 @@ function handleOrderByExpression(childClass, path, print) {
   return concat(parts);
 }
 
-function handleOrderOperation(childClass, path, print, opts) {
+function handleOrderOperation(childClass: any, path: any, print: any, opts: any) {
   const loc = opts.locStart(path.getValue());
   if (loc) {
     return constants.ORDER[childClass];
@@ -2227,7 +2272,7 @@ function handleOrderOperation(childClass, path, print, opts) {
   return "";
 }
 
-function handleNullOrderOperation(childClass, path, print, opts) {
+function handleNullOrderOperation(childClass: any, path: any, print: any, opts: any) {
   const loc = opts.locStart(path.getValue());
   if (loc) {
     return constants.ORDER_NULL[childClass];
@@ -2235,7 +2280,7 @@ function handleNullOrderOperation(childClass, path, print, opts) {
   return "";
 }
 
-function handleGroupByClause(path, print) {
+function handleGroupByClause(path: any, print: any) {
   const expressionDocs = path.map(print, "exprs");
   const typeDoc = path.call(print, "type", "value");
   const havingDoc = path.call(print, "having", "value");
@@ -2264,7 +2309,7 @@ function handleGroupByClause(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleGroupByType(childClass) {
+function handleGroupByType(childClass: any) {
   let doc;
   switch (childClass) {
     case "GroupByRollUp":
@@ -2281,7 +2326,7 @@ function handleGroupByType(childClass) {
   return doc;
 }
 
-function handleHavingClause(path, print) {
+function handleHavingClause(path: any, print: any) {
   const parts = [];
   parts.push("HAVING");
   parts.push(line);
@@ -2289,7 +2334,7 @@ function handleHavingClause(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleQueryUsingClause(path, print) {
+function handleQueryUsingClause(path: any, print: any) {
   const expressionDocs = path.map(print, "exprs");
   const parts = [];
   parts.push("USING");
@@ -2299,7 +2344,7 @@ function handleQueryUsingClause(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleUsingExpression(childClass, path, print) {
+function handleUsingExpression(childClass: any, path: any, print: any) {
   let doc;
   switch (childClass) {
     case "Using":
@@ -2334,7 +2379,7 @@ function handleUsingExpression(childClass, path, print) {
   return doc;
 }
 
-function handleTrackingType(childClass) {
+function handleTrackingType(childClass: any) {
   let doc;
   switch (childClass) {
     case "ForView":
@@ -2351,7 +2396,7 @@ function handleTrackingType(childClass) {
   return doc;
 }
 
-function handleQueryOption(childClass) {
+function handleQueryOption(childClass: any) {
   let doc;
   switch (childClass) {
     case "LockRows":
@@ -2368,7 +2413,7 @@ function handleQueryOption(childClass) {
   return doc;
 }
 
-function handleUpdateStatsClause(path, print) {
+function handleUpdateStatsClause(path: any, print: any) {
   const optionDocs = path.map(print, "options");
   const parts = [];
   parts.push("UPDATE");
@@ -2378,7 +2423,7 @@ function handleUpdateStatsClause(path, print) {
   return groupIndentConcat(parts);
 }
 
-function handleUpdateStatsOption(childClass) {
+function handleUpdateStatsOption(childClass: any) {
   let doc;
   switch (childClass) {
     case "UpdateTracking":
@@ -2395,7 +2440,7 @@ function handleUpdateStatsOption(childClass) {
   return doc;
 }
 
-function handleUsingType(path, print) {
+function handleUsingType(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "filter"));
   parts.push(" ");
@@ -2403,7 +2448,7 @@ function handleUsingType(path, print) {
   return concat(parts);
 }
 
-function handleModifier(childClass) {
+function handleModifier(childClass: any) {
   const modifierValue = constants.MODIFIER[childClass] || "";
   if (!modifierValue) {
     throw new Error(
@@ -2413,29 +2458,29 @@ function handleModifier(childClass) {
   return concat([modifierValue, " "]);
 }
 
-function handlePostfixExpression(path, print) {
+function handlePostfixExpression(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "expr"));
   parts.push(path.call(print, "op"));
   return concat(parts);
 }
 
-function handlePrefixExpression(path, print) {
+function handlePrefixExpression(path: any, print: any) {
   const parts = [];
   parts.push(path.call(print, "op"));
   parts.push(path.call(print, "expr"));
   return concat(parts);
 }
 
-function handlePostfixOperator(path, print) {
+function handlePostfixOperator(path: any, print: any) {
   return constants.POSTFIX[path.call(print, "$")];
 }
 
-function handlePrefixOperator(path, print) {
+function handlePrefixOperator(path: any, print: any) {
   return constants.PREFIX[path.call(print, "$")];
 }
 
-function handleWhileLoop(path, print) {
+function handleWhileLoop(path: any, print: any) {
   const node = path.getValue();
   const conditionDoc = path.call(print, "condition");
 
@@ -2455,14 +2500,16 @@ function handleWhileLoop(path, print) {
   const statementType = path.call(print, "stmnt", "value", "@class");
   if (statementType === apexTypes.BLOCK_STATEMENT) {
     parts.push(" ");
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
     _pushIfExist(parts, statementDoc);
   } else {
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
     _pushIfExist(parts, group(indent(concat([hardline, statementDoc]))));
   }
   return concat(parts);
 }
 
-function handleDoLoop(path, print) {
+function handleDoLoop(path: any, print: any) {
   const statementDoc = path.call(print, "stmnt");
   const conditionDoc = path.call(print, "condition");
 
@@ -2470,6 +2517,7 @@ function handleDoLoop(path, print) {
   parts.push("do");
   parts.push(" ");
   // Body
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, statementDoc);
   parts.push(" ");
   parts.push("while");
@@ -2482,7 +2530,7 @@ function handleDoLoop(path, print) {
   return concat(parts);
 }
 
-function handleForLoop(path, print) {
+function handleForLoop(path: any, print: any) {
   const node = path.getValue();
   const forControlDoc = path.call(print, "forControl");
 
@@ -2513,14 +2561,16 @@ function handleForLoop(path, print) {
   const statementDoc = path.call(print, "stmnt", "value");
   if (statementType === apexTypes.BLOCK_STATEMENT) {
     parts.push(" ");
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
     _pushIfExist(parts, statementDoc);
   } else {
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
     _pushIfExist(parts, group(indent(concat([hardline, statementDoc]))));
   }
   return concat(parts);
 }
 
-function handleForEnhancedControl(path, print) {
+function handleForEnhancedControl(path: any, print: any) {
   // See the note in handleForInit to see why we have to do this
   const initDocParts = path.call(print, "init");
   const initDoc = join(concat([" ", ":", " "]), initDocParts);
@@ -2532,12 +2582,13 @@ function handleForEnhancedControl(path, print) {
   return concat(parts);
 }
 
-function handleForCStyleControl(path, print) {
+function handleForCStyleControl(path: any, print: any) {
   const initsDoc = path.call(print, "inits", "value");
   const conditionDoc = path.call(print, "condition", "value");
   const controlDoc = path.call(print, "control", "value");
 
-  const parts = [];
+  const parts: any = [];
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, initsDoc);
   parts.push(";");
   _pushIfExist(parts, conditionDoc, null, [line]);
@@ -2546,7 +2597,7 @@ function handleForCStyleControl(path, print) {
   return groupConcat(parts);
 }
 
-function handleForInits(path, print) {
+function handleForInits(path: any, print: any) {
   const typeDoc = path.call(print, "type", "value");
   const initDocsParts = path.map(print, "inits");
 
@@ -2554,19 +2605,19 @@ function handleForInits(path, print) {
   // In this situation:
   // for (Integer i; i < 4; i++) {}
   // the second element of initDocParts is null, and so we do not want to add the initialization in
-  const initDocs = initDocsParts.map((initDocParts) =>
-    initDocParts[1]
-      ? join(concat([" ", "=", " "]), initDocParts)
-      : initDocParts[0],
+  const initDocs = initDocsParts.map((initDocParts: any) => initDocParts[1]
+    ? join(concat([" ", "=", " "]), initDocParts)
+    : initDocParts[0],
   );
 
-  const parts = [];
+  const parts: any = [];
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
   _pushIfExist(parts, typeDoc, [" "]);
   parts.push(join(concat([",", line]), initDocs));
   return groupIndentConcat(parts);
 }
 
-function handleForInit(path, print) {
+function handleForInit(path: any, print: any) {
   // This is one of the weird cases that does not really match the way that we print things.
   // ForInit is used by both C style for loop and enhanced for loop, and there's no way to tell
   // which operator we should use for init in this context, for example:
@@ -2584,236 +2635,415 @@ function handleForInit(path, print) {
 }
 
 const nodeHandler = {};
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.IF_ELSE_BLOCK] = handleIfElseBlock;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.IF_BLOCK] = handleIfBlock;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ELSE_BLOCK] = handleElseBlock;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.EXPRESSION_STATEMENT] = handleExpressionStatement;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.RETURN_STATEMENT] = handleReturnStatement;
-nodeHandler[apexTypes.TRIGGER_USAGE] = (path, print) =>
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+nodeHandler[apexTypes.TRIGGER_USAGE] = (path: any, print: any) =>
   constants.TRIGGER_USAGE[path.call(print, "$")];
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.JAVA_TYPE_REF] = handleJavaTypeRef;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.CLASS_TYPE_REF] = handleClassTypeRef;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ARRAY_TYPE_REF] = handleArrayTypeRef;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.LOCATION_IDENTIFIER] = _handlePassthroughCall("value");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.MODIFIER_PARAMETER_REF] = handleModifierParameterRef;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.EMPTY_MODIFIER_PARAMETER_REF] =
   handleEmptyModifierParameterRef;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.BLOCK_STATEMENT] = handleBlockStatement;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.VARIABLE_DECLARATION_STATEMENT] =
   _handlePassthroughCall("variableDecls");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.VARIABLE_DECLARATIONS] = handleVariableDeclarations;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.NAME_VALUE_PARAMETER] = handleNameValueParameter;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ANNOTATION] = handleAnnotation;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ANNOTATION_KEY_VALUE] = handleAnnotationKeyValue;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ANNOTATION_VALUE] = handleAnnotationValue;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ANNOTATION_STRING] = handleAnnotationString;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.MODIFIER] = handleModifier;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.RUN_AS_BLOCK] = handleRunAsBlock;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.DO_LOOP] = handleDoLoop;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WHILE_LOOP] = handleWhileLoop;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.FOR_LOOP] = handleForLoop;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.FOR_C_STYLE_CONTROL] = handleForCStyleControl;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.FOR_ENHANCED_CONTROL] = handleForEnhancedControl;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.FOR_INITS] = handleForInits;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.FOR_INIT] = handleForInit;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.BREAK_STATEMENT] = () => "break;";
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.CONTINUE_STATEMENT] = () => "continue;";
-nodeHandler[apexTypes.THROW_STATEMENT] = (path, print) =>
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+nodeHandler[apexTypes.THROW_STATEMENT] = (path: any, print: any) =>
   concat(["throw", " ", path.call(print, "expr"), ";"]);
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.TRY_CATCH_FINALLY_BLOCK] = handleTryCatchFinallyBlock;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.CATCH_BLOCK] = handleCatchBlock;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.FINALLY_BLOCK] = handleFinallyBlock;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.STATEMENT] = handleStatement;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.DML_MERGE_STATEMENT] = handleDmlMergeStatement;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SWITCH_STATEMENT] = handleSwitchStatement;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.VALUE_WHEN] = handleValueWhen;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ELSE_WHEN] = handleElseWhen;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.TYPE_WHEN] = handleTypeWhen;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ENUM_CASE] = handleEnumCase;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.LITERAL_CASE] = _handlePassthroughCall("expr");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.PROPERTY_DECLATION] = handlePropertyDeclaration;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.PROPERTY_GETTER] = _handlePropertyGetterSetter("get");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.PROPERTY_SETTER] = _handlePropertyGetterSetter("set");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.STRUCTURED_VERSION] = handleStructuredVersion;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.REQUEST_VERSION] = () => "Request";
-nodeHandler.int = (path, print) => path.call(print, "$");
-nodeHandler.string = (path, print) => concat(["'", path.call(print, "$"), "'"]);
+(nodeHandler as any).int = (path: any, print: any) => path.call(print, "$");
+(nodeHandler as any).string = (path: any, print: any) => concat(["'", path.call(print, "$"), "'"]);
 
 // Operator
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ASSIGNMENT_OPERATOR] = handleAssignmentOperation;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.BINARY_OPERATOR] = handleBinaryOperation;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.BOOLEAN_OPERATOR] = handleBooleanOperation;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.POSTFIX_OPERATOR] = handlePostfixOperator;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.PREFIX_OPERATOR] = handlePrefixOperator;
 
 // Declaration
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.CLASS_DECLARATION] = handleClassDeclaration;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.INTERFACE_DECLARATION] = handleInterfaceDeclaration;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.METHOD_DECLARATION] = handleMethodDeclaration;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.VARIABLE_DECLARATION] = handleVariableDeclaration;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ENUM_DECLARATION] = handleEnumDeclaration;
 
 // Compilation Unit: we're not handling  InvalidDeclUnit
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.TRIGGER_DECLARATION_UNIT] = handleTriggerDeclarationUnit;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.CLASS_DECLARATION_UNIT] = _handlePassthroughCall("body");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ENUM_DECLARATION_UNIT] = _handlePassthroughCall("body");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.INTERFACE_DECLARATION_UNIT] =
   _handlePassthroughCall("body");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ANONYMOUS_BLOCK_UNIT] = handleAnonymousBlockUnit;
 
 // Block Member
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.PROPERTY_MEMBER] = _handlePassthroughCall("propertyDecl");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.FIELD_MEMBER] = _handlePassthroughCall("variableDecls");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.STATEMENT_BLOCK_MEMBER] = _handleStatementBlockMember();
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.STATIC_STATEMENT_BLOCK_MEMBER] =
   _handleStatementBlockMember("static");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.METHOD_MEMBER] = _handlePassthroughCall("methodDecl");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.INNER_CLASS_MEMBER] = _handlePassthroughCall("body");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.INNER_ENUM_MEMBER] = _handlePassthroughCall("body");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.INNER_INTERFACE_MEMBER] = _handlePassthroughCall("body");
 
 // Expression
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.TERNARY_EXPRESSION] = handleTernaryExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.BOOLEAN_EXPRESSION] = handleBinaryishExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ASSIGNMENT_EXPRESSION] = handleAssignmentExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.NESTED_EXPRESSION] = handleNestedExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.VARIABLE_EXPRESSION] = handleVariableExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.JAVA_VARIABLE_EXPRESSION] = handleJavaVariableExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.LITERAL_EXPRESSION] = handleLiteralExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.BINARY_EXPRESSION] = handleBinaryishExpression;
-nodeHandler[apexTypes.TRIGGER_VARIABLE_EXPRESSION] = (path, print) =>
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+nodeHandler[apexTypes.TRIGGER_VARIABLE_EXPRESSION] = (path: any, print: any) =>
   concat(["Trigger", ".", path.call(print, "variable")]);
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.NEW_EXPRESSION] = handleNewExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.METHOD_CALL_EXPRESSION] = handleMethodCallExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.JAVA_METHOD_CALL_EXPRESSION] =
   handleJavaMethodCallExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.THIS_VARIABLE_EXPRESSION] = () => "this";
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SUPER_VARIABLE_EXPRESSION] = () => "super";
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.POSTFIX_EXPRESSION] = handlePostfixExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.PREFIX_EXPRESSION] = handlePrefixExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.CAST_EXPRESSION] = handleCastExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.INSTANCE_OF_EXPRESSION] = handleInstanceOfExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.PACKAGE_VERSION_EXPRESSION] =
   handlePackageVersionExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ARRAY_EXPRESSION] = handleArrayExpression;
-nodeHandler[apexTypes.CLASS_REF_EXPRESSION] = (path, print) =>
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+nodeHandler[apexTypes.CLASS_REF_EXPRESSION] = (path: any, print: any) =>
   concat([path.call(print, "type"), ".", "class"]);
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.THIS_METHOD_CALL_EXPRESSION] =
   handleThisMethodCallExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SUPER_METHOD_CALL_EXPRESSION] =
   handleSuperMethodCallExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SOQL_EXPRESSION] = handleSoqlExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SOSL_EXPRESSION] = handleSoslExpression;
 
 // New Object Init
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.NEW_SET_INIT] = handleNewSetInit;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.NEW_SET_LITERAL] = handleNewSetLiteral;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.NEW_LIST_INIT] = handleNewListInit;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.NEW_MAP_INIT] = handleNewMapInit;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.NEW_MAP_LITERAL] = handleNewMapLiteral;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.MAP_LITERAL_KEY_VALUE] = handleMapLiteralKeyValue;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.NEW_LIST_LITERAL] = handleNewListLiteral;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.NEW_STANDARD] = handleNewStandard;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.NEW_KEY_VALUE] = handleNewKeyValue;
 
 // SOSL
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SEARCH] = handleSearch;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.FIND_CLAUSE] = handleFindClause;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.FIND_VALUE] = handleFindValue;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.IN_CLAUSE] = handleInClause;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WITH_DIVISION_CLAUSE] = handleDivisionClause;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.DIVISION_VALUE] = handleDivisionValue;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WITH_DATA_CATEGORY_CLAUSE] = handleWithDataCategories;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SEARCH_WITH_CLAUSE] = handleSearchWithClause;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SEARCH_WITH_CLAUSE_VALUE] = handleSearchWithClauseValue;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.RETURNING_CLAUSE] = handleReturningClause;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.RETURNING_EXPRESSION] = handleReturningExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.RETURNING_SELECT_EXPRESSION] =
   handleReturningSelectExpression;
 
 // SOQL
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.QUERY] = handleQuery;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SELECT_COLUMN_CLAUSE] = handleColumnClause;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SELECT_COUNT_CLAUSE] = () =>
   concat(["SELECT", " ", "COUNT()"]);
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SELECT_COLUMN_EXPRESSION] = handleColumnExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SELECT_INNER_QUERY] = handleSelectInnerQuery;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SELECT_CASE_EXPRESSION] = _handlePassthroughCall("expr");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.CASE_EXPRESSION] = handleCaseExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WHEN_OPERATOR] = _handlePassthroughCall("identifier");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WHEN_EXPRESSION] = handleWhenExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.CASE_OPERATOR] = _handlePassthroughCall("identifier");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ELSE_EXPRESSION] = handleElseExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.FIELD] = handleField;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.FIELD_IDENTIFIER] = handleFieldIdentifier;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.FROM_CLAUSE] = handleFromClause;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.FROM_EXPRESSION] = handleFromExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.GROUP_BY_CLAUSE] = handleGroupByClause;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.GROUP_BY_EXPRESSION] = _handlePassthroughCall("field");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.GROUP_BY_TYPE] = handleGroupByType;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.HAVING_CLAUSE] = handleHavingClause;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WHERE_CLAUSE] = handleWhereClause;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WHERE_INNER_EXPRESSION] = handleWhereInnerExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WHERE_OPERATION_EXPRESSION] =
   handleWhereOperationExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WHERE_OPERATION_EXPRESSIONS] =
   handleWhereOperationExpressions;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WHERE_COMPOUND_EXPRESSION] =
   handleWhereCompoundExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WHERE_UNARY_EXPRESSION] = handleWhereUnaryExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WHERE_UNARY_OPERATOR] = () => "NOT";
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SELECT_DISTANCE_EXPRESSION] =
   handleSelectDistanceExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WHERE_DISTANCE_EXPRESSION] =
   handleWhereDistanceExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.DISTANCE_FUNCTION_EXPRESSION] =
   handleDistanceFunctionExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.GEOLOCATION_LITERAL] = handleGeolocationLiteral;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.NUMBER_LITERAL] = _handlePassthroughCall("number", "$");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.NUMBER_EXPRESSION] = _handlePassthroughCall("expr");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.QUERY_LITERAL_EXPRESSION] =
   _handlePassthroughCall("literal");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.QUERY_LITERAL] = handleWhereQueryLiteral;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.APEX_EXPRESSION] = _handlePassthroughCall("expr");
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.COLON_EXPRESSION] = handleColonExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ORDER_BY_CLAUSE] = handleOrderByClause;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.ORDER_BY_EXPRESSION] = handleOrderByExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WITH_VALUE] = handleWithValue;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WITH_DATA_CATEGORIES] = handleWithDataCategories;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.DATA_CATEGORY] = handleDataCategory;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.DATA_CATEGORY_OPERATOR] = handleDataCategoryOperator;
-nodeHandler[apexTypes.LIMIT_VALUE] = (path, print) =>
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+nodeHandler[apexTypes.LIMIT_VALUE] = (path: any, print: any) =>
   concat(["LIMIT", " ", path.call(print, "i")]);
-nodeHandler[apexTypes.LIMIT_EXPRESSION] = (path, print) =>
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+nodeHandler[apexTypes.LIMIT_EXPRESSION] = (path: any, print: any) =>
   concat(["LIMIT", " ", path.call(print, "expr")]);
-nodeHandler[apexTypes.OFFSET_VALUE] = (path, print) =>
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+nodeHandler[apexTypes.OFFSET_VALUE] = (path: any, print: any) =>
   concat(["OFFSET", " ", path.call(print, "i")]);
-nodeHandler[apexTypes.OFFSET_EXPRESSION] = (path, print) =>
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+nodeHandler[apexTypes.OFFSET_EXPRESSION] = (path: any, print: any) =>
   concat(["OFFSET", " ", path.call(print, "expr")]);
-nodeHandler[apexTypes.QUERY_OPERATOR] = (childClass) =>
-  constants.QUERY[childClass];
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+nodeHandler[apexTypes.QUERY_OPERATOR] = (childClass: any) => constants.QUERY[childClass];
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SOQL_ORDER] = handleOrderOperation;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SOQL_ORDER_NULL] = handleNullOrderOperation;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.TRACKING_TYPE] = handleTrackingType;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.QUERY_OPTION] = handleQueryOption;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.QUERY_USING_CLAUSE] = handleQueryUsingClause;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.USING_EXPRESSION] = handleUsingExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.UPDATE_STATS_CLAUSE] = handleUpdateStatsClause;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.UPDATE_STATS_OPTION] = handleUpdateStatsOption;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WHERE_CALC_EXPRESSION] = handleWhereCalcExpression;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WHERE_CALC_OPERATOR_PLUS] = () => "+";
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WHERE_CALC_OPERATOR_MINUS] = () => "-";
-nodeHandler[apexTypes.WHERE_COMPOUND_OPERATOR] = (childClass) =>
-  constants.QUERY_WHERE[childClass];
-nodeHandler[apexTypes.SEARCH_USING_CLAUSE] = (path, print) =>
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+nodeHandler[apexTypes.WHERE_COMPOUND_OPERATOR] = (childClass: any) => constants.QUERY_WHERE[childClass];
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+nodeHandler[apexTypes.SEARCH_USING_CLAUSE] = (path: any, print: any) =>
   concat(["USING", " ", path.call(print, "type")]);
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.USING_TYPE] = handleUsingType;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.BIND_CLAUSE] = handleBindClause;
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.BIND_EXPRESSION] = handleBindExpression;
-nodeHandler[apexTypes.WITH_IDENTIFIER] = (path, print) =>
+// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+nodeHandler[apexTypes.WITH_IDENTIFIER] = (path: any, print: any) =>
   concat(["WITH", " ", path.call(print, "identifier")]);
 
-function handleTrailingEmptyLines(doc, node) {
+function handleTrailingEmptyLines(doc: any, node: any) {
   let insertNewLine = false;
   if (node && node.trailingEmptyLine) {
     if (node.comments) {
@@ -2833,7 +3063,7 @@ function handleTrailingEmptyLines(doc, node) {
   return doc;
 }
 
-function genericPrint(path, options, print) {
+function genericPrint(path: any, options: any, print: any) {
   const n = path.getValue();
   if (typeof n === "number" || typeof n === "boolean") {
     return n.toString();
@@ -2860,6 +3090,7 @@ function genericPrint(path, options, print) {
     return "";
   }
   if (apexClass in nodeHandler) {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     return nodeHandler[apexClass](path, print, options);
   }
   const separatorIndex = apexClass.indexOf("$");
@@ -2867,6 +3098,7 @@ function genericPrint(path, options, print) {
     const parentClass = apexClass.substring(0, separatorIndex);
     const childClass = apexClass.substring(separatorIndex + 1);
     if (parentClass in nodeHandler) {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       return nodeHandler[parentClass](childClass, path, print, options);
     }
   }
@@ -2875,9 +3107,11 @@ function genericPrint(path, options, print) {
   );
 }
 
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'options'.
 let options;
-module.exports = function printGenerically(path, opts, print) {
+module.exports = function printGenerically(path: any, opts: any, print: any) {
   if (typeof opts === "object") {
+    // @ts-expect-error ts-migrate(2588) FIXME: Cannot assign to 'options' because it is a constan... Remove this comment to see the full error message
     options = opts;
   }
   const node = path.getValue();

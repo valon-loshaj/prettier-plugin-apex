@@ -3,12 +3,14 @@
 
 const docblock = require("jest-docblock");
 
-function hasPragma(text) {
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'hasPragma'... Remove this comment to see the full error message
+function hasPragma(text: any) {
   const pragmas = Object.keys(docblock.parse(docblock.extract(text)));
   return pragmas.indexOf("prettier") !== -1 || pragmas.indexOf("format") !== -1;
 }
 
-function insertPragma(text) {
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'insertPrag... Remove this comment to see the full error message
+function insertPragma(text: any) {
   const parsedDocblock = docblock.parseWithComments(docblock.extract(text));
   const pragmas = { format: "", ...parsedDocblock.pragmas };
   const newDocblock = docblock

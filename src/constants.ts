@@ -1,3 +1,4 @@
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'constants'... Remove this comment to see the full error message
 const constants = {
   APEX_TYPES: {
     TRIGGER_USAGE: "apex.jorje.data.ast.TriggerUsage",

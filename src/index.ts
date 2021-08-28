@@ -1,3 +1,4 @@
+// @ts-expect-error ts-migrate(6200) FIXME: Definitions of the following identifiers conflict ... Remove this comment to see the full error message
 const {
   canAttachComment,
   handleEndOfLineComment,
@@ -8,9 +9,13 @@ const {
   printComment,
   willPrintOwnComments,
 } = require("./comments");
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 const parse = require("./parser");
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'hasPragma'... Remove this comment to see the full error message
 const { hasPragma, insertPragma } = require("./pragma");
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'print'.
 const print = require("./printer");
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'massageAst... Remove this comment to see the full error message
 const { massageAstNode } = require("./util");
 
 const languages = [
@@ -30,12 +35,12 @@ const languages = [
   },
 ];
 
-function locStart(node) {
+function locStart(node: any) {
   const location = node.loc ? node.loc : node.location;
   return location.startIndex;
 }
 
-function locEnd(node) {
+function locEnd(node: any) {
   const location = node.loc ? node.loc : node.location;
   return location.endIndex;
 }
@@ -47,7 +52,7 @@ const parsers = {
     locStart,
     locEnd,
     hasPragma,
-    preprocess: (text) => text.trim(),
+    preprocess: (text: any) => text.trim(),
   },
   "apex-anonymous": {
     astFormat: "apex",
@@ -55,7 +60,7 @@ const parsers = {
     locStart,
     locEnd,
     hasPragma,
-    preprocess: (text) => text.trim(),
+    preprocess: (text: any) => text.trim(),
   },
 };
 
@@ -79,6 +84,7 @@ const printers = {
 
 const CATEGORY_APEX = "apex";
 
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'options'.
 const options = {
   apexStandaloneParser: {
     type: "choice",

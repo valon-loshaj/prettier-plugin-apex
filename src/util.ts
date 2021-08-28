@@ -1,10 +1,13 @@
 /* eslint no-param-reassign: 0 */
 
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'constants'... Remove this comment to see the full error message
 const constants = require("./constants");
 
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apexTypes'... Remove this comment to see the full error message
 const apexTypes = constants.APEX_TYPES;
 
-function isBinaryish(node) {
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'isBinaryis... Remove this comment to see the full error message
+function isBinaryish(node: any) {
   return (
     node["@class"] === apexTypes.BOOLEAN_EXPRESSION ||
     node["@class"] === apexTypes.BINARY_EXPRESSION
@@ -16,17 +19,17 @@ function isBinaryish(node) {
  * This code is straight from prettier JSDoc detection.
  * @param comment the comment to check.
  */
-function isApexDocComment(comment) {
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'isApexDocC... Remove this comment to see the full error message
+function isApexDocComment(comment: any) {
   const lines = comment.value.split("\n");
-  return (
-    lines.length > 1 &&
-    lines
-      .slice(1, lines.length - 1)
-      .every((commentLine) => commentLine.trim()[0] === "*")
-  );
+  return lines.length > 1 &&
+  lines
+    .slice(1, lines.length - 1)
+    .every((commentLine: any) => commentLine.trim()[0] === "*");
 }
 
-function checkIfParentIsDottedExpression(path) {
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'checkIfPar... Remove this comment to see the full error message
+function checkIfParentIsDottedExpression(path: any) {
   const node = path.getValue();
   const parentNode = path.getParentNode();
 
@@ -36,10 +39,10 @@ function checkIfParentIsDottedExpression(path) {
   // parent name.
   let parentNodeName = "";
   let grandParentNodeName = "";
-  path.callParent((innerPath) => {
+  path.callParent((innerPath: any) => {
     parentNodeName = innerPath.getName();
   });
-  path.callParent((innerPath) => {
+  path.callParent((innerPath: any) => {
     grandParentNodeName = innerPath.getName();
   }, 1);
   if (parentNodeName === "dottedExpr") {
@@ -88,7 +91,8 @@ const METADATA_TO_IGNORE = [
  * @param ast the Abstract Syntax Tree to compare
  * @param newObj the newly created object
  */
-function massageAstNode(ast, newObj) {
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'massageAst... Remove this comment to see the full error message
+function massageAstNode(ast: any, newObj: any) {
   // Handling ApexDoc
   if (
     ast["@class"] &&
@@ -138,19 +142,19 @@ function massageAstNode(ast, newObj) {
  * Helper function to find a character in a string, starting at an index.
  * It will ignore characters that are part of comments.
  */
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'findNextUn... Remove this comment to see the full error message
 function findNextUncommentedCharacter(
-  sourceCode,
-  character,
-  fromIndex,
-  commentNodes,
+  sourceCode: any,
+  character: any,
+  fromIndex: any,
+  commentNodes: any,
   backwards = false,
 ) {
   let indexFound = false;
-  let index;
+  let index: any;
 
-  const findIndex = (comment) =>
-    comment.location.startIndex <= index &&
-    comment.location.endIndex - 1 >= index;
+  const findIndex = (comment: any) => comment.location.startIndex <= index &&
+  comment.location.endIndex - 1 >= index;
   while (!indexFound) {
     if (backwards) {
       index = sourceCode.lastIndexOf(character, fromIndex);
@@ -189,11 +193,14 @@ const PRECEDENCE = {};
   ["*", "/", "%"],
 ].forEach((tier, i) => {
   tier.forEach((op) => {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     PRECEDENCE[op] = i;
   });
 });
 
-function getPrecedence(op) {
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'getPrecede... Remove this comment to see the full error message
+function getPrecedence(op: any) {
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   return PRECEDENCE[op];
 }
 
