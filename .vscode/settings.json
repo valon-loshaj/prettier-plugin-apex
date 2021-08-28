@@ -1,4 +1,5 @@
 {
   "editor.formatOnSave": true,
-  "jestrunner.configPath": "jest.config.standalone.js"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "jestrunner.configPath": "dist/jest.config.standalone.js"
 }

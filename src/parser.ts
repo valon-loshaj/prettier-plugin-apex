@@ -43,7 +43,12 @@ function parseTextWithSpawn(text: any, anonymous: any) {
   return executionResult.stdout.toString();
 }
 
-function parseTextWithHttp(text: any, serverHost: any, serverPort: any, anonymous: any) {
+function parseTextWithHttp(
+  text: any,
+  serverHost: any,
+  serverPort: any,
+  anonymous: any,
+) {
   const httpClientLocation = path.join(__dirname, "http-client.js");
   const args = [
     httpClientLocation,
@@ -103,14 +108,27 @@ function resolveAstReferences(node: any, referenceMap: any) {
   return node;
 }
 
-function handleNodeSurroundedByCharacters(startCharacter: any, endCharacter: any) {
+function handleNodeSurroundedByCharacters(
+  startCharacter: any,
+  endCharacter: any,
+) {
   return (location: any, sourceCode: any, commentNodes: any) => {
     const resultLocation = {};
-    (resultLocation as any).startIndex = findNextUncommentedCharacter(sourceCode, startCharacter, location.startIndex, commentNodes, 
-/* backwards */ true);
+    (resultLocation as any).startIndex = findNextUncommentedCharacter(
+      sourceCode,
+      startCharacter,
+      location.startIndex,
+      commentNodes,
+      /* backwards */ true,
+    );
     (resultLocation as any).endIndex =
-    findNextUncommentedCharacter(sourceCode, endCharacter, location.startIndex, commentNodes, 
-    /* backwards */ false) + 1;
+      findNextUncommentedCharacter(
+        sourceCode,
+        endCharacter,
+        location.startIndex,
+        commentNodes,
+        /* backwards */ false,
+      ) + 1;
     return resultLocation;
   };
 }
@@ -118,8 +136,13 @@ function handleNodeSurroundedByCharacters(startCharacter: any, endCharacter: any
 function handleNodeStartedWithCharacter(startCharacter: any) {
   return (location: any, sourceCode: any, commentNodes: any) => {
     const resultLocation = {};
-    (resultLocation as any).startIndex = findNextUncommentedCharacter(sourceCode, startCharacter, location.startIndex, commentNodes, 
-/* backwards */ true);
+    (resultLocation as any).startIndex = findNextUncommentedCharacter(
+      sourceCode,
+      startCharacter,
+      location.startIndex,
+      commentNodes,
+      /* backwards */ true,
+    );
     (resultLocation as any).endIndex = location.endIndex;
     return resultLocation;
   };
@@ -130,8 +153,13 @@ function handleNodeEndedWithCharacter(endCharacter: any) {
     const resultLocation = {};
     (resultLocation as any).startIndex = location.startIndex;
     (resultLocation as any).endIndex =
-    findNextUncommentedCharacter(sourceCode, endCharacter, location.endIndex, commentNodes, 
-    /* backwards */ false) + 1;
+      findNextUncommentedCharacter(
+        sourceCode,
+        endCharacter,
+        location.endIndex,
+        commentNodes,
+        /* backwards */ false,
+      ) + 1;
     return resultLocation;
   };
 }
@@ -144,7 +172,12 @@ function handleAnonymousUnitLocation(location: any, sourceCode: any) {
 }
 
 // @ts-expect-error ts-migrate(2393) FIXME: Duplicate function implementation.
-function handleMethodDeclaration(location: any, sourceCode: any, commentNodes: any, node: any) {
+function handleMethodDeclaration(
+  location: any,
+  sourceCode: any,
+  commentNodes: any,
+  node: any,
+) {
   // This is a method declaration with a body, so we can safely use the identity
   // location.
   if (node.stmnt.value) {
@@ -157,7 +190,12 @@ function handleMethodDeclaration(location: any, sourceCode: any, commentNodes: a
 }
 
 // @ts-expect-error ts-migrate(2393) FIXME: Duplicate function implementation.
-function handleAnnotation(location: any, sourceCode: any, commentNodes: any, node: any) {
+function handleAnnotation(
+  location: any,
+  sourceCode: any,
+  commentNodes: any,
+  node: any,
+) {
   // This is an annotation without parameters, so we only need to worry about
   // the starting character
   if (!node.parameters || node.parameters.length === 0) {
@@ -542,8 +580,9 @@ function parse(sourceCode: any, _: any, options: any) {
     const commentNodes = ast[apexTypes.PARSER_OUTPUT].hiddenTokenMap
       .map((item: any) => item[1])
       .filter(
-        (node: any) => node["@class"] === apexTypes.BLOCK_COMMENT ||
-        node["@class"] === apexTypes.INLINE_COMMENT,
+        (node: any) =>
+          node["@class"] === apexTypes.BLOCK_COMMENT ||
+          node["@class"] === apexTypes.INLINE_COMMENT,
       );
     ast = resolveAstReferences(ast, {});
     handleNodeLocation(ast, sourceCode, commentNodes);
@@ -552,9 +591,12 @@ function parse(sourceCode: any, _: any, options: any) {
     generateExtraMetadata(ast, getEmptyLineLocations(sourceCode), true);
     // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     (ast as any).comments = ast[apexTypes.PARSER_OUTPUT].hiddenTokenMap
-    .map((token: any) => token[1])
-    .filter((node: any) => node["@class"] === apexTypes.INLINE_COMMENT ||
-    node["@class"] === apexTypes.BLOCK_COMMENT);
+      .map((token: any) => token[1])
+      .filter(
+        (node: any) =>
+          node["@class"] === apexTypes.INLINE_COMMENT ||
+          node["@class"] === apexTypes.BLOCK_COMMENT,
+      );
   }
   return ast;
 }

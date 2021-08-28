@@ -406,14 +406,18 @@ function handleAnonymousBlockUnit(path: any, print: any) {
   // Unlike other compilation units, Anonymous Unit cannot have dangling comments,
   // so we don't have to handle them here.
   const parts = [];
-  const memberParts = path.map(print, "members").filter((member: any) => member);
+  const memberParts = path
+    .map(print, "members")
+    .filter((member: any) => member);
 
-  const memberDocs = memberParts.map((memberDoc: any, index: any, allMemberDocs: any) => {
-    if (index !== allMemberDocs.length - 1) {
-      return concat([memberDoc, hardline]);
-    }
-    return memberDoc;
-  });
+  const memberDocs = memberParts.map(
+    (memberDoc: any, index: any, allMemberDocs: any) => {
+      if (index !== allMemberDocs.length - 1) {
+        return concat([memberDoc, hardline]);
+      }
+      return memberDoc;
+    },
+  );
   if (memberDocs.length > 0) {
     parts.push(...memberDocs);
   }
@@ -444,14 +448,18 @@ function handleTriggerDeclarationUnit(path: any, print: any, options: any) {
   parts.push(")");
   parts.push(" ");
   parts.push("{");
-  const memberParts = path.map(print, "members").filter((member: any) => member);
+  const memberParts = path
+    .map(print, "members")
+    .filter((member: any) => member);
 
-  const memberDocs = memberParts.map((memberDoc: any, index: any, allMemberDocs: any) => {
-    if (index !== allMemberDocs.length - 1) {
-      return concat([memberDoc, hardline]);
-    }
-    return memberDoc;
-  });
+  const memberDocs = memberParts.map(
+    (memberDoc: any, index: any, allMemberDocs: any) => {
+      if (index !== allMemberDocs.length - 1) {
+        return concat([memberDoc, hardline]);
+      }
+      return memberDoc;
+    },
+  );
   if (danglingCommentDocs.length > 0) {
     parts.push(indent(concat([hardline, ...danglingCommentDocs])));
   } else if (memberDocs.length > 0) {
@@ -466,15 +474,19 @@ function handleInterfaceDeclaration(path: any, print: any, options: any) {
 
   const superInterface = path.call(print, "superInterface", "value");
   const modifierDocs = path.map(print, "modifiers");
-  const memberParts = path.map(print, "members").filter((member: any) => member);
+  const memberParts = path
+    .map(print, "members")
+    .filter((member: any) => member);
   const danglingCommentDocs = _getDanglingCommentDocs(path, print, options);
 
-  const memberDocs = memberParts.map((memberDoc: any, index: any, allMemberDocs: any) => {
-    if (index !== allMemberDocs.length - 1) {
-      return concat([memberDoc, hardline]);
-    }
-    return memberDoc;
-  });
+  const memberDocs = memberParts.map(
+    (memberDoc: any, index: any, allMemberDocs: any) => {
+      if (index !== allMemberDocs.length - 1) {
+        return concat([memberDoc, hardline]);
+      }
+      return memberDoc;
+    },
+  );
 
   const parts = [];
   if (modifierDocs.length > 0) {
@@ -511,15 +523,19 @@ function handleClassDeclaration(path: any, print: any, options: any) {
 
   const superClass = path.call(print, "superClass", "value");
   const modifierDocs = path.map(print, "modifiers");
-  const memberParts = path.map(print, "members").filter((member: any) => member);
+  const memberParts = path
+    .map(print, "members")
+    .filter((member: any) => member);
   const danglingCommentDocs = _getDanglingCommentDocs(path, print, options);
 
-  const memberDocs = memberParts.map((memberDoc: any, index: any, allMemberDocs: any) => {
-    if (index !== allMemberDocs.length - 1) {
-      return concat([memberDoc, hardline]);
-    }
-    return memberDoc;
-  });
+  const memberDocs = memberParts.map(
+    (memberDoc: any, index: any, allMemberDocs: any) => {
+      if (index !== allMemberDocs.length - 1) {
+        return concat([memberDoc, hardline]);
+      }
+      return memberDoc;
+    },
+  );
 
   const parts = [];
   if (modifierDocs.length > 0) {
@@ -2129,7 +2145,12 @@ function escapeSoqlString(text: any, isInLikeExpression: any) {
   return escapedText;
 }
 
-function handleWhereQueryLiteral(childClass: any, path: any, print: any, options: any) {
+function handleWhereQueryLiteral(
+  childClass: any,
+  path: any,
+  print: any,
+  options: any,
+) {
   const node = path.getValue();
   const grandParentNode = path.getParentNode(1);
 
@@ -2264,7 +2285,12 @@ function handleOrderByExpression(childClass: any, path: any, print: any) {
   return concat(parts);
 }
 
-function handleOrderOperation(childClass: any, path: any, print: any, opts: any) {
+function handleOrderOperation(
+  childClass: any,
+  path: any,
+  print: any,
+  opts: any,
+) {
   const loc = opts.locStart(path.getValue());
   if (loc) {
     return constants.ORDER[childClass];
@@ -2272,7 +2298,12 @@ function handleOrderOperation(childClass: any, path: any, print: any, opts: any)
   return "";
 }
 
-function handleNullOrderOperation(childClass: any, path: any, print: any, opts: any) {
+function handleNullOrderOperation(
+  childClass: any,
+  path: any,
+  print: any,
+  opts: any,
+) {
   const loc = opts.locStart(path.getValue());
   if (loc) {
     return constants.ORDER_NULL[childClass];
@@ -2605,9 +2636,10 @@ function handleForInits(path: any, print: any) {
   // In this situation:
   // for (Integer i; i < 4; i++) {}
   // the second element of initDocParts is null, and so we do not want to add the initialization in
-  const initDocs = initDocsParts.map((initDocParts: any) => initDocParts[1]
-    ? join(concat([" ", "=", " "]), initDocParts)
-    : initDocParts[0],
+  const initDocs = initDocsParts.map((initDocParts: any) =>
+    initDocParts[1]
+      ? join(concat([" ", "=", " "]), initDocParts)
+      : initDocParts[0],
   );
 
   const parts: any = [];
@@ -2736,7 +2768,8 @@ nodeHandler[apexTypes.STRUCTURED_VERSION] = handleStructuredVersion;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.REQUEST_VERSION] = () => "Request";
 (nodeHandler as any).int = (path: any, print: any) => path.call(print, "$");
-(nodeHandler as any).string = (path: any, print: any) => concat(["'", path.call(print, "$"), "'"]);
+(nodeHandler as any).string = (path: any, print: any) =>
+  concat(["'", path.call(print, "$"), "'"]);
 
 // Operator
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
@@ -3005,7 +3038,8 @@ nodeHandler[apexTypes.OFFSET_VALUE] = (path: any, print: any) =>
 nodeHandler[apexTypes.OFFSET_EXPRESSION] = (path: any, print: any) =>
   concat(["OFFSET", " ", path.call(print, "expr")]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.QUERY_OPERATOR] = (childClass: any) => constants.QUERY[childClass];
+nodeHandler[apexTypes.QUERY_OPERATOR] = (childClass: any) =>
+  constants.QUERY[childClass];
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SOQL_ORDER] = handleOrderOperation;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
@@ -3029,7 +3063,8 @@ nodeHandler[apexTypes.WHERE_CALC_OPERATOR_PLUS] = () => "+";
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.WHERE_CALC_OPERATOR_MINUS] = () => "-";
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHERE_COMPOUND_OPERATOR] = (childClass: any) => constants.QUERY_WHERE[childClass];
+nodeHandler[apexTypes.WHERE_COMPOUND_OPERATOR] = (childClass: any) =>
+  constants.QUERY_WHERE[childClass];
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[apexTypes.SEARCH_USING_CLAUSE] = (path: any, print: any) =>
   concat(["USING", " ", path.call(print, "type")]);

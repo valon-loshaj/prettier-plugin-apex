@@ -22,10 +22,12 @@ function isBinaryish(node: any) {
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'isApexDocC... Remove this comment to see the full error message
 function isApexDocComment(comment: any) {
   const lines = comment.value.split("\n");
-  return lines.length > 1 &&
-  lines
-    .slice(1, lines.length - 1)
-    .every((commentLine: any) => commentLine.trim()[0] === "*");
+  return (
+    lines.length > 1 &&
+    lines
+      .slice(1, lines.length - 1)
+      .every((commentLine: any) => commentLine.trim()[0] === "*")
+  );
 }
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'checkIfPar... Remove this comment to see the full error message
@@ -153,8 +155,9 @@ function findNextUncommentedCharacter(
   let indexFound = false;
   let index: any;
 
-  const findIndex = (comment: any) => comment.location.startIndex <= index &&
-  comment.location.endIndex - 1 >= index;
+  const findIndex = (comment: any) =>
+    comment.location.startIndex <= index &&
+    comment.location.endIndex - 1 >= index;
   while (!indexFound) {
     if (backwards) {
       index = sourceCode.lastIndexOf(character, fromIndex);
