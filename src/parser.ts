@@ -171,8 +171,7 @@ function handleAnonymousUnitLocation(location: any, sourceCode: any) {
   };
 }
 
-// @ts-expect-error ts-migrate(2393) FIXME: Duplicate function implementation.
-function handleMethodDeclaration(
+function handleMethodDeclarationLocation(
   location: any,
   sourceCode: any,
   commentNodes: any,
@@ -189,8 +188,7 @@ function handleMethodDeclaration(
   return handleNodeEndedWithCharacter(")")(location, sourceCode, commentNodes);
 }
 
-// @ts-expect-error ts-migrate(2393) FIXME: Duplicate function implementation.
-function handleAnnotation(
+function handleAnnotationLocation(
   location: any,
   sourceCode: any,
   commentNodes: any,
@@ -307,10 +305,10 @@ locationGenerationHandler[apexTypes.NEW_KEY_VALUE] =
 locationGenerationHandler[apexTypes.METHOD_CALL_EXPRESSION] =
   handleNodeEndedWithCharacter(")");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.ANNOTATION] = handleAnnotation;
+locationGenerationHandler[apexTypes.ANNOTATION] = handleAnnotationLocation;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[apexTypes.METHOD_DECLARATION] =
-  handleMethodDeclaration;
+  handleMethodDeclarationLocation;
 
 /**
  * Generate and/or fix node locations, because jorje sometimes either provides
