@@ -1,5 +1,5 @@
 /* eslint no-underscore-dangle: 0 */
-import prettier, { Doc } from "prettier";
+import prettier, { AstPath, Doc } from "prettier";
 import {
   getTrailingComments,
   printComment,
@@ -44,7 +44,7 @@ function groupIndentConcat(docs: any) {
 }
 
 function _handlePassthroughCall(...names: any[]) {
-  return (path: any, print: any) => path.call(print, ...names);
+  return (path: AstPath, print: any) => path.call(print, ...names);
 }
 
 function _pushIfExist(parts: any, doc: any, postDocs: any, preDocs: any) {
@@ -72,11 +72,11 @@ function _escapeString(text: any) {
     .replace(/'/g, "\\'");
 }
 
-function handleReturnStatement(path: any, print: any) {
+function handleReturnStatement(path: AstPath, print: any) {
   const node = path.getValue();
   const docs = [];
   docs.push("return");
-  const childDocs = path.call(print, "expr", "value");
+  const childDocs: Doc = path.call(print, "expr", "value");
   if (childDocs) {
     docs.push(" ");
     docs.push(childDocs);
@@ -95,7 +95,7 @@ function getOperator(node: any): string {
   return BINARY[node.op.$ as keyof typeof BINARY];
 }
 
-function handleBinaryishExpression(path: any, print: any) {
+function handleBinaryishExpression(path: AstPath, print: any) {
   const node = path.getValue();
   const nodeOp = getOperator(node);
   const nodePrecedence = getPrecedence(nodeOp);
@@ -115,9 +115,9 @@ function handleBinaryishExpression(path: any, print: any) {
     nodePrecedence === getPrecedence(getOperator(parentNode));
 
   const docs = [];
-  const leftDoc = path.call(print, "left");
-  const operationDoc = path.call(print, "op");
-  const rightDoc = path.call(print, "right");
+  const leftDoc: Doc = path.call(print, "left");
+  const operationDoc: Doc = path.call(print, "op");
+  const rightDoc: Doc = path.call(print, "right");
 
   // This variable signifies that this node is a left child with the same
   // precedence as its parent, and thus should be laid out on the same indent
@@ -184,13 +184,13 @@ function handleBinaryishExpression(path: any, print: any) {
   return groupConcat(docs);
 }
 
-function handleAssignmentExpression(path: any, print: any) {
+function handleAssignmentExpression(path: AstPath, print: any) {
   const node = path.getValue();
   const docs = [];
 
-  const leftDoc = path.call(print, "left");
-  const operationDoc = path.call(print, "op");
-  const rightDoc = path.call(print, "right");
+  const leftDoc: Doc = path.call(print, "left");
+  const operationDoc: Doc = path.call(print, "op");
+  const rightDoc: Doc = path.call(print, "right");
   docs.push(leftDoc);
   docs.push(" ");
   docs.push(operationDoc);
@@ -204,7 +204,7 @@ function handleAssignmentExpression(path: any, print: any) {
   return groupConcat(docs);
 }
 
-function shouldDottedExpressionBreak(path: any) {
+function shouldDottedExpressionBreak(path: AstPath) {
   const node = path.getValue();
   // #62 - `super` cannot  be followed any white spaces
   if (
@@ -232,10 +232,10 @@ function shouldDottedExpressionBreak(path: any) {
   return node.dottedExpr.value;
 }
 
-function handleDottedExpression(path: any, print: any) {
+function handleDottedExpression(path: AstPath, print: any) {
   const node = path.getValue();
-  const dottedExpressionParts = [];
-  const dottedExpressionDoc = path.call(print, "dottedExpr", "value");
+  const dottedExpressionParts: Doc[] = [];
+  const dottedExpressionDoc: Doc = path.call(print, "dottedExpr", "value");
 
   if (dottedExpressionDoc) {
     dottedExpressionParts.push(dottedExpressionDoc);
@@ -251,7 +251,11 @@ function handleDottedExpression(path: any, print: any) {
   return "";
 }
 
-function handleArrayExpressionIndex(path: any, print: any, withGroup = true) {
+function handleArrayExpressionIndex(
+  path: AstPath,
+  print: any,
+  withGroup = true,
+) {
   const node = path.getValue();
   let parts;
   if (node.index["@class"] === APEX_TYPES.LITERAL_EXPRESSION) {
@@ -264,12 +268,12 @@ function handleArrayExpressionIndex(path: any, print: any, withGroup = true) {
   return withGroup ? groupIndentConcat(parts) : concat(parts);
 }
 
-function handleVariableExpression(path: any, print: any) {
+function handleVariableExpression(path: AstPath, print: any) {
   const node = path.getValue();
   const parentNode = path.getParentNode();
   const nodeName = path.getName();
   const { dottedExpr } = node;
-  const parts = [];
+  const parts: Doc[] = [];
   const dottedExpressionDoc = handleDottedExpression(path, print);
   const isParentDottedExpression = checkIfParentIsDottedExpression(path);
   const isDottedExpressionSoqlExpression =
@@ -282,7 +286,7 @@ function handleVariableExpression(path: any, print: any) {
 
   parts.push(dottedExpressionDoc);
   // Name chain
-  const nameDocs = path.map(print, "names");
+  const nameDocs: Doc[] = path.map(print, "names");
   parts.push(join(".", nameDocs));
 
   // Technically, in a typical array expression (e.g: a[b]),
@@ -307,7 +311,7 @@ function handleVariableExpression(path: any, print: any) {
     parentNode["@class"] === APEX_TYPES.ARRAY_EXPRESSION &&
     nodeName === "expr"
   ) {
-    path.callParent((innerPath: any) => {
+    path.callParent((innerPath: AstPath) => {
       const withGroup = isParentDottedExpression || !!dottedExpressionDoc;
 
       parts.push(handleArrayExpressionIndex(innerPath, print, withGroup));
@@ -319,20 +323,20 @@ function handleVariableExpression(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleJavaVariableExpression(path: any, print: any) {
-  const parts = [];
+function handleJavaVariableExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("java:");
   parts.push(join(".", path.map(print, "names")));
   return concat(parts);
 }
 
-function handleLiteralExpression(path: any, print: any, options: any) {
+function handleLiteralExpression(path: AstPath, print: any, options: any) {
   const node = path.getValue();
-  const literalType = path.call(print, "type", "$");
+  const literalType: Doc = path.call(print, "type", "$");
   if (literalType === "NULL") {
     return "null";
   }
-  const literalDoc = path.call(print, "literal", "$");
+  const literalDoc: Doc = path.call(print, "literal", "$");
   let doc;
   if (literalType === "STRING") {
     // #165 - We have to use the original string because it might contain Unicode code points,
@@ -374,22 +378,22 @@ function handleLiteralExpression(path: any, print: any, options: any) {
   return literalDoc;
 }
 
-function handleBinaryOperation(path: any) {
+function handleBinaryOperation(path: AstPath) {
   const node = path.getValue();
   return BINARY[node.$ as keyof typeof BINARY];
 }
 
-function handleBooleanOperation(path: any) {
+function handleBooleanOperation(path: AstPath) {
   const node = path.getValue();
   return BOOLEAN[node.$ as keyof typeof BOOLEAN];
 }
 
-function handleAssignmentOperation(path: any) {
+function handleAssignmentOperation(path: AstPath) {
   const node = path.getValue();
   return ASSIGNMENT[node.$ as keyof typeof ASSIGNMENT];
 }
 
-function _getDanglingCommentDocs(path: any, print: any, options: any) {
+function _getDanglingCommentDocs(path: AstPath, print: any, options: any) {
   const node = path.getValue();
   if (!node.comments) {
     return [];
@@ -398,22 +402,22 @@ function _getDanglingCommentDocs(path: any, print: any, options: any) {
     (comment: any) => !comment.leading && !comment.trailing,
   );
   const danglingCommentParts: any = [];
-  path.each((commentPath: any) => {
+  path.each((commentPath: AstPath) => {
     danglingCommentParts.push(printDanglingComment(commentPath, options));
   }, "danglingComments");
   delete node.danglingComments;
   return danglingCommentParts;
 }
 
-function handleAnonymousBlockUnit(path: any, print: any) {
+function handleAnonymousBlockUnit(path: AstPath, print: any) {
   // Unlike other compilation units, Anonymous Unit cannot have dangling comments,
   // so we don't have to handle them here.
-  const parts = [];
+  const parts: Doc[] = [];
   const memberParts = path
     .map(print, "members")
     .filter((member: any) => member);
 
-  const memberDocs = memberParts.map(
+  const memberDocs: Doc[] = memberParts.map(
     (memberDoc: any, index: any, allMemberDocs: any) => {
       if (index !== allMemberDocs.length - 1) {
         return concat([memberDoc, hardline]);
@@ -427,12 +431,16 @@ function handleAnonymousBlockUnit(path: any, print: any) {
   return concat(parts);
 }
 
-function handleTriggerDeclarationUnit(path: any, print: any, options: any) {
-  const usageDocs = path.map(print, "usages");
-  const targetDocs = path.map(print, "target");
-  const danglingCommentDocs = _getDanglingCommentDocs(path, print, options);
+function handleTriggerDeclarationUnit(path: AstPath, print: any, options: any) {
+  const usageDocs: Doc[] = path.map(print, "usages");
+  const targetDocs: Doc[] = path.map(print, "target");
+  const danglingCommentDocs: Doc[] = _getDanglingCommentDocs(
+    path,
+    print,
+    options,
+  );
 
-  const parts = [];
+  const parts: Doc[] = [];
   const usageParts = [];
   parts.push("trigger");
   parts.push(" ");
@@ -455,7 +463,7 @@ function handleTriggerDeclarationUnit(path: any, print: any, options: any) {
     .map(print, "members")
     .filter((member: any) => member);
 
-  const memberDocs = memberParts.map(
+  const memberDocs: Doc[] = memberParts.map(
     (memberDoc: any, index: any, allMemberDocs: any) => {
       if (index !== allMemberDocs.length - 1) {
         return concat([memberDoc, hardline]);
@@ -472,17 +480,21 @@ function handleTriggerDeclarationUnit(path: any, print: any, options: any) {
   return concat(parts);
 }
 
-function handleInterfaceDeclaration(path: any, print: any, options: any) {
+function handleInterfaceDeclaration(path: AstPath, print: any, options: any) {
   const node = path.getValue();
 
-  const superInterface = path.call(print, "superInterface", "value");
-  const modifierDocs = path.map(print, "modifiers");
+  const superInterface: Doc = path.call(print, "superInterface", "value");
+  const modifierDocs: Doc[] = path.map(print, "modifiers");
   const memberParts = path
     .map(print, "members")
     .filter((member: any) => member);
-  const danglingCommentDocs = _getDanglingCommentDocs(path, print, options);
+  const danglingCommentDocs: Doc[] = _getDanglingCommentDocs(
+    path,
+    print,
+    options,
+  );
 
-  const memberDocs = memberParts.map(
+  const memberDocs: Doc[] = memberParts.map(
     (memberDoc: any, index: any, allMemberDocs: any) => {
       if (index !== allMemberDocs.length - 1) {
         return concat([memberDoc, hardline]);
@@ -491,7 +503,7 @@ function handleInterfaceDeclaration(path: any, print: any, options: any) {
     },
   );
 
-  const parts = [];
+  const parts: Doc[] = [];
   if (modifierDocs.length > 0) {
     parts.push(concat(modifierDocs));
   }
@@ -499,7 +511,7 @@ function handleInterfaceDeclaration(path: any, print: any, options: any) {
   parts.push(" ");
   parts.push(path.call(print, "name"));
   if (node.typeArguments.value) {
-    const typeArgumentParts = path.map(print, "typeArguments", "value");
+    const typeArgumentParts: Doc[] = path.map(print, "typeArguments", "value");
     parts.push("<");
     parts.push(join(", ", typeArgumentParts));
     parts.push(">");
@@ -521,17 +533,21 @@ function handleInterfaceDeclaration(path: any, print: any, options: any) {
   return concat(parts);
 }
 
-function handleClassDeclaration(path: any, print: any, options: any) {
+function handleClassDeclaration(path: AstPath, print: any, options: any) {
   const node = path.getValue();
 
-  const superClass = path.call(print, "superClass", "value");
-  const modifierDocs = path.map(print, "modifiers");
+  const superClass: Doc = path.call(print, "superClass", "value");
+  const modifierDocs: Doc[] = path.map(print, "modifiers");
   const memberParts = path
     .map(print, "members")
     .filter((member: any) => member);
-  const danglingCommentDocs = _getDanglingCommentDocs(path, print, options);
+  const danglingCommentDocs: Doc[] = _getDanglingCommentDocs(
+    path,
+    print,
+    options,
+  );
 
-  const memberDocs = memberParts.map(
+  const memberDocs: Doc[] = memberParts.map(
     (memberDoc: any, index: any, allMemberDocs: any) => {
       if (index !== allMemberDocs.length - 1) {
         return concat([memberDoc, hardline]);
@@ -540,7 +556,7 @@ function handleClassDeclaration(path: any, print: any, options: any) {
     },
   );
 
-  const parts = [];
+  const parts: Doc[] = [];
   if (modifierDocs.length > 0) {
     parts.push(concat(modifierDocs));
   }
@@ -548,7 +564,7 @@ function handleClassDeclaration(path: any, print: any, options: any) {
   parts.push(" ");
   parts.push(path.call(print, "name"));
   if (node.typeArguments.value) {
-    const typeArgumentParts = path.map(print, "typeArguments", "value");
+    const typeArgumentParts: Doc[] = path.map(print, "typeArguments", "value");
     parts.push("<");
     parts.push(join(", ", typeArgumentParts));
     parts.push(">");
@@ -559,7 +575,7 @@ function handleClassDeclaration(path: any, print: any, options: any) {
     parts.push(" ");
     parts.push(superClass);
   }
-  const interfaces = path.map(print, "interfaces");
+  const interfaces: Doc[] = path.map(print, "interfaces");
   if (interfaces.length > 0) {
     parts.push(" ");
     parts.push("implements");
@@ -577,12 +593,12 @@ function handleClassDeclaration(path: any, print: any, options: any) {
   return concat(parts);
 }
 
-function handleAnnotation(path: any, print: any) {
+function handleAnnotation(path: AstPath, print: any) {
   const node = path.getValue();
-  const parts = [];
+  const parts: Doc[] = [];
   const trailingParts: any = [];
   const parameterParts = [];
-  const parameterDocs = path.map(print, "parameters");
+  const parameterDocs: Doc[] = path.map(print, "parameters");
   if (node.comments) {
     // We print the comments manually because this method adds a hardline
     // at the end of the annotation. If we left it to Prettier to print trailing
@@ -592,7 +608,7 @@ function handleAnnotation(path: any, print: any) {
     // // Trailing Comment
     // void method() {}
     // ```
-    path.each((innerPath: any) => {
+    path.each((innerPath: AstPath) => {
       const commentNode = innerPath.getValue();
       // This can only be a trailing comment, because if it is a leading one,
       // it will be attached to the Annotation's parent node (e.g. MethodDecl)
@@ -617,16 +633,16 @@ function handleAnnotation(path: any, print: any) {
   return concat(parts);
 }
 
-function handleAnnotationKeyValue(path: any, print: any) {
-  const parts = [];
+function handleAnnotationKeyValue(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "key", "value"));
   parts.push("=");
   parts.push(path.call(print, "value"));
   return concat(parts);
 }
 
-function handleAnnotationValue(childClass: any, path: any, print: any) {
-  const parts = [];
+function handleAnnotationValue(childClass: any, path: AstPath, print: any) {
+  const parts: Doc[] = [];
   switch (childClass) {
     case "TrueAnnotationValue":
       parts.push("true");
@@ -647,18 +663,18 @@ function handleAnnotationValue(childClass: any, path: any, print: any) {
   return concat(parts);
 }
 
-function handleAnnotationString(path: any, print: any) {
-  const parts = [];
+function handleAnnotationString(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("'");
   parts.push(path.call(print, "value"));
   parts.push("'");
   return concat(parts);
 }
 
-function handleClassTypeRef(path: any, print: any) {
-  const parts = [];
+function handleClassTypeRef(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(join(".", path.map(print, "names")));
-  const typeArgumentDocs = path.map(print, "typeArguments");
+  const typeArgumentDocs: Doc[] = path.map(print, "typeArguments");
   if (typeArgumentDocs.length > 0) {
     parts.push("<");
     parts.push(join(", ", typeArgumentDocs));
@@ -667,25 +683,25 @@ function handleClassTypeRef(path: any, print: any) {
   return concat(parts);
 }
 
-function handleArrayTypeRef(path: any, print: any) {
-  const parts = [];
+function handleArrayTypeRef(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "heldType"));
   parts.push("[]");
   return concat(parts);
 }
 
-function handleJavaTypeRef(path: any, print: any) {
-  const parts = [];
+function handleJavaTypeRef(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("java:");
   parts.push(join(".", path.map(print, "names")));
   return concat(parts);
 }
 
 function _handleStatementBlockMember(modifier: any) {
-  return (path: any, print: any) => {
-    const statementDoc = path.call(print, "stmnt");
+  return (path: AstPath, print: any) => {
+    const statementDoc: Doc = path.call(print, "stmnt");
 
-    const parts = [];
+    const parts: Doc[] = [];
     if (modifier) {
       parts.push(modifier);
       parts.push(" ");
@@ -696,12 +712,12 @@ function _handleStatementBlockMember(modifier: any) {
   };
 }
 
-function handlePropertyDeclaration(path: any, print: any) {
-  const modifierDocs = path.map(print, "modifiers");
-  const getterDoc = path.call(print, "getter", "value");
-  const setterDoc = path.call(print, "setter", "value");
+function handlePropertyDeclaration(path: AstPath, print: any) {
+  const modifierDocs: Doc[] = path.map(print, "modifiers");
+  const getterDoc: Doc = path.call(print, "getter", "value");
+  const setterDoc: Doc = path.call(print, "setter", "value");
 
-  const parts = [];
+  const parts: Doc[] = [];
   const innerParts = [];
   parts.push(join("", modifierDocs));
   parts.push(path.call(print, "type"));
@@ -728,10 +744,10 @@ function handlePropertyDeclaration(path: any, print: any) {
 }
 
 function _handlePropertyGetterSetter(action: any) {
-  return (path: any, print: any) => {
-    const statementDoc = path.call(print, "stmnt", "value");
+  return (path: AstPath, print: any) => {
+    const statementDoc: Doc = path.call(print, "stmnt", "value");
 
-    const parts = [];
+    const parts: Doc[] = [];
     parts.push(path.call(print, "modifier", "value"));
     parts.push(action);
     if (statementDoc) {
@@ -744,12 +760,12 @@ function _handlePropertyGetterSetter(action: any) {
   };
 }
 
-function handleMethodDeclaration(path: any, print: any) {
-  const statementDoc = path.call(print, "stmnt", "value");
-  const modifierDocs = path.map(print, "modifiers");
-  const parameterDocs = path.map(print, "parameters");
+function handleMethodDeclaration(path: AstPath, print: any) {
+  const statementDoc: Doc = path.call(print, "stmnt", "value");
+  const modifierDocs: Doc[] = path.map(print, "modifiers");
+  const parameterDocs: Doc[] = path.map(print, "parameters");
 
-  const parts = [];
+  const parts: Doc[] = [];
   const parameterParts = [];
   // Modifiers
   if (modifierDocs.length > 0) {
@@ -777,8 +793,8 @@ function handleMethodDeclaration(path: any, print: any) {
   return concat(parts);
 }
 
-function handleModifierParameterRef(path: any, print: any) {
-  const parts = [];
+function handleModifierParameterRef(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   // Modifiers
   parts.push(join("", path.map(print, "modifiers")));
   // Type
@@ -789,8 +805,8 @@ function handleModifierParameterRef(path: any, print: any) {
   return concat(parts);
 }
 
-function handleEmptyModifierParameterRef(path: any, print: any) {
-  const parts = [];
+function handleEmptyModifierParameterRef(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   // Type
   parts.push(path.call(print, "typeRef"));
   parts.push(" ");
@@ -799,7 +815,7 @@ function handleEmptyModifierParameterRef(path: any, print: any) {
   return concat(parts);
 }
 
-function handleStatement(childClass: any, path: any, print: any) {
+function handleStatement(childClass: any, path: AstPath, print: any) {
   let doc;
   switch (childClass) {
     case "DmlInsertStmnt":
@@ -823,7 +839,7 @@ function handleStatement(childClass: any, path: any, print: any) {
       );
   }
   const node = path.getValue();
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push(doc);
   parts.push(" ");
   parts.push(path.call(print, "expr"));
@@ -835,8 +851,8 @@ function handleStatement(childClass: any, path: any, print: any) {
   return groupConcat(parts);
 }
 
-function handleDmlMergeStatement(path: any, print: any) {
-  const parts = [];
+function handleDmlMergeStatement(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("merge");
   parts.push(" ");
   parts.push(path.call(print, "expr1"));
@@ -846,9 +862,9 @@ function handleDmlMergeStatement(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleEnumDeclaration(path: any, print: any, options: any) {
-  const modifierDocs = path.map(print, "modifiers");
-  const memberDocs = path.map(print, "members");
+function handleEnumDeclaration(path: AstPath, print: any, options: any) {
+  const modifierDocs: Doc[] = path.map(print, "modifiers");
+  const memberDocs: Doc[] = path.map(print, "members");
   const danglingCommentDocs = _getDanglingCommentDocs(path, print, options);
 
   const parts: any = [];
@@ -870,10 +886,10 @@ function handleEnumDeclaration(path: any, print: any, options: any) {
   return concat(parts);
 }
 
-function handleSwitchStatement(path: any, print: any) {
-  const whenBlocks = path.map(print, "whenBlocks");
+function handleSwitchStatement(path: AstPath, print: any) {
+  const whenBlocks: Doc[] = path.map(print, "whenBlocks");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push("switch on");
   parts.push(groupConcat([line, path.call(print, "expr")]));
   parts.push(" ");
@@ -885,11 +901,11 @@ function handleSwitchStatement(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleValueWhen(path: any, print: any) {
-  const whenCaseDocs = path.map(print, "whenCases");
-  const statementDoc = path.call(print, "stmnt");
+function handleValueWhen(path: AstPath, print: any) {
+  const whenCaseDocs: Doc[] = path.map(print, "whenCases");
+  const statementDoc: Doc = path.call(print, "stmnt");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push("when");
   parts.push(" ");
   const whenCaseGroup = group(indent(join(concat([",", line]), whenCaseDocs)));
@@ -900,10 +916,10 @@ function handleValueWhen(path: any, print: any) {
   return concat(parts);
 }
 
-function handleElseWhen(path: any, print: any) {
-  const statementDoc = path.call(print, "stmnt");
+function handleElseWhen(path: AstPath, print: any) {
+  const statementDoc: Doc = path.call(print, "stmnt");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push("when");
   parts.push(" ");
   parts.push("else");
@@ -913,10 +929,10 @@ function handleElseWhen(path: any, print: any) {
   return concat(parts);
 }
 
-function handleTypeWhen(path: any, print: any) {
-  const statementDoc = path.call(print, "stmnt");
+function handleTypeWhen(path: AstPath, print: any) {
+  const statementDoc: Doc = path.call(print, "stmnt");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push("when");
   parts.push(" ");
   parts.push(path.call(print, "typeRef"));
@@ -928,15 +944,15 @@ function handleTypeWhen(path: any, print: any) {
   return concat(parts);
 }
 
-function handleEnumCase(path: any, print: any) {
+function handleEnumCase(path: AstPath, print: any) {
   return join(".", path.map(print, "identifiers"));
 }
 
-function handleRunAsBlock(path: any, print: any) {
-  const paramDocs = path.map(print, "inputParameters");
-  const statementDoc = path.call(print, "stmnt");
+function handleRunAsBlock(path: AstPath, print: any) {
+  const paramDocs: Doc[] = path.map(print, "inputParameters");
+  const statementDoc: Doc = path.call(print, "stmnt");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push("System.runAs");
   parts.push("(");
   parts.push(join(concat([",", line]), paramDocs));
@@ -947,10 +963,10 @@ function handleRunAsBlock(path: any, print: any) {
   return concat(parts);
 }
 
-function handleBlockStatement(path: any, print: any, options: any) {
-  const parts = [];
+function handleBlockStatement(path: AstPath, print: any, options: any) {
+  const parts: Doc[] = [];
   const danglingCommentDocs = _getDanglingCommentDocs(path, print, options);
-  const statementDocs = path.map(print, "stmnts");
+  const statementDocs: Doc[] = path.map(print, "stmnts");
 
   parts.push("{");
   if (danglingCommentDocs.length > 0) {
@@ -964,12 +980,12 @@ function handleBlockStatement(path: any, print: any, options: any) {
   return groupIndentConcat(parts);
 }
 
-function handleTryCatchFinallyBlock(path: any, print: any) {
-  const tryStatementDoc = path.call(print, "tryBlock");
-  const catchBlockDocs = path.map(print, "catchBlocks");
-  const finallyBlockDoc = path.call(print, "finallyBlock", "value");
+function handleTryCatchFinallyBlock(path: AstPath, print: any) {
+  const tryStatementDoc: Doc = path.call(print, "tryBlock");
+  const catchBlockDocs: Doc[] = path.map(print, "catchBlocks");
+  const finallyBlockDoc: Doc = path.call(print, "finallyBlock", "value");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push("try");
   parts.push(" ");
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
@@ -983,8 +999,8 @@ function handleTryCatchFinallyBlock(path: any, print: any) {
   return concat(parts);
 }
 
-function handleCatchBlock(path: any, print: any) {
-  const parts = [];
+function handleCatchBlock(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("catch");
   parts.push(" ");
   parts.push("(");
@@ -996,8 +1012,8 @@ function handleCatchBlock(path: any, print: any) {
   return concat(parts);
 }
 
-function handleFinallyBlock(path: any, print: any) {
-  const parts = [];
+function handleFinallyBlock(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("finally");
   parts.push(" ");
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
@@ -1005,10 +1021,10 @@ function handleFinallyBlock(path: any, print: any) {
   return concat(parts);
 }
 
-function handleVariableDeclarations(path: any, print: any) {
-  const modifierDocs = path.map(print, "modifiers");
+function handleVariableDeclarations(path: AstPath, print: any) {
+  const modifierDocs: Doc[] = path.map(print, "modifiers");
 
-  const parts = [];
+  const parts: Doc[] = [];
   // Modifiers
   parts.push(join("", modifierDocs));
 
@@ -1016,7 +1032,7 @@ function handleVariableDeclarations(path: any, print: any) {
   parts.push(path.call(print, "type"));
   parts.push(" ");
   // Variable declarations
-  const declarationDocs = path.map(print, "decls");
+  const declarationDocs: Doc[] = path.map(print, "decls");
   if (declarationDocs.length > 1) {
     parts.push(indentConcat([join(concat([",", line]), declarationDocs)]));
     parts.push(";");
@@ -1026,13 +1042,13 @@ function handleVariableDeclarations(path: any, print: any) {
   return groupConcat(parts);
 }
 
-function handleVariableDeclaration(path: any, print: any) {
+function handleVariableDeclaration(path: AstPath, print: any) {
   const node = path.getValue();
-  const parts = [];
+  const parts: Doc[] = [];
   let resultDoc;
 
   parts.push(path.call(print, "name"));
-  const assignmentDocs = path.call(print, "assignment", "value");
+  const assignmentDocs: Doc = path.call(print, "assignment", "value");
   if (assignmentDocs && isBinaryish(node.assignment.value)) {
     parts.push(" ");
     parts.push("=");
@@ -1051,9 +1067,9 @@ function handleVariableDeclaration(path: any, print: any) {
   return resultDoc;
 }
 
-function handleNewStandard(path: any, print: any) {
-  const paramDocs = path.map(print, "inputParameters");
-  const parts = [];
+function handleNewStandard(path: AstPath, print: any) {
+  const paramDocs: Doc[] = path.map(print, "inputParameters");
+  const parts: Doc[] = [];
   // Type
   parts.push(path.call(print, "type"));
   // Params
@@ -1067,10 +1083,10 @@ function handleNewStandard(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleNewKeyValue(path: any, print: any) {
-  const keyValueDocs = path.map(print, "keyValues");
+function handleNewKeyValue(path: AstPath, print: any) {
+  const keyValueDocs: Doc[] = path.map(print, "keyValues");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push(path.call(print, "type"));
   parts.push("(");
   if (keyValueDocs.length > 0) {
@@ -1082,10 +1098,10 @@ function handleNewKeyValue(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleNameValueParameter(path: any, print: any) {
+function handleNameValueParameter(path: AstPath, print: any) {
   const node = path.getValue();
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push(path.call(print, "name"));
   parts.push(" ");
   parts.push("=");
@@ -1100,31 +1116,31 @@ function handleNameValueParameter(path: any, print: any) {
   return concat(parts);
 }
 
-function handleThisMethodCallExpression(path: any, print: any) {
-  const parts = [];
+function handleThisMethodCallExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("this");
   parts.push("(");
   parts.push(softline);
-  const paramDocs = path.map(print, "inputParameters");
+  const paramDocs: Doc[] = path.map(print, "inputParameters");
   parts.push(join(concat([",", line]), paramDocs));
   parts.push(dedent(softline));
   parts.push(")");
   return groupIndentConcat(parts);
 }
 
-function handleSuperMethodCallExpression(path: any, print: any) {
-  const parts = [];
+function handleSuperMethodCallExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("super");
   parts.push("(");
   parts.push(softline);
-  const paramDocs = path.map(print, "inputParameters");
+  const paramDocs: Doc[] = path.map(print, "inputParameters");
   parts.push(join(concat([",", line]), paramDocs));
   parts.push(dedent(softline));
   parts.push(")");
   return groupIndentConcat(parts);
 }
 
-function handleMethodCallExpression(path: any, print: any) {
+function handleMethodCallExpression(path: AstPath, print: any) {
   const node = path.getValue();
   const parentNode = path.getParentNode();
   const nodeName = path.getName();
@@ -1147,8 +1163,8 @@ function handleMethodCallExpression(path: any, print: any) {
     dottedExpr.value["@class"] === APEX_TYPES.SUPER_VARIABLE_EXPRESSION;
 
   const dottedExpressionDoc = handleDottedExpression(path, print);
-  const nameDocs = path.map(print, "names");
-  const paramDocs = path.map(print, "inputParameters");
+  const nameDocs: Doc[] = path.map(print, "names");
+  const paramDocs: Doc[] = path.map(print, "inputParameters");
 
   const resultParamDoc =
     paramDocs.length > 0
@@ -1185,7 +1201,7 @@ function handleMethodCallExpression(path: any, print: any) {
     parentNode["@class"] === APEX_TYPES.ARRAY_EXPRESSION &&
     nodeName === "expr"
   ) {
-    path.callParent((innerPath: any) => {
+    path.callParent((innerPath: AstPath) => {
       const withGroup = isParentDottedExpression || !!dottedExpressionDoc;
 
       arrayIndexDoc = handleArrayExpressionIndex(innerPath, print, withGroup);
@@ -1260,8 +1276,8 @@ function handleMethodCallExpression(path: any, print: any) {
   return resultDoc;
 }
 
-function handleJavaMethodCallExpression(path: any, print: any) {
-  const parts = [];
+function handleJavaMethodCallExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("java:");
   parts.push(join(".", path.map(print, "names")));
   parts.push("(");
@@ -1272,17 +1288,17 @@ function handleJavaMethodCallExpression(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleNestedExpression(path: any, print: any) {
-  const parts = [];
+function handleNestedExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("(");
   parts.push(path.call(print, "expr"));
   parts.push(")");
   return concat(parts);
 }
 
-function handleNewSetInit(path: any, print: any) {
-  const parts = [];
-  const expressionDoc = path.call(print, "expr", "value");
+function handleNewSetInit(path: AstPath, print: any) {
+  const parts: Doc[] = [];
+  const expressionDoc: Doc = path.call(print, "expr", "value");
 
   // Type
   parts.push("Set");
@@ -1296,10 +1312,10 @@ function handleNewSetInit(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleNewSetLiteral(path: any, print: any) {
-  const valueDocs = path.map(print, "values");
+function handleNewSetLiteral(path: AstPath, print: any) {
+  const valueDocs: Doc[] = path.map(print, "values");
 
-  const parts = [];
+  const parts: Doc[] = [];
   // Type
   parts.push("Set");
   parts.push("<");
@@ -1316,7 +1332,7 @@ function handleNewSetLiteral(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleNewListInit(path: any, print: any) {
+function handleNewListInit(path: AstPath, print: any) {
   // We can declare lists in the following ways:
   // new Object[size];
   // new Object[] { value, ... };
@@ -1328,9 +1344,9 @@ function handleNewListInit(path: any, print: any) {
   // This should provide compatibility for all known types without knowing
   // if the parameter is a variable (copy constructor) or literal size.
 
-  const expressionDoc = path.call(print, "expr", "value");
-  const parts = [];
-  const typePart = path.map(print, "types");
+  const expressionDoc: string = path.call(print, "expr", "value");
+  const parts: Doc[] = [];
+  const typePart: any = path.map(print, "types");
   const hasLiteralNumberInitializer =
     (typePart.group || (typePart.length && typePart[0].parts.length < 4)) &&
     !Number.isNaN(parseInt(expressionDoc, 10));
@@ -1350,14 +1366,14 @@ function handleNewListInit(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleNewMapInit(path: any, print: any) {
-  const parts = [];
-  const expressionDoc = path.call(print, "expr", "value");
+function handleNewMapInit(path: AstPath, print: any) {
+  const parts: Doc[] = [];
+  const expressionDoc: Doc = path.call(print, "expr", "value");
 
   parts.push("Map");
   // Type
   parts.push("<");
-  const typeDocs = path.map(print, "types");
+  const typeDocs: Doc[] = path.map(print, "types");
   parts.push(join(", ", typeDocs));
   parts.push(">");
   parts.push("(");
@@ -1366,10 +1382,10 @@ function handleNewMapInit(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleNewMapLiteral(path: any, print: any) {
-  const valueDocs = path.map(print, "pairs");
+function handleNewMapLiteral(path: AstPath, print: any) {
+  const valueDocs: Doc[] = path.map(print, "pairs");
 
-  const parts = [];
+  const parts: Doc[] = [];
   // Type
   parts.push("Map");
   parts.push("<");
@@ -1386,8 +1402,8 @@ function handleNewMapLiteral(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleMapLiteralKeyValue(path: any, print: any) {
-  const parts = [];
+function handleMapLiteralKeyValue(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "key"));
   parts.push(" ");
   parts.push("=>");
@@ -1396,10 +1412,10 @@ function handleMapLiteralKeyValue(path: any, print: any) {
   return concat(parts);
 }
 
-function handleNewListLiteral(path: any, print: any) {
-  const valueDocs = path.map(print, "values");
+function handleNewListLiteral(path: AstPath, print: any) {
+  const valueDocs: Doc[] = path.map(print, "values");
 
-  const parts = [];
+  const parts: Doc[] = [];
   // Type
   parts.push("List<");
   parts.push(join(".", path.map(print, "types")));
@@ -1415,19 +1431,19 @@ function handleNewListLiteral(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleNewExpression(path: any, print: any) {
-  const parts = [];
+function handleNewExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("new");
   parts.push(" ");
   parts.push(path.call(print, "creator"));
   return concat(parts);
 }
 
-function handleIfElseBlock(path: any, print: any) {
+function handleIfElseBlock(path: AstPath, print: any) {
   const node = path.getValue();
-  const parts = [];
-  const ifBlockDocs = path.map(print, "ifBlocks");
-  const elseBlockDoc = path.call(print, "elseBlock", "value");
+  const parts: Doc[] = [];
+  const ifBlockDocs: Doc[] = path.map(print, "ifBlocks");
+  const elseBlockDoc: Doc = path.call(print, "elseBlock", "value");
   // There are differences when we handle block vs expression statements in
   // if bodies and else body. For expression statement, we need to add a
   // hardline after a statement vs a space for block statement. For example:
@@ -1462,11 +1478,11 @@ function handleIfElseBlock(path: any, print: any) {
   return groupConcat(parts);
 }
 
-function handleIfBlock(path: any, print: any) {
-  const statementType = path.call(print, "stmnt", "@class");
-  const statementDoc = path.call(print, "stmnt");
+function handleIfBlock(path: AstPath, print: any) {
+  const statementType: Doc = path.call(print, "stmnt", "@class");
+  const statementDoc: Doc = path.call(print, "stmnt");
 
-  const parts = [];
+  const parts: Doc[] = [];
   const conditionParts = [];
   parts.push("if");
   parts.push(" ");
@@ -1489,11 +1505,11 @@ function handleIfBlock(path: any, print: any) {
   return concat(parts);
 }
 
-function handleElseBlock(path: any, print: any) {
-  const statementType = path.call(print, "stmnt", "@class");
-  const statementDoc = path.call(print, "stmnt");
+function handleElseBlock(path: AstPath, print: any) {
+  const statementType: Doc = path.call(print, "stmnt", "@class");
+  const statementDoc: Doc = path.call(print, "stmnt");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push("else");
   // Body block
   if (statementType === APEX_TYPES.BLOCK_STATEMENT) {
@@ -1507,8 +1523,8 @@ function handleElseBlock(path: any, print: any) {
   return concat(parts);
 }
 
-function handleTernaryExpression(path: any, print: any) {
-  const parts = [];
+function handleTernaryExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "condition"));
 
   parts.push(line);
@@ -1537,8 +1553,8 @@ function handleTernaryExpression(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleInstanceOfExpression(path: any, print: any) {
-  const parts = [];
+function handleInstanceOfExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "expr"));
   parts.push(" ");
   parts.push("instanceof");
@@ -1547,25 +1563,25 @@ function handleInstanceOfExpression(path: any, print: any) {
   return concat(parts);
 }
 
-function handlePackageVersionExpression(path: any, print: any) {
-  const parts = [];
+function handlePackageVersionExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("Package.Version.");
   parts.push(path.call(print, "version"));
   return concat(parts);
 }
 
-function handleStructuredVersion(path: any, print: any) {
-  const parts = [];
+function handleStructuredVersion(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "major"));
   parts.push(".");
   parts.push(path.call(print, "minor"));
   return concat(parts);
 }
 
-function handleArrayExpression(path: any, print: any) {
+function handleArrayExpression(path: AstPath, print: any) {
   const node = path.getValue();
-  const parts = [];
-  const expressionDoc = path.call(print, "expr");
+  const parts: Doc[] = [];
+  const expressionDoc: Doc = path.call(print, "expr");
   // In certain situations we need to defer printing the [] part to be part of
   // the `expr` printing. Take a look at handleVariableExpression or
   // handleMethodCallExpression for example.
@@ -1583,8 +1599,8 @@ function handleArrayExpression(path: any, print: any) {
   return groupConcat(parts);
 }
 
-function handleCastExpression(path: any, print: any) {
-  const parts = [];
+function handleCastExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("(");
   parts.push(path.call(print, "type"));
   parts.push(")");
@@ -1593,16 +1609,16 @@ function handleCastExpression(path: any, print: any) {
   return concat(parts);
 }
 
-function handleExpressionStatement(path: any, print: any) {
-  const parts = [];
+function handleExpressionStatement(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "expr"));
   parts.push(";");
   return concat(parts);
 }
 
 // SOSL
-function handleSoslExpression(path: any, print: any) {
-  const parts = [];
+function handleSoslExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("[");
   parts.push(softline);
   parts.push(path.call(print, "search"));
@@ -1611,14 +1627,14 @@ function handleSoslExpression(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleFindClause(path: any, print: any) {
-  const parts = [];
+function handleFindClause(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(indentConcat(["FIND", line, path.call(print, "search")]));
   return groupConcat(parts);
 }
 
-function handleFindValue(childClass: any, path: any, print: any) {
-  let doc;
+function handleFindValue(childClass: any, path: AstPath, print: any) {
+  let doc: Doc;
   switch (childClass) {
     case "FindString":
       doc = concat(["'", path.call(print, "value"), "'"]);
@@ -1634,25 +1650,25 @@ function handleFindValue(childClass: any, path: any, print: any) {
   return doc;
 }
 
-function handleInClause(path: any, print: any) {
-  const parts = [];
+function handleInClause(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("IN");
   parts.push(" ");
-  parts.push(path.call(print, "scope").toUpperCase());
+  parts.push((path.call(print, "scope") as string).toUpperCase());
   parts.push(" ");
   parts.push("FIELDS");
   return concat(parts);
 }
 
-function handleDivisionClause(path: any, print: any) {
-  const parts = [];
+function handleDivisionClause(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("WITH DIVISION = ");
   parts.push(path.call(print, "value"));
   return concat(parts);
 }
 
-function handleDivisionValue(childClass: any, path: any, print: any) {
-  let doc;
+function handleDivisionValue(childClass: any, path: AstPath, print: any) {
+  let doc: Doc;
   switch (childClass) {
     case "DivisionLiteral":
       doc = concat(["'", path.call(print, "literal"), "'"]);
@@ -1668,8 +1684,8 @@ function handleDivisionValue(childClass: any, path: any, print: any) {
   return doc;
 }
 
-function handleSearchWithClause(path: any, print: any) {
-  const parts = [];
+function handleSearchWithClause(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("WITH");
   parts.push(" ");
   parts.push(path.call(print, "name"));
@@ -1677,9 +1693,13 @@ function handleSearchWithClause(path: any, print: any) {
   return concat(parts);
 }
 
-function handleSearchWithClauseValue(childClass: any, path: any, print: any) {
-  const parts = [];
-  let valueDocs;
+function handleSearchWithClauseValue(
+  childClass: any,
+  path: AstPath,
+  print: any,
+) {
+  const parts: Doc[] = [];
+  let valueDocs: Doc[];
   switch (childClass) {
     case "SearchWithStringValue":
       valueDocs = path.map(print, "values");
@@ -1718,8 +1738,8 @@ function handleSearchWithClauseValue(childClass: any, path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleReturningClause(path: any, print: any) {
-  const parts = [];
+function handleReturningClause(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(
     indentConcat([
       "RETURNING",
@@ -1730,10 +1750,10 @@ function handleReturningClause(path: any, print: any) {
   return groupConcat(parts);
 }
 
-function handleReturningExpression(path: any, print: any) {
-  const selectDoc = path.call(print, "select", "value");
+function handleReturningExpression(path: AstPath, print: any) {
+  const selectDoc: Doc = path.call(print, "select", "value");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push(path.call(print, "name"));
   if (selectDoc) {
     parts.push("(");
@@ -1743,10 +1763,10 @@ function handleReturningExpression(path: any, print: any) {
   return groupConcat(parts);
 }
 
-function handleReturningSelectExpression(path: any, print: any) {
-  const fieldDocs = path.map(print, "fields");
+function handleReturningSelectExpression(path: AstPath, print: any) {
+  const fieldDocs: Doc[] = path.map(print, "fields");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push(join(concat([",", line]), fieldDocs));
 
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
@@ -1764,10 +1784,10 @@ function handleReturningSelectExpression(path: any, print: any) {
   return groupIndentConcat([softline, join(line, parts)]);
 }
 
-function handleSearch(path: any, print: any) {
-  const withDocs = path.map(print, "withs");
+function handleSearch(path: AstPath, print: any) {
+  const withDocs: Doc[] = path.map(print, "withs");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push(path.call(print, "find"));
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
   _pushIfExist(parts, path.call(print, "in", "value"));
@@ -1791,8 +1811,8 @@ function handleSearch(path: any, print: any) {
 }
 
 // SOQL
-function handleSoqlExpression(path: any, print: any) {
-  const parts = [];
+function handleSoqlExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("[");
   parts.push(softline);
   parts.push(path.call(print, "query"));
@@ -1801,21 +1821,21 @@ function handleSoqlExpression(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleSelectInnerQuery(path: any, print: any) {
-  const parts = [];
+function handleSelectInnerQuery(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("(");
   parts.push(softline);
   parts.push(path.call(print, "query"));
   parts.push(dedent(softline));
   parts.push(")");
-  const aliasDoc = path.call(print, "alias", "value");
+  const aliasDoc: Doc = path.call(print, "alias", "value");
   _pushIfExist(parts, aliasDoc, null, [" "]);
 
   return groupIndentConcat(parts);
 }
 
-function handleWhereInnerExpression(path: any, print: any) {
-  const parts = [];
+function handleWhereInnerExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "field"));
   parts.push(" ");
   parts.push(path.call(print, "op"));
@@ -1828,9 +1848,9 @@ function handleWhereInnerExpression(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleQuery(path: any, print: any) {
-  const withIdentifierDocs = path.map(print, "withIdentifiers");
-  const parts = [];
+function handleQuery(path: AstPath, print: any) {
+  const withIdentifierDocs: Doc[] = path.map(print, "withIdentifiers");
+  const parts: Doc[] = [];
   parts.push(path.call(print, "select"));
   parts.push(path.call(print, "from"));
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
@@ -1859,17 +1879,17 @@ function handleQuery(path: any, print: any) {
   return join(line, parts);
 }
 
-function handleBindClause(path: any, print: any) {
-  const expressionDocs = path.map(print, "exprs");
-  const parts = [];
+function handleBindClause(path: AstPath, print: any) {
+  const expressionDocs: Doc[] = path.map(print, "exprs");
+  const parts: Doc[] = [];
   parts.push("BIND");
   parts.push(" ");
   parts.push(join(", ", expressionDocs));
   return concat(parts);
 }
 
-function handleBindExpression(path: any, print: any) {
-  const parts = [];
+function handleBindExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "field"));
   parts.push(" ");
   parts.push("=");
@@ -1878,10 +1898,10 @@ function handleBindExpression(path: any, print: any) {
   return concat(parts);
 }
 
-function handleCaseExpression(path: any, print: any) {
-  const parts = [];
-  const whenBranchDocs = path.map(print, "whenBranches");
-  const elseBranchDoc = path.call(print, "elseBranch", "value");
+function handleCaseExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
+  const whenBranchDocs: Doc[] = path.map(print, "whenBranches");
+  const elseBranchDoc: Doc = path.call(print, "elseBranch", "value");
   parts.push("TYPEOF");
   parts.push(" ");
   parts.push(path.call(print, "op"));
@@ -1896,32 +1916,32 @@ function handleCaseExpression(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleWhenExpression(path: any, print: any) {
-  const parts = [];
+function handleWhenExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("WHEN");
   parts.push(" ");
   parts.push(path.call(print, "op"));
   parts.push(" ");
   parts.push("THEN");
   parts.push(line);
-  const identifierDocs = path.map(print, "identifiers");
+  const identifierDocs: Doc[] = path.map(print, "identifiers");
   parts.push(join(concat([",", line]), identifierDocs));
   parts.push(dedent(softline));
   return groupIndentConcat(parts);
 }
 
-function handleElseExpression(path: any, print: any) {
-  const parts = [];
+function handleElseExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("ELSE");
   parts.push(" ");
-  const identifierDocs = path.map(print, "identifiers");
+  const identifierDocs: Doc[] = path.map(print, "identifiers");
   parts.push(join(concat([",", line]), identifierDocs));
   parts.push(dedent(softline));
   return groupIndentConcat(parts);
 }
 
-function handleColumnClause(path: any, print: any) {
-  const parts = [];
+function handleColumnClause(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(
     indentConcat([
       "SELECT",
@@ -1932,16 +1952,16 @@ function handleColumnClause(path: any, print: any) {
   return groupConcat(parts);
 }
 
-function handleColumnExpression(path: any, print: any) {
-  const parts = [];
+function handleColumnExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "field"));
   _pushIfExist(parts, path.call(print, "alias", "value"), null, [" "]);
   return groupConcat(parts);
 }
 
-function handleFieldIdentifier(path: any, print: any) {
-  const parts = [];
-  const entity = path.call(print, "entity", "value");
+function handleFieldIdentifier(path: AstPath, print: any) {
+  const parts: Doc[] = [];
+  const entity: Doc = path.call(print, "entity", "value");
   if (entity) {
     parts.push(entity);
     parts.push(".");
@@ -1950,9 +1970,9 @@ function handleFieldIdentifier(path: any, print: any) {
   return concat(parts);
 }
 
-function handleField(path: any, print: any) {
-  const functionOneDoc = path.call(print, "function1", "value");
-  const functionTwoDoc = path.call(print, "function2", "value");
+function handleField(path: AstPath, print: any) {
+  const functionOneDoc: Doc = path.call(print, "function1", "value");
+  const functionTwoDoc: Doc = path.call(print, "function2", "value");
 
   const parts: any = [];
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
@@ -1971,16 +1991,16 @@ function handleField(path: any, print: any) {
   return groupConcat(parts);
 }
 
-function handleFromClause(path: any, print: any) {
-  const parts = [];
+function handleFromClause(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(
     indentConcat(["FROM", line, join(", ", path.map(print, "exprs"))]),
   );
   return groupConcat(parts);
 }
 
-function handleFromExpression(path: any, print: any) {
-  const parts = [];
+function handleFromExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "table"));
   _pushIfExist(parts, path.call(print, "alias", "value"), null, [" "]);
   _pushIfExist(
@@ -1992,22 +2012,22 @@ function handleFromExpression(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleWhereClause(path: any, print: any) {
-  const parts = [];
+function handleWhereClause(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(indentConcat(["WHERE", line, path.call(print, "expr")]));
   return groupConcat(parts);
 }
 
-function handleSelectDistanceExpression(path: any, print: any) {
-  const parts = [];
+function handleSelectDistanceExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "expr"));
   parts.push(" ");
   parts.push(path.call(print, "alias", "value"));
   return groupConcat(parts);
 }
 
-function handleWhereDistanceExpression(path: any, print: any) {
-  const parts = [];
+function handleWhereDistanceExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "distance"));
   parts.push(" ");
   parts.push(path.call(print, "op"));
@@ -2016,9 +2036,9 @@ function handleWhereDistanceExpression(path: any, print: any) {
   return groupConcat(parts);
 }
 
-function handleDistanceFunctionExpression(path: any, print: any) {
-  const parts = [];
-  const distanceDocs = [];
+function handleDistanceFunctionExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
+  const distanceDocs: Doc[] = [];
   parts.push("DISTANCE");
   parts.push("(");
   parts.push(softline);
@@ -2031,9 +2051,9 @@ function handleDistanceFunctionExpression(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleGeolocationLiteral(path: any, print: any) {
-  const parts = [];
-  const childParts = [];
+function handleGeolocationLiteral(path: AstPath, print: any) {
+  const parts: Doc[] = [];
+  const childParts: Doc[] = [];
   parts.push("GEOLOCATION");
   parts.push("(");
   childParts.push(path.call(print, "latitude"));
@@ -2044,8 +2064,8 @@ function handleGeolocationLiteral(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleWithValue(path: any, print: any) {
-  const parts = [];
+function handleWithValue(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("WITH");
   parts.push(" ");
   parts.push(path.call(print, "name"));
@@ -2056,9 +2076,9 @@ function handleWithValue(path: any, print: any) {
   return concat(parts);
 }
 
-function handleWithDataCategories(path: any, print: any) {
-  const parts = [];
-  const categoryDocs = path.map(print, "categories");
+function handleWithDataCategories(path: AstPath, print: any) {
+  const parts: Doc[] = [];
+  const categoryDocs: Doc[] = path.map(print, "categories");
   parts.push("WITH DATA CATEGORY");
   parts.push(line);
   parts.push(join(concat([line, "AND", " "]), categoryDocs));
@@ -2066,9 +2086,10 @@ function handleWithDataCategories(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleDataCategory(path: any, print: any) {
-  const parts = [];
-  const categoryDocs = path.map(print, "categories").filter((doc: any) => doc);
+function handleDataCategory(path: AstPath, print: any) {
+  const parts: Doc[] = [];
+  let categoryDocs: Doc[] = path.map(print, "categories");
+  categoryDocs = categoryDocs.filter((doc: Doc) => doc);
   parts.push(path.call(print, "type"));
   parts.push(" ");
   parts.push(path.call(print, "op"));
@@ -2089,8 +2110,8 @@ function handleDataCategoryOperator(childClass: any) {
   return DATA_CATEGORY[childClass as keyof typeof DATA_CATEGORY];
 }
 
-function handleWhereCalcExpression(path: any, print: any) {
-  const parts = [];
+function handleWhereCalcExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "field1"));
   parts.push(" ");
   parts.push(path.call(print, "calc"));
@@ -2103,8 +2124,8 @@ function handleWhereCalcExpression(path: any, print: any) {
   return groupConcat(parts);
 }
 
-function handleWhereOperationExpression(path: any, print: any) {
-  const parts = [];
+function handleWhereOperationExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "field"));
   parts.push(" ");
   parts.push(path.call(print, "op"));
@@ -2113,8 +2134,8 @@ function handleWhereOperationExpression(path: any, print: any) {
   return groupConcat(parts);
 }
 
-function handleWhereOperationExpressions(path: any, print: any) {
-  const parts = [];
+function handleWhereOperationExpressions(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "field"));
   parts.push(" ");
   parts.push(path.call(print, "op"));
@@ -2150,14 +2171,14 @@ function escapeSoqlString(text: any, isInLikeExpression: any) {
 
 function handleWhereQueryLiteral(
   childClass: any,
-  path: any,
+  path: AstPath,
   print: any,
   options: any,
-) {
+): Doc {
   const node = path.getValue();
   const grandParentNode = path.getParentNode(1);
 
-  let doc;
+  let doc: Doc;
   const isInLikeExpression =
     grandParentNode &&
     grandParentNode.op &&
@@ -2200,7 +2221,7 @@ function handleWhereQueryLiteral(
   return "";
 }
 
-function handleWhereCompoundExpression(path: any, print: any) {
+function handleWhereCompoundExpression(path: AstPath, print: any) {
   const node = path.getValue();
   const parentNode = path.getParentNode();
   const isNestedExpression =
@@ -2210,13 +2231,13 @@ function handleWhereCompoundExpression(path: any, print: any) {
   const isSamePrecedenceWithParent =
     parentNode.op && nodeOp === parentNode.op["@class"];
 
-  const parts = [];
+  const parts: Doc[] = [];
 
   if (isNestedExpression && !isSamePrecedenceWithParent) {
     parts.push("(");
   }
-  const operatorDoc = path.call(print, "op");
-  const expressionDocs = path.map(print, "expr");
+  const operatorDoc: Doc = path.call(print, "op");
+  const expressionDocs: Doc[] = path.map(print, "expr");
   parts.push(join(concat([line, operatorDoc, " "]), expressionDocs));
   if (isNestedExpression && !isSamePrecedenceWithParent) {
     parts.push(")");
@@ -2224,12 +2245,12 @@ function handleWhereCompoundExpression(path: any, print: any) {
   return concat(parts);
 }
 
-function handleWhereUnaryExpression(path: any, print: any) {
+function handleWhereUnaryExpression(path: AstPath, print: any) {
   const parentNode = path.getParentNode();
   const isNestedExpression =
     parentNode["@class"] === APEX_TYPES.WHERE_COMPOUND_EXPRESSION ||
     parentNode["@class"] === APEX_TYPES.WHERE_UNARY_EXPRESSION;
-  const parts = [];
+  const parts: Doc[] = [];
   if (isNestedExpression) {
     parts.push("(");
   }
@@ -2242,15 +2263,15 @@ function handleWhereUnaryExpression(path: any, print: any) {
   return concat(parts);
 }
 
-function handleColonExpression(path: any, print: any) {
-  const parts = [];
+function handleColonExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(":");
   parts.push(path.call(print, "expr"));
   return concat(parts);
 }
 
-function handleOrderByClause(path: any, print: any) {
-  const parts = [];
+function handleOrderByClause(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("ORDER BY");
   parts.push(
     indentConcat([line, join(concat([",", line]), path.map(print, "exprs"))]),
@@ -2258,8 +2279,8 @@ function handleOrderByClause(path: any, print: any) {
   return groupConcat(parts);
 }
 
-function handleOrderByExpression(childClass: any, path: any, print: any) {
-  const parts = [];
+function handleOrderByExpression(childClass: any, path: AstPath, print: any) {
+  const parts: Doc[] = [];
   let expressionField;
   switch (childClass) {
     case "OrderByDistance":
@@ -2275,12 +2296,12 @@ function handleOrderByExpression(childClass: any, path: any, print: any) {
   }
   parts.push(path.call(print, expressionField));
 
-  const orderDoc = path.call(print, "order");
+  const orderDoc: Doc = path.call(print, "order");
   if (orderDoc) {
     parts.push(" ");
     parts.push(orderDoc);
   }
-  const nullOrderDoc = path.call(print, "nullOrder");
+  const nullOrderDoc: Doc = path.call(print, "nullOrder");
   if (nullOrderDoc) {
     parts.push(" ");
     parts.push(nullOrderDoc);
@@ -2290,7 +2311,7 @@ function handleOrderByExpression(childClass: any, path: any, print: any) {
 
 function handleOrderOperation(
   childClass: any,
-  path: any,
+  path: AstPath,
   print: any,
   opts: any,
 ) {
@@ -2303,7 +2324,7 @@ function handleOrderOperation(
 
 function handleNullOrderOperation(
   childClass: any,
-  path: any,
+  path: AstPath,
   print: any,
   opts: any,
 ) {
@@ -2314,12 +2335,12 @@ function handleNullOrderOperation(
   return "";
 }
 
-function handleGroupByClause(path: any, print: any) {
-  const expressionDocs = path.map(print, "exprs");
-  const typeDoc = path.call(print, "type", "value");
-  const havingDoc = path.call(print, "having", "value");
+function handleGroupByClause(path: AstPath, print: any) {
+  const expressionDocs: Doc[] = path.map(print, "exprs");
+  const typeDoc: Doc = path.call(print, "type", "value");
+  const havingDoc: Doc = path.call(print, "having", "value");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push("GROUP BY");
   if (typeDoc) {
     parts.push(" ");
@@ -2360,17 +2381,17 @@ function handleGroupByType(childClass: any) {
   return doc;
 }
 
-function handleHavingClause(path: any, print: any) {
-  const parts = [];
+function handleHavingClause(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push("HAVING");
   parts.push(line);
   parts.push(path.call(print, "expr"));
   return groupIndentConcat(parts);
 }
 
-function handleQueryUsingClause(path: any, print: any) {
-  const expressionDocs = path.map(print, "exprs");
-  const parts = [];
+function handleQueryUsingClause(path: AstPath, print: any) {
+  const expressionDocs: Doc[] = path.map(print, "exprs");
+  const parts: Doc[] = [];
   parts.push("USING");
   parts.push(line);
   parts.push(join(concat([",", line]), expressionDocs));
@@ -2378,7 +2399,7 @@ function handleQueryUsingClause(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleUsingExpression(childClass: any, path: any, print: any) {
+function handleUsingExpression(childClass: any, path: AstPath, print: any) {
   let doc;
   switch (childClass) {
     case "Using":
@@ -2447,9 +2468,9 @@ function handleQueryOption(childClass: any) {
   return doc;
 }
 
-function handleUpdateStatsClause(path: any, print: any) {
-  const optionDocs = path.map(print, "options");
-  const parts = [];
+function handleUpdateStatsClause(path: AstPath, print: any) {
+  const optionDocs: Doc[] = path.map(print, "options");
+  const parts: Doc[] = [];
   parts.push("UPDATE");
   parts.push(line);
   parts.push(join(concat([",", line]), optionDocs));
@@ -2474,8 +2495,8 @@ function handleUpdateStatsOption(childClass: any) {
   return doc;
 }
 
-function handleUsingType(path: any, print: any) {
-  const parts = [];
+function handleUsingType(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "filter"));
   parts.push(" ");
   parts.push(path.call(print, "value"));
@@ -2492,33 +2513,33 @@ function handleModifier(childClass: keyof typeof MODIFIER) {
   return concat([modifierValue, " "]);
 }
 
-function handlePostfixExpression(path: any, print: any) {
-  const parts = [];
+function handlePostfixExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "expr"));
   parts.push(path.call(print, "op"));
   return concat(parts);
 }
 
-function handlePrefixExpression(path: any, print: any) {
-  const parts = [];
+function handlePrefixExpression(path: AstPath, print: any) {
+  const parts: Doc[] = [];
   parts.push(path.call(print, "op"));
   parts.push(path.call(print, "expr"));
   return concat(parts);
 }
 
-function handlePostfixOperator(path: any, print: any) {
+function handlePostfixOperator(path: AstPath, print: any) {
   return POSTFIX[path.call(print, "$") as keyof typeof POSTFIX];
 }
 
-function handlePrefixOperator(path: any, print: any) {
+function handlePrefixOperator(path: AstPath, print: any) {
   return PREFIX[path.call(print, "$") as keyof typeof PREFIX];
 }
 
-function handleWhileLoop(path: any, print: any) {
+function handleWhileLoop(path: AstPath, print: any) {
   const node = path.getValue();
-  const conditionDoc = path.call(print, "condition");
+  const conditionDoc: Doc = path.call(print, "condition");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push("while");
   parts.push(" ");
   parts.push("(");
@@ -2530,8 +2551,8 @@ function handleWhileLoop(path: any, print: any) {
     return concat(parts);
   }
   // Body
-  const statementDoc = path.call(print, "stmnt", "value");
-  const statementType = path.call(print, "stmnt", "value", "@class");
+  const statementDoc: Doc = path.call(print, "stmnt", "value");
+  const statementType: Doc = path.call(print, "stmnt", "value", "@class");
   if (statementType === APEX_TYPES.BLOCK_STATEMENT) {
     parts.push(" ");
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
@@ -2543,11 +2564,11 @@ function handleWhileLoop(path: any, print: any) {
   return concat(parts);
 }
 
-function handleDoLoop(path: any, print: any) {
-  const statementDoc = path.call(print, "stmnt");
-  const conditionDoc = path.call(print, "condition");
+function handleDoLoop(path: AstPath, print: any) {
+  const statementDoc: Doc = path.call(print, "stmnt");
+  const conditionDoc: Doc = path.call(print, "condition");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push("do");
   parts.push(" ");
   // Body
@@ -2564,11 +2585,11 @@ function handleDoLoop(path: any, print: any) {
   return concat(parts);
 }
 
-function handleForLoop(path: any, print: any) {
+function handleForLoop(path: AstPath, print: any) {
   const node = path.getValue();
-  const forControlDoc = path.call(print, "forControl");
+  const forControlDoc: Doc = path.call(print, "forControl");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push("for");
   parts.push(" ");
   parts.push("(");
@@ -2591,8 +2612,8 @@ function handleForLoop(path: any, print: any) {
     return concat(parts);
   }
   // Body
-  const statementType = path.call(print, "stmnt", "value", "@class");
-  const statementDoc = path.call(print, "stmnt", "value");
+  const statementType: Doc = path.call(print, "stmnt", "value", "@class");
+  const statementDoc: Doc = path.call(print, "stmnt", "value");
   if (statementType === APEX_TYPES.BLOCK_STATEMENT) {
     parts.push(" ");
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
@@ -2604,22 +2625,22 @@ function handleForLoop(path: any, print: any) {
   return concat(parts);
 }
 
-function handleForEnhancedControl(path: any, print: any) {
+function handleForEnhancedControl(path: AstPath, print: any) {
   // See the note in handleForInit to see why we have to do this
-  const initDocParts = path.call(print, "init");
+  const initDocParts: Doc[] = path.call(print, "init");
   const initDoc = join(concat([" ", ":", " "]), initDocParts);
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push(path.call(print, "type"));
   parts.push(" ");
   parts.push(initDoc);
   return concat(parts);
 }
 
-function handleForCStyleControl(path: any, print: any) {
-  const initsDoc = path.call(print, "inits", "value");
-  const conditionDoc = path.call(print, "condition", "value");
-  const controlDoc = path.call(print, "control", "value");
+function handleForCStyleControl(path: AstPath, print: any) {
+  const initsDoc: Doc = path.call(print, "inits", "value");
+  const conditionDoc: Doc = path.call(print, "condition", "value");
+  const controlDoc: Doc = path.call(print, "control", "value");
 
   const parts: any = [];
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
@@ -2631,8 +2652,8 @@ function handleForCStyleControl(path: any, print: any) {
   return groupConcat(parts);
 }
 
-function handleForInits(path: any, print: any) {
-  const typeDoc = path.call(print, "type", "value");
+function handleForInits(path: AstPath, print: any) {
+  const typeDoc: Doc = path.call(print, "type", "value");
   const initDocsParts = path.map(print, "inits");
 
   // See the note in handleForInit to see why we have to do this
@@ -2652,7 +2673,7 @@ function handleForInits(path: any, print: any) {
   return groupIndentConcat(parts);
 }
 
-function handleForInit(path: any, print: any) {
+function handleForInit(path: AstPath, print: any) {
   // This is one of the weird cases that does not really match the way that we print things.
   // ForInit is used by both C style for loop and enhanced for loop, and there's no way to tell
   // which operator we should use for init in this context, for example:
@@ -2661,9 +2682,9 @@ function handleForInit(path: any, print: any) {
   // for (Contact a: [SELECT Id FROM Contact])
   // have very little differentiation from the POV of the ForInit handler.
   // Therefore, we'll return 2 docs here so the parent can decide what operator to insert between them.
-  const nameDocs = path.map(print, "name");
+  const nameDocs: Doc[] = path.map(print, "name");
 
-  const parts = [];
+  const parts: Doc[] = [];
   parts.push(join(".", nameDocs));
   parts.push(path.call(print, "expr", "value"));
   return parts;
@@ -2681,7 +2702,7 @@ nodeHandler[APEX_TYPES.EXPRESSION_STATEMENT] = handleExpressionStatement;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.RETURN_STATEMENT] = handleReturnStatement;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[APEX_TYPES.TRIGGER_USAGE] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.TRIGGER_USAGE] = (path: AstPath, print: any) =>
   TRIGGER_USAGE[path.call(print, "$") as keyof typeof TRIGGER_USAGE];
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.JAVA_TYPE_REF] = handleJavaTypeRef;
@@ -2736,7 +2757,7 @@ nodeHandler[APEX_TYPES.BREAK_STATEMENT] = () => "break;";
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.CONTINUE_STATEMENT] = () => "continue;";
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[APEX_TYPES.THROW_STATEMENT] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.THROW_STATEMENT] = (path: AstPath, print: any) =>
   concat(["throw", " ", path.call(print, "expr"), ";"]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.TRY_CATCH_FINALLY_BLOCK] = handleTryCatchFinallyBlock;
@@ -2770,8 +2791,8 @@ nodeHandler[APEX_TYPES.PROPERTY_SETTER] = _handlePropertyGetterSetter("set");
 nodeHandler[APEX_TYPES.STRUCTURED_VERSION] = handleStructuredVersion;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.REQUEST_VERSION] = () => "Request";
-(nodeHandler as any).int = (path: any, print: any) => path.call(print, "$");
-(nodeHandler as any).string = (path: any, print: any) =>
+(nodeHandler as any).int = (path: AstPath, print: any) => path.call(print, "$");
+(nodeHandler as any).string = (path: AstPath, print: any) =>
   concat(["'", path.call(print, "$"), "'"]);
 
 // Operator
@@ -2849,8 +2870,10 @@ nodeHandler[APEX_TYPES.LITERAL_EXPRESSION] = handleLiteralExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.BINARY_EXPRESSION] = handleBinaryishExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[APEX_TYPES.TRIGGER_VARIABLE_EXPRESSION] = (path: any, print: any) =>
-  concat(["Trigger", ".", path.call(print, "variable")]);
+nodeHandler[APEX_TYPES.TRIGGER_VARIABLE_EXPRESSION] = (
+  path: AstPath,
+  print: any,
+) => concat(["Trigger", ".", path.call(print, "variable")]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.NEW_EXPRESSION] = handleNewExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
@@ -2876,7 +2899,7 @@ nodeHandler[APEX_TYPES.PACKAGE_VERSION_EXPRESSION] =
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ARRAY_EXPRESSION] = handleArrayExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[APEX_TYPES.CLASS_REF_EXPRESSION] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.CLASS_REF_EXPRESSION] = (path: AstPath, print: any) =>
   concat([path.call(print, "type"), ".", "class"]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.THIS_METHOD_CALL_EXPRESSION] =
@@ -3030,16 +3053,16 @@ nodeHandler[APEX_TYPES.DATA_CATEGORY] = handleDataCategory;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.DATA_CATEGORY_OPERATOR] = handleDataCategoryOperator;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[APEX_TYPES.LIMIT_VALUE] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.LIMIT_VALUE] = (path: AstPath, print: any) =>
   concat(["LIMIT", " ", path.call(print, "i")]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[APEX_TYPES.LIMIT_EXPRESSION] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.LIMIT_EXPRESSION] = (path: AstPath, print: any) =>
   concat(["LIMIT", " ", path.call(print, "expr")]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[APEX_TYPES.OFFSET_VALUE] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.OFFSET_VALUE] = (path: AstPath, print: any) =>
   concat(["OFFSET", " ", path.call(print, "i")]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[APEX_TYPES.OFFSET_EXPRESSION] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.OFFSET_EXPRESSION] = (path: AstPath, print: any) =>
   concat(["OFFSET", " ", path.call(print, "expr")]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.QUERY_OPERATOR] = (childClass: any) => QUERY[childClass];
@@ -3070,7 +3093,7 @@ nodeHandler[APEX_TYPES.WHERE_COMPOUND_OPERATOR] = (
   childClass: keyof typeof QUERY_WHERE,
 ) => QUERY_WHERE[childClass];
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[APEX_TYPES.SEARCH_USING_CLAUSE] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.SEARCH_USING_CLAUSE] = (path: AstPath, print: any) =>
   concat(["USING", " ", path.call(print, "type")]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.USING_TYPE] = handleUsingType;
@@ -3079,7 +3102,7 @@ nodeHandler[APEX_TYPES.BIND_CLAUSE] = handleBindClause;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.BIND_EXPRESSION] = handleBindExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[APEX_TYPES.WITH_IDENTIFIER] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.WITH_IDENTIFIER] = (path: AstPath, print: any) =>
   concat(["WITH", " ", path.call(print, "identifier")]);
 
 function handleTrailingEmptyLines(doc: any, node: any) {
@@ -3102,7 +3125,7 @@ function handleTrailingEmptyLines(doc: any, node: any) {
   return doc;
 }
 
-function genericPrint(path: any, options: any, print: any) {
+function genericPrint(path: AstPath, options: any, print: any) {
   const n = path.getValue();
   if (typeof n === "number" || typeof n === "boolean") {
     return n.toString();
@@ -3147,7 +3170,11 @@ function genericPrint(path: any, options: any, print: any) {
 }
 
 let options: any;
-export default function printGenerically(path: any, opts: any, print: any) {
+export default function printGenerically(
+  path: AstPath,
+  opts: any,
+  print: any,
+): Doc {
   if (typeof opts === "object") {
     options = opts;
   }
