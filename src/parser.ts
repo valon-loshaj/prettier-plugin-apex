@@ -6,10 +6,11 @@ import {
   findNextUncommentedCharacter,
   getSerializerBinDirectory,
 } from "./util";
-
-const constants = require("./constants");
-
-const apexTypes = constants.APEX_TYPES;
+import {
+  APEX_TYPES,
+  ALLOW_TRAILING_EMPTY_LINE,
+  TRAILING_EMPTY_LINE_AFTER_LAST_NODE,
+} from "./constants";
 
 const MAX_BUFFER = 8192 * 8192;
 
@@ -224,88 +225,88 @@ const identityFunction = (location: any) => location;
 // attached to one WhereCompoundOp, and that operator is printed multiple times.
 const removeFunction = () => null;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.QUERY] = identityFunction;
+locationGenerationHandler[APEX_TYPES.QUERY] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.VARIABLE_EXPRESSION] = identityFunction;
+locationGenerationHandler[APEX_TYPES.VARIABLE_EXPRESSION] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.INNER_CLASS_MEMBER] = identityFunction;
+locationGenerationHandler[APEX_TYPES.INNER_CLASS_MEMBER] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.INNER_INTERFACE_MEMBER] = identityFunction;
+locationGenerationHandler[APEX_TYPES.INNER_INTERFACE_MEMBER] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.INNER_ENUM_MEMBER] = identityFunction;
+locationGenerationHandler[APEX_TYPES.INNER_ENUM_MEMBER] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.METHOD_MEMBER] = identityFunction;
+locationGenerationHandler[APEX_TYPES.METHOD_MEMBER] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.IF_ELSE_BLOCK] = identityFunction;
+locationGenerationHandler[APEX_TYPES.IF_ELSE_BLOCK] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.NAME_VALUE_PARAMETER] = identityFunction;
+locationGenerationHandler[APEX_TYPES.NAME_VALUE_PARAMETER] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.VARIABLE_DECLARATION] = identityFunction;
+locationGenerationHandler[APEX_TYPES.VARIABLE_DECLARATION] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.BINARY_EXPRESSION] = identityFunction;
+locationGenerationHandler[APEX_TYPES.BINARY_EXPRESSION] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.BOOLEAN_EXPRESSION] = identityFunction;
+locationGenerationHandler[APEX_TYPES.BOOLEAN_EXPRESSION] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.ASSIGNMENT_EXPRESSION] = identityFunction;
+locationGenerationHandler[APEX_TYPES.ASSIGNMENT_EXPRESSION] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.FIELD_MEMBER] = identityFunction;
+locationGenerationHandler[APEX_TYPES.FIELD_MEMBER] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.VALUE_WHEN] = identityFunction;
+locationGenerationHandler[APEX_TYPES.VALUE_WHEN] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.ELSE_WHEN] = identityFunction;
+locationGenerationHandler[APEX_TYPES.ELSE_WHEN] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.QUERY] = identityFunction;
+locationGenerationHandler[APEX_TYPES.QUERY] = identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.WHERE_COMPOUND_OPERATOR] = removeFunction;
+locationGenerationHandler[APEX_TYPES.WHERE_COMPOUND_OPERATOR] = removeFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.VARIABLE_DECLARATION_STATEMENT] =
+locationGenerationHandler[APEX_TYPES.VARIABLE_DECLARATION_STATEMENT] =
   identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.WHERE_COMPOUND_EXPRESSION] =
+locationGenerationHandler[APEX_TYPES.WHERE_COMPOUND_EXPRESSION] =
   identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.WHERE_OPERATION_EXPRESSION] =
+locationGenerationHandler[APEX_TYPES.WHERE_OPERATION_EXPRESSION] =
   identityFunction;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.SELECT_INNER_QUERY] =
+locationGenerationHandler[APEX_TYPES.SELECT_INNER_QUERY] =
   handleNodeSurroundedByCharacters("(", ")");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.ANONYMOUS_BLOCK_UNIT] =
+locationGenerationHandler[APEX_TYPES.ANONYMOUS_BLOCK_UNIT] =
   handleAnonymousUnitLocation;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.NESTED_EXPRESSION] =
+locationGenerationHandler[APEX_TYPES.NESTED_EXPRESSION] =
   handleNodeSurroundedByCharacters("(", ")");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.PROPERTY_MEMBER] =
+locationGenerationHandler[APEX_TYPES.PROPERTY_MEMBER] =
   handleNodeEndedWithCharacter("}");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.SWITCH_STATEMENT] =
+locationGenerationHandler[APEX_TYPES.SWITCH_STATEMENT] =
   handleNodeEndedWithCharacter("}");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.NEW_LIST_LITERAL] =
+locationGenerationHandler[APEX_TYPES.NEW_LIST_LITERAL] =
   handleNodeEndedWithCharacter("}");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.NEW_SET_LITERAL] =
+locationGenerationHandler[APEX_TYPES.NEW_SET_LITERAL] =
   handleNodeEndedWithCharacter("}");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.NEW_MAP_LITERAL] =
+locationGenerationHandler[APEX_TYPES.NEW_MAP_LITERAL] =
   handleNodeEndedWithCharacter("}");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.NEW_STANDARD] =
+locationGenerationHandler[APEX_TYPES.NEW_STANDARD] =
   handleNodeEndedWithCharacter(")");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.VARIABLE_DECLARATIONS] =
+locationGenerationHandler[APEX_TYPES.VARIABLE_DECLARATIONS] =
   handleNodeEndedWithCharacter(";");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.NEW_KEY_VALUE] =
+locationGenerationHandler[APEX_TYPES.NEW_KEY_VALUE] =
   handleNodeEndedWithCharacter(")");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.METHOD_CALL_EXPRESSION] =
+locationGenerationHandler[APEX_TYPES.METHOD_CALL_EXPRESSION] =
   handleNodeEndedWithCharacter(")");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.ANNOTATION] = handleAnnotationLocation;
+locationGenerationHandler[APEX_TYPES.ANNOTATION] = handleAnnotationLocation;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-locationGenerationHandler[apexTypes.METHOD_DECLARATION] =
+locationGenerationHandler[APEX_TYPES.METHOD_DECLARATION] =
   handleMethodDeclarationLocation;
 
 /**
@@ -407,9 +408,9 @@ function generateExtraMetadata(
   const apexClass = node["@class"];
   let allowTrailingEmptyLineWithin: any;
   const isSpecialClass =
-    constants.TRAILING_EMPTY_LINE_AFTER_LAST_NODE.includes(apexClass);
+    TRAILING_EMPTY_LINE_AFTER_LAST_NODE.includes(apexClass);
   const trailingEmptyLineAllowed =
-    constants.ALLOW_TRAILING_EMPTY_LINE.includes(apexClass);
+    ALLOW_TRAILING_EMPTY_LINE.includes(apexClass);
   if (isSpecialClass) {
     allowTrailingEmptyLineWithin = false;
   } else if (trailingEmptyLineAllowed) {
@@ -561,23 +562,23 @@ export default function parse(sourceCode: any, _: any, options: any): any {
     ast = JSON.parse(serializedAst);
     if (
       // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      ast[apexTypes.PARSER_OUTPUT] &&
+      ast[APEX_TYPES.PARSER_OUTPUT] &&
       // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      ast[apexTypes.PARSER_OUTPUT].parseErrors.length > 0
+      ast[APEX_TYPES.PARSER_OUTPUT].parseErrors.length > 0
     ) {
       // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      const errors = ast[apexTypes.PARSER_OUTPUT].parseErrors.map(
+      const errors = ast[APEX_TYPES.PARSER_OUTPUT].parseErrors.map(
         (err: any) => `${err.message}. ${err.detailMessage}`,
       );
       throw new Error(errors.join("\r\n"));
     }
     // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-    const commentNodes = ast[apexTypes.PARSER_OUTPUT].hiddenTokenMap
+    const commentNodes = ast[APEX_TYPES.PARSER_OUTPUT].hiddenTokenMap
       .map((item: any) => item[1])
       .filter(
         (node: any) =>
-          node["@class"] === apexTypes.BLOCK_COMMENT ||
-          node["@class"] === apexTypes.INLINE_COMMENT,
+          node["@class"] === APEX_TYPES.BLOCK_COMMENT ||
+          node["@class"] === APEX_TYPES.INLINE_COMMENT,
       );
     ast = resolveAstReferences(ast, {});
     handleNodeLocation(ast, sourceCode, commentNodes);
@@ -585,12 +586,12 @@ export default function parse(sourceCode: any, _: any, options: any): any {
 
     generateExtraMetadata(ast, getEmptyLineLocations(sourceCode), true);
     // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-    (ast as any).comments = ast[apexTypes.PARSER_OUTPUT].hiddenTokenMap
+    (ast as any).comments = ast[APEX_TYPES.PARSER_OUTPUT].hiddenTokenMap
       .map((token: any) => token[1])
       .filter(
         (node: any) =>
-          node["@class"] === apexTypes.INLINE_COMMENT ||
-          node["@class"] === apexTypes.BLOCK_COMMENT,
+          node["@class"] === APEX_TYPES.INLINE_COMMENT ||
+          node["@class"] === APEX_TYPES.BLOCK_COMMENT,
       );
   }
   return ast;
