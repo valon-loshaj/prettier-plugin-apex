@@ -1,9 +1,10 @@
-/* eslint no-param-reassign: 0 no-underscore-dangle: 0 */
+/* eslint no-param-reassign: 0 */
 import childProcess, { spawnSync } from "child_process";
 import path from "path";
 
 import {
   findNextUncommentedCharacter,
+  GenericComment,
   getSerializerBinDirectory,
 } from "./util";
 import {
@@ -14,7 +15,12 @@ import {
 
 const MAX_BUFFER = 8192 * 8192;
 
-function parseTextWithSpawn(text: any, anonymous: any) {
+type MinimalLocation = {
+  startIndex: number;
+  endIndex: number;
+};
+
+function parseTextWithSpawn(text: string, anonymous: boolean): string {
   let serializerBin = getSerializerBinDirectory();
   if (process.platform === "win32") {
     serializerBin = path.join(serializerBin, "apex-ast-serializer.bat");
@@ -43,11 +49,11 @@ function parseTextWithSpawn(text: any, anonymous: any) {
 }
 
 function parseTextWithHttp(
-  text: any,
-  serverHost: any,
-  serverPort: any,
-  anonymous: any,
-) {
+  text: string,
+  serverHost: string,
+  serverPort: number,
+  anonymous: boolean,
+): string {
   const httpClientLocation = path.join(__dirname, "http-client.js");
   const args = [
     httpClientLocation,
@@ -56,7 +62,7 @@ function parseTextWithHttp(
     "-f",
     "json",
     "-p",
-    serverPort,
+    serverPort.toString(),
   ];
   if (anonymous) {
     args.push("-n");
@@ -76,7 +82,7 @@ function parseTextWithHttp(
 
 // jorje calls the location node differently for different types of nodes,
 // so we use this method to abstract away that difference
-function _getNodeLocation(node: any) {
+function getNodeLocation(node: any) {
   if (node.loc) {
     return node.loc;
   }
@@ -89,7 +95,7 @@ function _getNodeLocation(node: any) {
 // The serialized string given back contains references (to avoid circular references),
 // which need to be resolved. This method recursively walks through the
 // deserialized object and resolve those references.
-function resolveAstReferences(node: any, referenceMap: any) {
+function resolveAstReferences(node: any, referenceMap: { [key: string]: any }) {
   const nodeId = node["@id"];
   const nodeReference = node["@reference"];
   if (nodeId) {
@@ -108,62 +114,71 @@ function resolveAstReferences(node: any, referenceMap: any) {
 }
 
 function handleNodeSurroundedByCharacters(
-  startCharacter: any,
-  endCharacter: any,
+  startCharacter: string,
+  endCharacter: string,
 ) {
-  return (location: any, sourceCode: any, commentNodes: any) => {
-    const resultLocation = {};
-    (resultLocation as any).startIndex = findNextUncommentedCharacter(
+  return (
+    location: MinimalLocation,
+    sourceCode: string,
+    commentNodes: GenericComment[],
+  ): MinimalLocation => ({
+    startIndex: findNextUncommentedCharacter(
       sourceCode,
       startCharacter,
       location.startIndex,
       commentNodes,
       /* backwards */ true,
-    );
-    (resultLocation as any).endIndex =
+    ),
+    endIndex:
       findNextUncommentedCharacter(
         sourceCode,
         endCharacter,
         location.startIndex,
         commentNodes,
         /* backwards */ false,
-      ) + 1;
-    return resultLocation;
-  };
+      ) + 1,
+  });
 }
 
-function handleNodeStartedWithCharacter(startCharacter: any) {
-  return (location: any, sourceCode: any, commentNodes: any) => {
-    const resultLocation = {};
-    (resultLocation as any).startIndex = findNextUncommentedCharacter(
+function handleNodeStartedWithCharacter(startCharacter: string) {
+  return (
+    location: MinimalLocation,
+    sourceCode: string,
+    commentNodes: GenericComment[],
+  ): MinimalLocation => ({
+    startIndex: findNextUncommentedCharacter(
       sourceCode,
       startCharacter,
       location.startIndex,
       commentNodes,
       /* backwards */ true,
-    );
-    (resultLocation as any).endIndex = location.endIndex;
-    return resultLocation;
-  };
+    ),
+    endIndex: location.endIndex,
+  });
 }
 
-function handleNodeEndedWithCharacter(endCharacter: any) {
-  return (location: any, sourceCode: any, commentNodes: any) => {
-    const resultLocation = {};
-    (resultLocation as any).startIndex = location.startIndex;
-    (resultLocation as any).endIndex =
+function handleNodeEndedWithCharacter(endCharacter: string) {
+  return (
+    location: MinimalLocation,
+    sourceCode: string,
+    commentNodes: GenericComment[],
+  ): MinimalLocation => ({
+    startIndex: location.startIndex,
+    endIndex:
       findNextUncommentedCharacter(
         sourceCode,
         endCharacter,
         location.endIndex,
         commentNodes,
         /* backwards */ false,
-      ) + 1;
-    return resultLocation;
-  };
+      ) + 1,
+  });
 }
 
-function handleAnonymousUnitLocation(location: any, sourceCode: any) {
+function handleAnonymousUnitLocation(
+  location: MinimalLocation,
+  sourceCode: string,
+): MinimalLocation {
   return {
     startIndex: 0,
     endIndex: sourceCode.length,
@@ -171,11 +186,11 @@ function handleAnonymousUnitLocation(location: any, sourceCode: any) {
 }
 
 function handleMethodDeclarationLocation(
-  location: any,
-  sourceCode: any,
-  commentNodes: any,
+  location: MinimalLocation,
+  sourceCode: string,
+  commentNodes: GenericComment[],
   node: any,
-) {
+): MinimalLocation {
   // This is a method declaration with a body, so we can safely use the identity
   // location.
   if (node.stmnt.value) {
@@ -188,11 +203,11 @@ function handleMethodDeclarationLocation(
 }
 
 function handleAnnotationLocation(
-  location: any,
-  sourceCode: any,
-  commentNodes: any,
+  location: MinimalLocation,
+  sourceCode: string,
+  commentNodes: GenericComment[],
   node: any,
-) {
+): MinimalLocation {
   // This is an annotation without parameters, so we only need to worry about
   // the starting character
   if (!node.parameters || node.parameters.length === 0) {
@@ -213,8 +228,16 @@ function handleAnnotationLocation(
 
 // We need to generate the location for a node differently based on the node
 // type. This object holds a String => Function mapping in order to do that.
-const locationGenerationHandler = {};
-const identityFunction = (location: any) => location;
+const locationGenerationHandler: {
+  [key: string]: (
+    location: MinimalLocation,
+    sourceCode: string,
+    commentNodes: GenericComment[],
+    node: any,
+  ) => MinimalLocation | null;
+} = {};
+const identityFunction = (location: MinimalLocation): MinimalLocation =>
+  location;
 // Sometimes we need to delete a location node. For example, a WhereCompoundOp
 // location does not make sense since it can appear in multiple places:
 // SELECT Id FROM Account
@@ -224,88 +247,54 @@ const identityFunction = (location: any) => location;
 // If we keep those locations, a comment might be duplicated since it is
 // attached to one WhereCompoundOp, and that operator is printed multiple times.
 const removeFunction = () => null;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.QUERY] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.VARIABLE_EXPRESSION] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.INNER_CLASS_MEMBER] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.INNER_INTERFACE_MEMBER] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.INNER_ENUM_MEMBER] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.METHOD_MEMBER] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.IF_ELSE_BLOCK] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.NAME_VALUE_PARAMETER] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.VARIABLE_DECLARATION] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.BINARY_EXPRESSION] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.BOOLEAN_EXPRESSION] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.ASSIGNMENT_EXPRESSION] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.FIELD_MEMBER] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.VALUE_WHEN] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.ELSE_WHEN] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.QUERY] = identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.WHERE_COMPOUND_OPERATOR] = removeFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.VARIABLE_DECLARATION_STATEMENT] =
   identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.WHERE_COMPOUND_EXPRESSION] =
   identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.WHERE_OPERATION_EXPRESSION] =
   identityFunction;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.SELECT_INNER_QUERY] =
   handleNodeSurroundedByCharacters("(", ")");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.ANONYMOUS_BLOCK_UNIT] =
   handleAnonymousUnitLocation;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.NESTED_EXPRESSION] =
   handleNodeSurroundedByCharacters("(", ")");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.PROPERTY_MEMBER] =
   handleNodeEndedWithCharacter("}");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.SWITCH_STATEMENT] =
   handleNodeEndedWithCharacter("}");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.NEW_LIST_LITERAL] =
   handleNodeEndedWithCharacter("}");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.NEW_SET_LITERAL] =
   handleNodeEndedWithCharacter("}");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.NEW_MAP_LITERAL] =
   handleNodeEndedWithCharacter("}");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.NEW_STANDARD] =
   handleNodeEndedWithCharacter(")");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.VARIABLE_DECLARATIONS] =
   handleNodeEndedWithCharacter(";");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.NEW_KEY_VALUE] =
   handleNodeEndedWithCharacter(")");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.METHOD_CALL_EXPRESSION] =
   handleNodeEndedWithCharacter(")");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.ANNOTATION] = handleAnnotationLocation;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 locationGenerationHandler[APEX_TYPES.METHOD_DECLARATION] =
   handleMethodDeclarationLocation;
 
@@ -321,8 +310,12 @@ locationGenerationHandler[APEX_TYPES.METHOD_DECLARATION] =
  * @param commentNodes all the comment nodes.
  * @return the corrected node.
  */
-function handleNodeLocation(node: any, sourceCode: any, commentNodes: any) {
-  let currentLocation: any;
+function handleNodeLocation(
+  node: any,
+  sourceCode: string,
+  commentNodes: GenericComment[],
+) {
+  let currentLocation: MinimalLocation | undefined;
   Object.keys(node).forEach((key) => {
     if (typeof node[key] === "object") {
       const location = handleNodeLocation(node[key], sourceCode, commentNodes);
@@ -347,12 +340,10 @@ function handleNodeLocation(node: any, sourceCode: any, commentNodes: any) {
     if (separatorIndex !== -1) {
       const parentClass = apexClass.substring(0, separatorIndex);
       if (parentClass in locationGenerationHandler) {
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         handlerFn = locationGenerationHandler[parentClass];
       }
     }
     if (apexClass in locationGenerationHandler) {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       handlerFn = locationGenerationHandler[apexClass];
     }
   }
@@ -403,10 +394,10 @@ function handleNodeLocation(node: any, sourceCode: any, commentNodes: any) {
 function generateExtraMetadata(
   node: any,
   emptyLineLocations: number[],
-  allowTrailingEmptyLine: any,
+  allowTrailingEmptyLine: boolean,
 ) {
   const apexClass = node["@class"];
-  let allowTrailingEmptyLineWithin: any;
+  let allowTrailingEmptyLineWithin: boolean;
   const isSpecialClass =
     TRAILING_EMPTY_LINE_AFTER_LAST_NODE.includes(apexClass);
   const trailingEmptyLineAllowed =
@@ -455,7 +446,7 @@ function generateExtraMetadata(
     }
   });
 
-  const nodeLoc = _getNodeLocation(node);
+  const nodeLoc = getNodeLocation(node);
   if (
     apexClass &&
     nodeLoc &&
@@ -476,17 +467,17 @@ function generateExtraMetadata(
 // that line; however we use this method to resolve that line index to a global
 // index of that node within the source code. That allows us to use prettier
 // utility methods.
-function resolveLineIndexes(node: any, lineIndexes: any) {
-  const nodeLoc = _getNodeLocation(node);
+function resolveLineIndexes(node: any, lineIndexes: number[]) {
+  const nodeLoc = getNodeLocation(node);
   if (nodeLoc && !("startLine" in nodeLoc)) {
     // The location node that we manually generate do not contain startLine
     // information, so we will create them here.
     nodeLoc.startLine =
-      lineIndexes.findIndex((index: any) => index > nodeLoc.startIndex) - 1;
+      lineIndexes.findIndex((index: number) => index > nodeLoc.startIndex) - 1;
   }
   if (nodeLoc && !("endLine" in nodeLoc)) {
     nodeLoc.endLine =
-      lineIndexes.findIndex((index: any) => index > nodeLoc.endIndex) - 1;
+      lineIndexes.findIndex((index: number) => index > nodeLoc.endIndex) - 1;
 
     // Edge case: root node
     if (nodeLoc.endLine < 0) {
@@ -497,7 +488,7 @@ function resolveLineIndexes(node: any, lineIndexes: any) {
     nodeLoc.column =
       nodeLoc.startIndex -
       lineIndexes[
-        lineIndexes.findIndex((index: any) => index > nodeLoc.startIndex) - 1
+        lineIndexes.findIndex((index: number) => index > nodeLoc.startIndex) - 1
       ];
   }
   Object.keys(node).forEach((key) => {
@@ -508,7 +499,7 @@ function resolveLineIndexes(node: any, lineIndexes: any) {
   return node;
 }
 // Get a map of line number to the index of its first character
-function getLineIndexes(sourceCode: any) {
+function getLineIndexes(sourceCode: string) {
   // First line always start with index 0
   const lineIndexes = [0, 0];
   let characterIndex = 0;
@@ -528,20 +519,23 @@ function getLineIndexes(sourceCode: any) {
   return lineIndexes;
 }
 
-function getEmptyLineLocations(sourceCode: any): number[] {
+function getEmptyLineLocations(sourceCode: string): number[] {
   const whiteSpaceRegEx = /^\s*$/;
   const lines = sourceCode.split("\n");
   return lines
-    .map((line: any) => whiteSpaceRegEx.test(line))
-    .reduce((accumulator: any, currentValue: any, currentIndex: any) => {
-      if (currentValue) {
-        accumulator.push(currentIndex + 1);
-      }
-      return accumulator;
-    }, []);
+    .map((line: string) => whiteSpaceRegEx.test(line))
+    .reduce(
+      (accumulator: number[], currentValue: boolean, currentIndex: number) => {
+        if (currentValue) {
+          accumulator.push(currentIndex + 1);
+        }
+        return accumulator;
+      },
+      [],
+    );
 }
 
-export default function parse(sourceCode: any, _: any, options: any): any {
+export default function parse(sourceCode: string, _: any, options: any): any {
   const lineIndexes = getLineIndexes(sourceCode);
   let serializedAst;
   if (options.apexStandaloneParser === "built-in") {

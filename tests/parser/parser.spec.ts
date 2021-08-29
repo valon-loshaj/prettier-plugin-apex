@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import prettier, { Options, RequiredOptions } from "prettier";
+import prettier from "prettier";
 
 declare module "prettier" {
   interface Options {
