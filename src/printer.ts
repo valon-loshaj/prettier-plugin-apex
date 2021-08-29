@@ -1,27 +1,35 @@
 /* eslint no-underscore-dangle: 0 */
-
-const prettier = require("prettier");
-
-const docBuilders = prettier.doc.builders;
-
-const { align, concat, join, hardline, line, softline, group, indent, dedent } =
-  docBuilders;
-
-const { willBreak } = prettier.doc.utils;
-
-const {
+import prettier, { Doc } from "prettier";
+import {
   getTrailingComments,
   printComment,
   printDanglingComment,
-} = require("./comments");
-const {
+} from "./comments";
+import {
   checkIfParentIsDottedExpression,
   getPrecedence,
   isBinaryish,
-} = require("./util");
-const constants = require("./constants");
+} from "./util";
+import {
+  ASSIGNMENT,
+  APEX_TYPES,
+  BINARY,
+  BOOLEAN,
+  DATA_CATEGORY,
+  MODIFIER,
+  ORDER,
+  ORDER_NULL,
+  POSTFIX,
+  PREFIX,
+  TRIGGER_USAGE,
+  QUERY,
+  QUERY_WHERE,
+} from "./constants";
 
-const apexTypes = constants.APEX_TYPES;
+const docBuilders = prettier.doc.builders;
+const { align, concat, join, hardline, line, softline, group, indent, dedent } =
+  docBuilders;
+const { willBreak } = prettier.doc.utils;
 
 function indentConcat(docs: any) {
   return indent(concat(docs));
@@ -80,11 +88,11 @@ function handleReturnStatement(path: any, print: any) {
   return groupConcat(docs);
 }
 
-function getOperator(node: any) {
-  if (node.op["@class"] === apexTypes.BOOLEAN_OPERATOR) {
-    return constants.BOOLEAN[node.op.$];
+function getOperator(node: any): string {
+  if (node.op["@class"] === APEX_TYPES.BOOLEAN_OPERATOR) {
+    return BOOLEAN[node.op.$ as keyof typeof BOOLEAN];
   }
-  return constants.BINARY[node.op.$];
+  return BINARY[node.op.$ as keyof typeof BINARY];
 }
 
 function handleBinaryishExpression(path: any, print: any) {
@@ -199,15 +207,17 @@ function handleAssignmentExpression(path: any, print: any) {
 function shouldDottedExpressionBreak(path: any) {
   const node = path.getValue();
   // #62 - `super` cannot  be followed any white spaces
-  if (node.dottedExpr.value["@class"] === apexTypes.SUPER_VARIABLE_EXPRESSION) {
+  if (
+    node.dottedExpr.value["@class"] === APEX_TYPES.SUPER_VARIABLE_EXPRESSION
+  ) {
     return false;
   }
   // #98 - Even though `this` can synctactically be followed by whitespaces,
   // make the formatted output similar to `super` to provide consistency.
-  if (node.dottedExpr.value["@class"] === apexTypes.THIS_VARIABLE_EXPRESSION) {
+  if (node.dottedExpr.value["@class"] === APEX_TYPES.THIS_VARIABLE_EXPRESSION) {
     return false;
   }
-  if (node["@class"] !== apexTypes.METHOD_CALL_EXPRESSION) {
+  if (node["@class"] !== APEX_TYPES.METHOD_CALL_EXPRESSION) {
     return true;
   }
   if (checkIfParentIsDottedExpression(path)) {
@@ -215,7 +225,7 @@ function shouldDottedExpressionBreak(path: any) {
   }
   if (
     node.dottedExpr.value &&
-    node.dottedExpr.value["@class"] === apexTypes.METHOD_CALL_EXPRESSION
+    node.dottedExpr.value["@class"] === APEX_TYPES.METHOD_CALL_EXPRESSION
   ) {
     return true;
   }
@@ -244,7 +254,7 @@ function handleDottedExpression(path: any, print: any) {
 function handleArrayExpressionIndex(path: any, print: any, withGroup = true) {
   const node = path.getValue();
   let parts;
-  if (node.index["@class"] === apexTypes.LITERAL_EXPRESSION) {
+  if (node.index["@class"] === APEX_TYPES.LITERAL_EXPRESSION) {
     // For literal index, we will make sure it's always attached to the [],
     // because it's usually short and will look bad being broken up.
     parts = ["[", path.call(print, "index"), "]"];
@@ -265,10 +275,10 @@ function handleVariableExpression(path: any, print: any) {
   const isDottedExpressionSoqlExpression =
     dottedExpr &&
     dottedExpr.value &&
-    (dottedExpr.value["@class"] === apexTypes.SOQL_EXPRESSION ||
-      (dottedExpr.value["@class"] === apexTypes.ARRAY_EXPRESSION &&
+    (dottedExpr.value["@class"] === APEX_TYPES.SOQL_EXPRESSION ||
+      (dottedExpr.value["@class"] === APEX_TYPES.ARRAY_EXPRESSION &&
         dottedExpr.value.expr &&
-        dottedExpr.value.expr["@class"] === apexTypes.SOQL_EXPRESSION));
+        dottedExpr.value.expr["@class"] === APEX_TYPES.SOQL_EXPRESSION));
 
   parts.push(dottedExpressionDoc);
   // Name chain
@@ -294,11 +304,11 @@ function handleVariableExpression(path: any, print: any) {
   // Hence why we are deferring the printing of the [] part from handleArrayExpression
   // to here.
   if (
-    parentNode["@class"] === apexTypes.ARRAY_EXPRESSION &&
+    parentNode["@class"] === APEX_TYPES.ARRAY_EXPRESSION &&
     nodeName === "expr"
   ) {
     path.callParent((innerPath: any) => {
-      const withGroup = isParentDottedExpression || dottedExpressionDoc;
+      const withGroup = isParentDottedExpression || !!dottedExpressionDoc;
 
       parts.push(handleArrayExpressionIndex(innerPath, print, withGroup));
     });
@@ -366,17 +376,17 @@ function handleLiteralExpression(path: any, print: any, options: any) {
 
 function handleBinaryOperation(path: any) {
   const node = path.getValue();
-  return constants.BINARY[node.$];
+  return BINARY[node.$ as keyof typeof BINARY];
 }
 
 function handleBooleanOperation(path: any) {
   const node = path.getValue();
-  return constants.BOOLEAN[node.$];
+  return BOOLEAN[node.$ as keyof typeof BOOLEAN];
 }
 
 function handleAssignmentOperation(path: any) {
   const node = path.getValue();
-  return constants.ASSIGNMENT[node.$];
+  return ASSIGNMENT[node.$ as keyof typeof ASSIGNMENT];
 }
 
 function _getDanglingCommentDocs(path: any, print: any, options: any) {
@@ -389,9 +399,7 @@ function _getDanglingCommentDocs(path: any, print: any, options: any) {
   );
   const danglingCommentParts: any = [];
   path.each((commentPath: any) => {
-    danglingCommentParts.push(
-      printDanglingComment(commentPath, options, print),
-    );
+    danglingCommentParts.push(printDanglingComment(commentPath, options));
   }, "danglingComments");
   delete node.danglingComments;
   return danglingCommentParts;
@@ -1125,18 +1133,18 @@ function handleMethodCallExpression(path: any, print: any) {
   const isDottedExpressionSoqlExpression =
     dottedExpr &&
     dottedExpr.value &&
-    (dottedExpr.value["@class"] === apexTypes.SOQL_EXPRESSION ||
-      (dottedExpr.value["@class"] === apexTypes.ARRAY_EXPRESSION &&
+    (dottedExpr.value["@class"] === APEX_TYPES.SOQL_EXPRESSION ||
+      (dottedExpr.value["@class"] === APEX_TYPES.ARRAY_EXPRESSION &&
         dottedExpr.value.expr &&
-        dottedExpr.value.expr["@class"] === apexTypes.SOQL_EXPRESSION));
+        dottedExpr.value.expr["@class"] === APEX_TYPES.SOQL_EXPRESSION));
   const isDottedExpressionThisVariableExpression =
     dottedExpr &&
     dottedExpr.value &&
-    dottedExpr.value["@class"] === apexTypes.THIS_VARIABLE_EXPRESSION;
+    dottedExpr.value["@class"] === APEX_TYPES.THIS_VARIABLE_EXPRESSION;
   const isDottedExpressionSuperVariableExpression =
     dottedExpr &&
     dottedExpr.value &&
-    dottedExpr.value["@class"] === apexTypes.SUPER_VARIABLE_EXPRESSION;
+    dottedExpr.value["@class"] === APEX_TYPES.SUPER_VARIABLE_EXPRESSION;
 
   const dottedExpressionDoc = handleDottedExpression(path, print);
   const nameDocs = path.map(print, "names");
@@ -1172,13 +1180,13 @@ function handleMethodCallExpression(path: any, print: any) {
   // ]
   // Hence why we are deferring the printing of the [] part from handleArrayExpression
   // to here.
-  let arrayIndexDoc = "";
+  let arrayIndexDoc: Doc = "";
   if (
-    parentNode["@class"] === apexTypes.ARRAY_EXPRESSION &&
+    parentNode["@class"] === APEX_TYPES.ARRAY_EXPRESSION &&
     nodeName === "expr"
   ) {
     path.callParent((innerPath: any) => {
-      const withGroup = isParentDottedExpression || dottedExpressionDoc;
+      const withGroup = isParentDottedExpression || !!dottedExpressionDoc;
 
       arrayIndexDoc = handleArrayExpressionIndex(innerPath, print, withGroup);
     });
@@ -1429,7 +1437,7 @@ function handleIfElseBlock(path: any, print: any) {
   //   b = 2;
   // }
   const ifBlockContainsBlockStatement = node.ifBlocks.map(
-    (ifBlock: any) => ifBlock.stmnt["@class"] === apexTypes.BLOCK_STATEMENT,
+    (ifBlock: any) => ifBlock.stmnt["@class"] === APEX_TYPES.BLOCK_STATEMENT,
   );
 
   ifBlockDocs.forEach((ifBlockDoc: any, index: any) => {
@@ -1470,7 +1478,7 @@ function handleIfBlock(path: any, print: any) {
   conditionParts.push(")");
   parts.push(groupIndentConcat(conditionParts));
   // Body block
-  if (statementType === apexTypes.BLOCK_STATEMENT) {
+  if (statementType === APEX_TYPES.BLOCK_STATEMENT) {
     parts.push(" ");
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
     _pushIfExist(parts, statementDoc);
@@ -1488,7 +1496,7 @@ function handleElseBlock(path: any, print: any) {
   const parts = [];
   parts.push("else");
   // Body block
-  if (statementType === apexTypes.BLOCK_STATEMENT) {
+  if (statementType === APEX_TYPES.BLOCK_STATEMENT) {
     parts.push(" ");
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
     _pushIfExist(parts, statementDoc);
@@ -1563,8 +1571,8 @@ function handleArrayExpression(path: any, print: any) {
   // handleMethodCallExpression for example.
   if (
     node.expr &&
-    (node.expr["@class"] === apexTypes.VARIABLE_EXPRESSION ||
-      node.expr["@class"] === apexTypes.METHOD_CALL_EXPRESSION)
+    (node.expr["@class"] === APEX_TYPES.VARIABLE_EXPRESSION ||
+      node.expr["@class"] === APEX_TYPES.METHOD_CALL_EXPRESSION)
   ) {
     return expressionDoc;
   }
@@ -2078,7 +2086,7 @@ function handleDataCategory(path: any, print: any) {
 }
 
 function handleDataCategoryOperator(childClass: any) {
-  return constants.DATA_CATEGORY[childClass];
+  return DATA_CATEGORY[childClass as keyof typeof DATA_CATEGORY];
 }
 
 function handleWhereCalcExpression(path: any, print: any) {
@@ -2153,7 +2161,7 @@ function handleWhereQueryLiteral(
   const isInLikeExpression =
     grandParentNode &&
     grandParentNode.op &&
-    grandParentNode.op["@class"] === constants.APEX_TYPES.QUERY_OPERATOR_LIKE;
+    grandParentNode.op["@class"] === APEX_TYPES.QUERY_OPERATOR_LIKE;
   switch (childClass) {
     case "QueryString":
       // #340 - Query Strings have different properties than normal Apex strings,
@@ -2196,8 +2204,8 @@ function handleWhereCompoundExpression(path: any, print: any) {
   const node = path.getValue();
   const parentNode = path.getParentNode();
   const isNestedExpression =
-    parentNode["@class"] === apexTypes.WHERE_COMPOUND_EXPRESSION ||
-    parentNode["@class"] === apexTypes.WHERE_UNARY_EXPRESSION;
+    parentNode["@class"] === APEX_TYPES.WHERE_COMPOUND_EXPRESSION ||
+    parentNode["@class"] === APEX_TYPES.WHERE_UNARY_EXPRESSION;
   const nodeOp = node.op["@class"];
   const isSamePrecedenceWithParent =
     parentNode.op && nodeOp === parentNode.op["@class"];
@@ -2219,8 +2227,8 @@ function handleWhereCompoundExpression(path: any, print: any) {
 function handleWhereUnaryExpression(path: any, print: any) {
   const parentNode = path.getParentNode();
   const isNestedExpression =
-    parentNode["@class"] === apexTypes.WHERE_COMPOUND_EXPRESSION ||
-    parentNode["@class"] === apexTypes.WHERE_UNARY_EXPRESSION;
+    parentNode["@class"] === APEX_TYPES.WHERE_COMPOUND_EXPRESSION ||
+    parentNode["@class"] === APEX_TYPES.WHERE_UNARY_EXPRESSION;
   const parts = [];
   if (isNestedExpression) {
     parts.push("(");
@@ -2288,7 +2296,7 @@ function handleOrderOperation(
 ) {
   const loc = opts.locStart(path.getValue());
   if (loc) {
-    return constants.ORDER[childClass];
+    return ORDER[childClass as keyof typeof ORDER];
   }
   return "";
 }
@@ -2301,7 +2309,7 @@ function handleNullOrderOperation(
 ) {
   const loc = opts.locStart(path.getValue());
   if (loc) {
-    return constants.ORDER_NULL[childClass];
+    return ORDER_NULL[childClass as keyof typeof ORDER_NULL];
   }
   return "";
 }
@@ -2474,8 +2482,8 @@ function handleUsingType(path: any, print: any) {
   return concat(parts);
 }
 
-function handleModifier(childClass: any) {
-  const modifierValue = constants.MODIFIER[childClass] || "";
+function handleModifier(childClass: keyof typeof MODIFIER) {
+  const modifierValue = MODIFIER[childClass] || "";
   if (!modifierValue) {
     throw new Error(
       `Modifier ${childClass} is not supported. Please file a bug report.`,
@@ -2499,11 +2507,11 @@ function handlePrefixExpression(path: any, print: any) {
 }
 
 function handlePostfixOperator(path: any, print: any) {
-  return constants.POSTFIX[path.call(print, "$")];
+  return POSTFIX[path.call(print, "$") as keyof typeof POSTFIX];
 }
 
 function handlePrefixOperator(path: any, print: any) {
-  return constants.PREFIX[path.call(print, "$")];
+  return PREFIX[path.call(print, "$") as keyof typeof PREFIX];
 }
 
 function handleWhileLoop(path: any, print: any) {
@@ -2524,7 +2532,7 @@ function handleWhileLoop(path: any, print: any) {
   // Body
   const statementDoc = path.call(print, "stmnt", "value");
   const statementType = path.call(print, "stmnt", "value", "@class");
-  if (statementType === apexTypes.BLOCK_STATEMENT) {
+  if (statementType === APEX_TYPES.BLOCK_STATEMENT) {
     parts.push(" ");
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
     _pushIfExist(parts, statementDoc);
@@ -2570,7 +2578,7 @@ function handleForLoop(path: any, print: any) {
     node.forControl.init &&
     node.forControl.init.expr &&
     node.forControl.init.expr.value &&
-    node.forControl.init.expr.value["@class"] === apexTypes.SOQL_EXPRESSION &&
+    node.forControl.init.expr.value["@class"] === APEX_TYPES.SOQL_EXPRESSION &&
     !willBreak(forControlDoc) // if there are breaks, e.g. comments, we need to be conservative and group them
   ) {
     parts.push(forControlDoc);
@@ -2585,7 +2593,7 @@ function handleForLoop(path: any, print: any) {
   // Body
   const statementType = path.call(print, "stmnt", "value", "@class");
   const statementDoc = path.call(print, "stmnt", "value");
-  if (statementType === apexTypes.BLOCK_STATEMENT) {
+  if (statementType === APEX_TYPES.BLOCK_STATEMENT) {
     parts.push(" ");
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 2.
     _pushIfExist(parts, statementDoc);
@@ -2663,414 +2671,415 @@ function handleForInit(path: any, print: any) {
 
 const nodeHandler = {};
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.IF_ELSE_BLOCK] = handleIfElseBlock;
+nodeHandler[APEX_TYPES.IF_ELSE_BLOCK] = handleIfElseBlock;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.IF_BLOCK] = handleIfBlock;
+nodeHandler[APEX_TYPES.IF_BLOCK] = handleIfBlock;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ELSE_BLOCK] = handleElseBlock;
+nodeHandler[APEX_TYPES.ELSE_BLOCK] = handleElseBlock;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.EXPRESSION_STATEMENT] = handleExpressionStatement;
+nodeHandler[APEX_TYPES.EXPRESSION_STATEMENT] = handleExpressionStatement;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.RETURN_STATEMENT] = handleReturnStatement;
+nodeHandler[APEX_TYPES.RETURN_STATEMENT] = handleReturnStatement;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.TRIGGER_USAGE] = (path: any, print: any) =>
-  constants.TRIGGER_USAGE[path.call(print, "$")];
+nodeHandler[APEX_TYPES.TRIGGER_USAGE] = (path: any, print: any) =>
+  TRIGGER_USAGE[path.call(print, "$") as keyof typeof TRIGGER_USAGE];
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.JAVA_TYPE_REF] = handleJavaTypeRef;
+nodeHandler[APEX_TYPES.JAVA_TYPE_REF] = handleJavaTypeRef;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.CLASS_TYPE_REF] = handleClassTypeRef;
+nodeHandler[APEX_TYPES.CLASS_TYPE_REF] = handleClassTypeRef;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ARRAY_TYPE_REF] = handleArrayTypeRef;
+nodeHandler[APEX_TYPES.ARRAY_TYPE_REF] = handleArrayTypeRef;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.LOCATION_IDENTIFIER] = _handlePassthroughCall("value");
+nodeHandler[APEX_TYPES.LOCATION_IDENTIFIER] = _handlePassthroughCall("value");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.MODIFIER_PARAMETER_REF] = handleModifierParameterRef;
+nodeHandler[APEX_TYPES.MODIFIER_PARAMETER_REF] = handleModifierParameterRef;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.EMPTY_MODIFIER_PARAMETER_REF] =
+nodeHandler[APEX_TYPES.EMPTY_MODIFIER_PARAMETER_REF] =
   handleEmptyModifierParameterRef;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.BLOCK_STATEMENT] = handleBlockStatement;
+nodeHandler[APEX_TYPES.BLOCK_STATEMENT] = handleBlockStatement;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.VARIABLE_DECLARATION_STATEMENT] =
+nodeHandler[APEX_TYPES.VARIABLE_DECLARATION_STATEMENT] =
   _handlePassthroughCall("variableDecls");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.VARIABLE_DECLARATIONS] = handleVariableDeclarations;
+nodeHandler[APEX_TYPES.VARIABLE_DECLARATIONS] = handleVariableDeclarations;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.NAME_VALUE_PARAMETER] = handleNameValueParameter;
+nodeHandler[APEX_TYPES.NAME_VALUE_PARAMETER] = handleNameValueParameter;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ANNOTATION] = handleAnnotation;
+nodeHandler[APEX_TYPES.ANNOTATION] = handleAnnotation;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ANNOTATION_KEY_VALUE] = handleAnnotationKeyValue;
+nodeHandler[APEX_TYPES.ANNOTATION_KEY_VALUE] = handleAnnotationKeyValue;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ANNOTATION_VALUE] = handleAnnotationValue;
+nodeHandler[APEX_TYPES.ANNOTATION_VALUE] = handleAnnotationValue;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ANNOTATION_STRING] = handleAnnotationString;
+nodeHandler[APEX_TYPES.ANNOTATION_STRING] = handleAnnotationString;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.MODIFIER] = handleModifier;
+nodeHandler[APEX_TYPES.MODIFIER] = handleModifier;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.RUN_AS_BLOCK] = handleRunAsBlock;
+nodeHandler[APEX_TYPES.RUN_AS_BLOCK] = handleRunAsBlock;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.DO_LOOP] = handleDoLoop;
+nodeHandler[APEX_TYPES.DO_LOOP] = handleDoLoop;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHILE_LOOP] = handleWhileLoop;
+nodeHandler[APEX_TYPES.WHILE_LOOP] = handleWhileLoop;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.FOR_LOOP] = handleForLoop;
+nodeHandler[APEX_TYPES.FOR_LOOP] = handleForLoop;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.FOR_C_STYLE_CONTROL] = handleForCStyleControl;
+nodeHandler[APEX_TYPES.FOR_C_STYLE_CONTROL] = handleForCStyleControl;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.FOR_ENHANCED_CONTROL] = handleForEnhancedControl;
+nodeHandler[APEX_TYPES.FOR_ENHANCED_CONTROL] = handleForEnhancedControl;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.FOR_INITS] = handleForInits;
+nodeHandler[APEX_TYPES.FOR_INITS] = handleForInits;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.FOR_INIT] = handleForInit;
+nodeHandler[APEX_TYPES.FOR_INIT] = handleForInit;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.BREAK_STATEMENT] = () => "break;";
+nodeHandler[APEX_TYPES.BREAK_STATEMENT] = () => "break;";
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.CONTINUE_STATEMENT] = () => "continue;";
+nodeHandler[APEX_TYPES.CONTINUE_STATEMENT] = () => "continue;";
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.THROW_STATEMENT] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.THROW_STATEMENT] = (path: any, print: any) =>
   concat(["throw", " ", path.call(print, "expr"), ";"]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.TRY_CATCH_FINALLY_BLOCK] = handleTryCatchFinallyBlock;
+nodeHandler[APEX_TYPES.TRY_CATCH_FINALLY_BLOCK] = handleTryCatchFinallyBlock;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.CATCH_BLOCK] = handleCatchBlock;
+nodeHandler[APEX_TYPES.CATCH_BLOCK] = handleCatchBlock;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.FINALLY_BLOCK] = handleFinallyBlock;
+nodeHandler[APEX_TYPES.FINALLY_BLOCK] = handleFinallyBlock;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.STATEMENT] = handleStatement;
+nodeHandler[APEX_TYPES.STATEMENT] = handleStatement;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.DML_MERGE_STATEMENT] = handleDmlMergeStatement;
+nodeHandler[APEX_TYPES.DML_MERGE_STATEMENT] = handleDmlMergeStatement;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SWITCH_STATEMENT] = handleSwitchStatement;
+nodeHandler[APEX_TYPES.SWITCH_STATEMENT] = handleSwitchStatement;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.VALUE_WHEN] = handleValueWhen;
+nodeHandler[APEX_TYPES.VALUE_WHEN] = handleValueWhen;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ELSE_WHEN] = handleElseWhen;
+nodeHandler[APEX_TYPES.ELSE_WHEN] = handleElseWhen;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.TYPE_WHEN] = handleTypeWhen;
+nodeHandler[APEX_TYPES.TYPE_WHEN] = handleTypeWhen;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ENUM_CASE] = handleEnumCase;
+nodeHandler[APEX_TYPES.ENUM_CASE] = handleEnumCase;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.LITERAL_CASE] = _handlePassthroughCall("expr");
+nodeHandler[APEX_TYPES.LITERAL_CASE] = _handlePassthroughCall("expr");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.PROPERTY_DECLATION] = handlePropertyDeclaration;
+nodeHandler[APEX_TYPES.PROPERTY_DECLATION] = handlePropertyDeclaration;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.PROPERTY_GETTER] = _handlePropertyGetterSetter("get");
+nodeHandler[APEX_TYPES.PROPERTY_GETTER] = _handlePropertyGetterSetter("get");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.PROPERTY_SETTER] = _handlePropertyGetterSetter("set");
+nodeHandler[APEX_TYPES.PROPERTY_SETTER] = _handlePropertyGetterSetter("set");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.STRUCTURED_VERSION] = handleStructuredVersion;
+nodeHandler[APEX_TYPES.STRUCTURED_VERSION] = handleStructuredVersion;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.REQUEST_VERSION] = () => "Request";
+nodeHandler[APEX_TYPES.REQUEST_VERSION] = () => "Request";
 (nodeHandler as any).int = (path: any, print: any) => path.call(print, "$");
 (nodeHandler as any).string = (path: any, print: any) =>
   concat(["'", path.call(print, "$"), "'"]);
 
 // Operator
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ASSIGNMENT_OPERATOR] = handleAssignmentOperation;
+nodeHandler[APEX_TYPES.ASSIGNMENT_OPERATOR] = handleAssignmentOperation;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.BINARY_OPERATOR] = handleBinaryOperation;
+nodeHandler[APEX_TYPES.BINARY_OPERATOR] = handleBinaryOperation;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.BOOLEAN_OPERATOR] = handleBooleanOperation;
+nodeHandler[APEX_TYPES.BOOLEAN_OPERATOR] = handleBooleanOperation;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.POSTFIX_OPERATOR] = handlePostfixOperator;
+nodeHandler[APEX_TYPES.POSTFIX_OPERATOR] = handlePostfixOperator;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.PREFIX_OPERATOR] = handlePrefixOperator;
+nodeHandler[APEX_TYPES.PREFIX_OPERATOR] = handlePrefixOperator;
 
 // Declaration
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.CLASS_DECLARATION] = handleClassDeclaration;
+nodeHandler[APEX_TYPES.CLASS_DECLARATION] = handleClassDeclaration;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.INTERFACE_DECLARATION] = handleInterfaceDeclaration;
+nodeHandler[APEX_TYPES.INTERFACE_DECLARATION] = handleInterfaceDeclaration;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.METHOD_DECLARATION] = handleMethodDeclaration;
+nodeHandler[APEX_TYPES.METHOD_DECLARATION] = handleMethodDeclaration;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.VARIABLE_DECLARATION] = handleVariableDeclaration;
+nodeHandler[APEX_TYPES.VARIABLE_DECLARATION] = handleVariableDeclaration;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ENUM_DECLARATION] = handleEnumDeclaration;
+nodeHandler[APEX_TYPES.ENUM_DECLARATION] = handleEnumDeclaration;
 
 // Compilation Unit: we're not handling  InvalidDeclUnit
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.TRIGGER_DECLARATION_UNIT] = handleTriggerDeclarationUnit;
+nodeHandler[APEX_TYPES.TRIGGER_DECLARATION_UNIT] = handleTriggerDeclarationUnit;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.CLASS_DECLARATION_UNIT] = _handlePassthroughCall("body");
+nodeHandler[APEX_TYPES.CLASS_DECLARATION_UNIT] = _handlePassthroughCall("body");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ENUM_DECLARATION_UNIT] = _handlePassthroughCall("body");
+nodeHandler[APEX_TYPES.ENUM_DECLARATION_UNIT] = _handlePassthroughCall("body");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.INTERFACE_DECLARATION_UNIT] =
+nodeHandler[APEX_TYPES.INTERFACE_DECLARATION_UNIT] =
   _handlePassthroughCall("body");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ANONYMOUS_BLOCK_UNIT] = handleAnonymousBlockUnit;
+nodeHandler[APEX_TYPES.ANONYMOUS_BLOCK_UNIT] = handleAnonymousBlockUnit;
 
 // Block Member
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.PROPERTY_MEMBER] = _handlePassthroughCall("propertyDecl");
+nodeHandler[APEX_TYPES.PROPERTY_MEMBER] =
+  _handlePassthroughCall("propertyDecl");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.FIELD_MEMBER] = _handlePassthroughCall("variableDecls");
+nodeHandler[APEX_TYPES.FIELD_MEMBER] = _handlePassthroughCall("variableDecls");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.STATEMENT_BLOCK_MEMBER] = _handleStatementBlockMember();
+nodeHandler[APEX_TYPES.STATEMENT_BLOCK_MEMBER] = _handleStatementBlockMember();
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.STATIC_STATEMENT_BLOCK_MEMBER] =
+nodeHandler[APEX_TYPES.STATIC_STATEMENT_BLOCK_MEMBER] =
   _handleStatementBlockMember("static");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.METHOD_MEMBER] = _handlePassthroughCall("methodDecl");
+nodeHandler[APEX_TYPES.METHOD_MEMBER] = _handlePassthroughCall("methodDecl");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.INNER_CLASS_MEMBER] = _handlePassthroughCall("body");
+nodeHandler[APEX_TYPES.INNER_CLASS_MEMBER] = _handlePassthroughCall("body");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.INNER_ENUM_MEMBER] = _handlePassthroughCall("body");
+nodeHandler[APEX_TYPES.INNER_ENUM_MEMBER] = _handlePassthroughCall("body");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.INNER_INTERFACE_MEMBER] = _handlePassthroughCall("body");
+nodeHandler[APEX_TYPES.INNER_INTERFACE_MEMBER] = _handlePassthroughCall("body");
 
 // Expression
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.TERNARY_EXPRESSION] = handleTernaryExpression;
+nodeHandler[APEX_TYPES.TERNARY_EXPRESSION] = handleTernaryExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.BOOLEAN_EXPRESSION] = handleBinaryishExpression;
+nodeHandler[APEX_TYPES.BOOLEAN_EXPRESSION] = handleBinaryishExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ASSIGNMENT_EXPRESSION] = handleAssignmentExpression;
+nodeHandler[APEX_TYPES.ASSIGNMENT_EXPRESSION] = handleAssignmentExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.NESTED_EXPRESSION] = handleNestedExpression;
+nodeHandler[APEX_TYPES.NESTED_EXPRESSION] = handleNestedExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.VARIABLE_EXPRESSION] = handleVariableExpression;
+nodeHandler[APEX_TYPES.VARIABLE_EXPRESSION] = handleVariableExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.JAVA_VARIABLE_EXPRESSION] = handleJavaVariableExpression;
+nodeHandler[APEX_TYPES.JAVA_VARIABLE_EXPRESSION] = handleJavaVariableExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.LITERAL_EXPRESSION] = handleLiteralExpression;
+nodeHandler[APEX_TYPES.LITERAL_EXPRESSION] = handleLiteralExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.BINARY_EXPRESSION] = handleBinaryishExpression;
+nodeHandler[APEX_TYPES.BINARY_EXPRESSION] = handleBinaryishExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.TRIGGER_VARIABLE_EXPRESSION] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.TRIGGER_VARIABLE_EXPRESSION] = (path: any, print: any) =>
   concat(["Trigger", ".", path.call(print, "variable")]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.NEW_EXPRESSION] = handleNewExpression;
+nodeHandler[APEX_TYPES.NEW_EXPRESSION] = handleNewExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.METHOD_CALL_EXPRESSION] = handleMethodCallExpression;
+nodeHandler[APEX_TYPES.METHOD_CALL_EXPRESSION] = handleMethodCallExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.JAVA_METHOD_CALL_EXPRESSION] =
+nodeHandler[APEX_TYPES.JAVA_METHOD_CALL_EXPRESSION] =
   handleJavaMethodCallExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.THIS_VARIABLE_EXPRESSION] = () => "this";
+nodeHandler[APEX_TYPES.THIS_VARIABLE_EXPRESSION] = () => "this";
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SUPER_VARIABLE_EXPRESSION] = () => "super";
+nodeHandler[APEX_TYPES.SUPER_VARIABLE_EXPRESSION] = () => "super";
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.POSTFIX_EXPRESSION] = handlePostfixExpression;
+nodeHandler[APEX_TYPES.POSTFIX_EXPRESSION] = handlePostfixExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.PREFIX_EXPRESSION] = handlePrefixExpression;
+nodeHandler[APEX_TYPES.PREFIX_EXPRESSION] = handlePrefixExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.CAST_EXPRESSION] = handleCastExpression;
+nodeHandler[APEX_TYPES.CAST_EXPRESSION] = handleCastExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.INSTANCE_OF_EXPRESSION] = handleInstanceOfExpression;
+nodeHandler[APEX_TYPES.INSTANCE_OF_EXPRESSION] = handleInstanceOfExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.PACKAGE_VERSION_EXPRESSION] =
+nodeHandler[APEX_TYPES.PACKAGE_VERSION_EXPRESSION] =
   handlePackageVersionExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ARRAY_EXPRESSION] = handleArrayExpression;
+nodeHandler[APEX_TYPES.ARRAY_EXPRESSION] = handleArrayExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.CLASS_REF_EXPRESSION] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.CLASS_REF_EXPRESSION] = (path: any, print: any) =>
   concat([path.call(print, "type"), ".", "class"]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.THIS_METHOD_CALL_EXPRESSION] =
+nodeHandler[APEX_TYPES.THIS_METHOD_CALL_EXPRESSION] =
   handleThisMethodCallExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SUPER_METHOD_CALL_EXPRESSION] =
+nodeHandler[APEX_TYPES.SUPER_METHOD_CALL_EXPRESSION] =
   handleSuperMethodCallExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SOQL_EXPRESSION] = handleSoqlExpression;
+nodeHandler[APEX_TYPES.SOQL_EXPRESSION] = handleSoqlExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SOSL_EXPRESSION] = handleSoslExpression;
+nodeHandler[APEX_TYPES.SOSL_EXPRESSION] = handleSoslExpression;
 
 // New Object Init
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.NEW_SET_INIT] = handleNewSetInit;
+nodeHandler[APEX_TYPES.NEW_SET_INIT] = handleNewSetInit;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.NEW_SET_LITERAL] = handleNewSetLiteral;
+nodeHandler[APEX_TYPES.NEW_SET_LITERAL] = handleNewSetLiteral;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.NEW_LIST_INIT] = handleNewListInit;
+nodeHandler[APEX_TYPES.NEW_LIST_INIT] = handleNewListInit;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.NEW_MAP_INIT] = handleNewMapInit;
+nodeHandler[APEX_TYPES.NEW_MAP_INIT] = handleNewMapInit;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.NEW_MAP_LITERAL] = handleNewMapLiteral;
+nodeHandler[APEX_TYPES.NEW_MAP_LITERAL] = handleNewMapLiteral;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.MAP_LITERAL_KEY_VALUE] = handleMapLiteralKeyValue;
+nodeHandler[APEX_TYPES.MAP_LITERAL_KEY_VALUE] = handleMapLiteralKeyValue;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.NEW_LIST_LITERAL] = handleNewListLiteral;
+nodeHandler[APEX_TYPES.NEW_LIST_LITERAL] = handleNewListLiteral;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.NEW_STANDARD] = handleNewStandard;
+nodeHandler[APEX_TYPES.NEW_STANDARD] = handleNewStandard;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.NEW_KEY_VALUE] = handleNewKeyValue;
+nodeHandler[APEX_TYPES.NEW_KEY_VALUE] = handleNewKeyValue;
 
 // SOSL
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SEARCH] = handleSearch;
+nodeHandler[APEX_TYPES.SEARCH] = handleSearch;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.FIND_CLAUSE] = handleFindClause;
+nodeHandler[APEX_TYPES.FIND_CLAUSE] = handleFindClause;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.FIND_VALUE] = handleFindValue;
+nodeHandler[APEX_TYPES.FIND_VALUE] = handleFindValue;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.IN_CLAUSE] = handleInClause;
+nodeHandler[APEX_TYPES.IN_CLAUSE] = handleInClause;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WITH_DIVISION_CLAUSE] = handleDivisionClause;
+nodeHandler[APEX_TYPES.WITH_DIVISION_CLAUSE] = handleDivisionClause;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.DIVISION_VALUE] = handleDivisionValue;
+nodeHandler[APEX_TYPES.DIVISION_VALUE] = handleDivisionValue;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WITH_DATA_CATEGORY_CLAUSE] = handleWithDataCategories;
+nodeHandler[APEX_TYPES.WITH_DATA_CATEGORY_CLAUSE] = handleWithDataCategories;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SEARCH_WITH_CLAUSE] = handleSearchWithClause;
+nodeHandler[APEX_TYPES.SEARCH_WITH_CLAUSE] = handleSearchWithClause;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SEARCH_WITH_CLAUSE_VALUE] = handleSearchWithClauseValue;
+nodeHandler[APEX_TYPES.SEARCH_WITH_CLAUSE_VALUE] = handleSearchWithClauseValue;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.RETURNING_CLAUSE] = handleReturningClause;
+nodeHandler[APEX_TYPES.RETURNING_CLAUSE] = handleReturningClause;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.RETURNING_EXPRESSION] = handleReturningExpression;
+nodeHandler[APEX_TYPES.RETURNING_EXPRESSION] = handleReturningExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.RETURNING_SELECT_EXPRESSION] =
+nodeHandler[APEX_TYPES.RETURNING_SELECT_EXPRESSION] =
   handleReturningSelectExpression;
 
 // SOQL
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.QUERY] = handleQuery;
+nodeHandler[APEX_TYPES.QUERY] = handleQuery;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SELECT_COLUMN_CLAUSE] = handleColumnClause;
+nodeHandler[APEX_TYPES.SELECT_COLUMN_CLAUSE] = handleColumnClause;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SELECT_COUNT_CLAUSE] = () =>
+nodeHandler[APEX_TYPES.SELECT_COUNT_CLAUSE] = () =>
   concat(["SELECT", " ", "COUNT()"]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SELECT_COLUMN_EXPRESSION] = handleColumnExpression;
+nodeHandler[APEX_TYPES.SELECT_COLUMN_EXPRESSION] = handleColumnExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SELECT_INNER_QUERY] = handleSelectInnerQuery;
+nodeHandler[APEX_TYPES.SELECT_INNER_QUERY] = handleSelectInnerQuery;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SELECT_CASE_EXPRESSION] = _handlePassthroughCall("expr");
+nodeHandler[APEX_TYPES.SELECT_CASE_EXPRESSION] = _handlePassthroughCall("expr");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.CASE_EXPRESSION] = handleCaseExpression;
+nodeHandler[APEX_TYPES.CASE_EXPRESSION] = handleCaseExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHEN_OPERATOR] = _handlePassthroughCall("identifier");
+nodeHandler[APEX_TYPES.WHEN_OPERATOR] = _handlePassthroughCall("identifier");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHEN_EXPRESSION] = handleWhenExpression;
+nodeHandler[APEX_TYPES.WHEN_EXPRESSION] = handleWhenExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.CASE_OPERATOR] = _handlePassthroughCall("identifier");
+nodeHandler[APEX_TYPES.CASE_OPERATOR] = _handlePassthroughCall("identifier");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ELSE_EXPRESSION] = handleElseExpression;
+nodeHandler[APEX_TYPES.ELSE_EXPRESSION] = handleElseExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.FIELD] = handleField;
+nodeHandler[APEX_TYPES.FIELD] = handleField;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.FIELD_IDENTIFIER] = handleFieldIdentifier;
+nodeHandler[APEX_TYPES.FIELD_IDENTIFIER] = handleFieldIdentifier;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.FROM_CLAUSE] = handleFromClause;
+nodeHandler[APEX_TYPES.FROM_CLAUSE] = handleFromClause;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.FROM_EXPRESSION] = handleFromExpression;
+nodeHandler[APEX_TYPES.FROM_EXPRESSION] = handleFromExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.GROUP_BY_CLAUSE] = handleGroupByClause;
+nodeHandler[APEX_TYPES.GROUP_BY_CLAUSE] = handleGroupByClause;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.GROUP_BY_EXPRESSION] = _handlePassthroughCall("field");
+nodeHandler[APEX_TYPES.GROUP_BY_EXPRESSION] = _handlePassthroughCall("field");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.GROUP_BY_TYPE] = handleGroupByType;
+nodeHandler[APEX_TYPES.GROUP_BY_TYPE] = handleGroupByType;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.HAVING_CLAUSE] = handleHavingClause;
+nodeHandler[APEX_TYPES.HAVING_CLAUSE] = handleHavingClause;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHERE_CLAUSE] = handleWhereClause;
+nodeHandler[APEX_TYPES.WHERE_CLAUSE] = handleWhereClause;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHERE_INNER_EXPRESSION] = handleWhereInnerExpression;
+nodeHandler[APEX_TYPES.WHERE_INNER_EXPRESSION] = handleWhereInnerExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHERE_OPERATION_EXPRESSION] =
+nodeHandler[APEX_TYPES.WHERE_OPERATION_EXPRESSION] =
   handleWhereOperationExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHERE_OPERATION_EXPRESSIONS] =
+nodeHandler[APEX_TYPES.WHERE_OPERATION_EXPRESSIONS] =
   handleWhereOperationExpressions;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHERE_COMPOUND_EXPRESSION] =
+nodeHandler[APEX_TYPES.WHERE_COMPOUND_EXPRESSION] =
   handleWhereCompoundExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHERE_UNARY_EXPRESSION] = handleWhereUnaryExpression;
+nodeHandler[APEX_TYPES.WHERE_UNARY_EXPRESSION] = handleWhereUnaryExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHERE_UNARY_OPERATOR] = () => "NOT";
+nodeHandler[APEX_TYPES.WHERE_UNARY_OPERATOR] = () => "NOT";
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SELECT_DISTANCE_EXPRESSION] =
+nodeHandler[APEX_TYPES.SELECT_DISTANCE_EXPRESSION] =
   handleSelectDistanceExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHERE_DISTANCE_EXPRESSION] =
+nodeHandler[APEX_TYPES.WHERE_DISTANCE_EXPRESSION] =
   handleWhereDistanceExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.DISTANCE_FUNCTION_EXPRESSION] =
+nodeHandler[APEX_TYPES.DISTANCE_FUNCTION_EXPRESSION] =
   handleDistanceFunctionExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.GEOLOCATION_LITERAL] = handleGeolocationLiteral;
+nodeHandler[APEX_TYPES.GEOLOCATION_LITERAL] = handleGeolocationLiteral;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.NUMBER_LITERAL] = _handlePassthroughCall("number", "$");
+nodeHandler[APEX_TYPES.NUMBER_LITERAL] = _handlePassthroughCall("number", "$");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.NUMBER_EXPRESSION] = _handlePassthroughCall("expr");
+nodeHandler[APEX_TYPES.NUMBER_EXPRESSION] = _handlePassthroughCall("expr");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.QUERY_LITERAL_EXPRESSION] =
+nodeHandler[APEX_TYPES.QUERY_LITERAL_EXPRESSION] =
   _handlePassthroughCall("literal");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.QUERY_LITERAL] = handleWhereQueryLiteral;
+nodeHandler[APEX_TYPES.QUERY_LITERAL] = handleWhereQueryLiteral;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.APEX_EXPRESSION] = _handlePassthroughCall("expr");
+nodeHandler[APEX_TYPES.APEX_EXPRESSION] = _handlePassthroughCall("expr");
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.COLON_EXPRESSION] = handleColonExpression;
+nodeHandler[APEX_TYPES.COLON_EXPRESSION] = handleColonExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ORDER_BY_CLAUSE] = handleOrderByClause;
+nodeHandler[APEX_TYPES.ORDER_BY_CLAUSE] = handleOrderByClause;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.ORDER_BY_EXPRESSION] = handleOrderByExpression;
+nodeHandler[APEX_TYPES.ORDER_BY_EXPRESSION] = handleOrderByExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WITH_VALUE] = handleWithValue;
+nodeHandler[APEX_TYPES.WITH_VALUE] = handleWithValue;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WITH_DATA_CATEGORIES] = handleWithDataCategories;
+nodeHandler[APEX_TYPES.WITH_DATA_CATEGORIES] = handleWithDataCategories;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.DATA_CATEGORY] = handleDataCategory;
+nodeHandler[APEX_TYPES.DATA_CATEGORY] = handleDataCategory;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.DATA_CATEGORY_OPERATOR] = handleDataCategoryOperator;
+nodeHandler[APEX_TYPES.DATA_CATEGORY_OPERATOR] = handleDataCategoryOperator;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.LIMIT_VALUE] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.LIMIT_VALUE] = (path: any, print: any) =>
   concat(["LIMIT", " ", path.call(print, "i")]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.LIMIT_EXPRESSION] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.LIMIT_EXPRESSION] = (path: any, print: any) =>
   concat(["LIMIT", " ", path.call(print, "expr")]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.OFFSET_VALUE] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.OFFSET_VALUE] = (path: any, print: any) =>
   concat(["OFFSET", " ", path.call(print, "i")]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.OFFSET_EXPRESSION] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.OFFSET_EXPRESSION] = (path: any, print: any) =>
   concat(["OFFSET", " ", path.call(print, "expr")]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.QUERY_OPERATOR] = (childClass: any) =>
-  constants.QUERY[childClass];
+nodeHandler[APEX_TYPES.QUERY_OPERATOR] = (childClass: any) => QUERY[childClass];
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SOQL_ORDER] = handleOrderOperation;
+nodeHandler[APEX_TYPES.SOQL_ORDER] = handleOrderOperation;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SOQL_ORDER_NULL] = handleNullOrderOperation;
+nodeHandler[APEX_TYPES.SOQL_ORDER_NULL] = handleNullOrderOperation;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.TRACKING_TYPE] = handleTrackingType;
+nodeHandler[APEX_TYPES.TRACKING_TYPE] = handleTrackingType;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.QUERY_OPTION] = handleQueryOption;
+nodeHandler[APEX_TYPES.QUERY_OPTION] = handleQueryOption;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.QUERY_USING_CLAUSE] = handleQueryUsingClause;
+nodeHandler[APEX_TYPES.QUERY_USING_CLAUSE] = handleQueryUsingClause;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.USING_EXPRESSION] = handleUsingExpression;
+nodeHandler[APEX_TYPES.USING_EXPRESSION] = handleUsingExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.UPDATE_STATS_CLAUSE] = handleUpdateStatsClause;
+nodeHandler[APEX_TYPES.UPDATE_STATS_CLAUSE] = handleUpdateStatsClause;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.UPDATE_STATS_OPTION] = handleUpdateStatsOption;
+nodeHandler[APEX_TYPES.UPDATE_STATS_OPTION] = handleUpdateStatsOption;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHERE_CALC_EXPRESSION] = handleWhereCalcExpression;
+nodeHandler[APEX_TYPES.WHERE_CALC_EXPRESSION] = handleWhereCalcExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHERE_CALC_OPERATOR_PLUS] = () => "+";
+nodeHandler[APEX_TYPES.WHERE_CALC_OPERATOR_PLUS] = () => "+";
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHERE_CALC_OPERATOR_MINUS] = () => "-";
+nodeHandler[APEX_TYPES.WHERE_CALC_OPERATOR_MINUS] = () => "-";
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WHERE_COMPOUND_OPERATOR] = (childClass: any) =>
-  constants.QUERY_WHERE[childClass];
+nodeHandler[APEX_TYPES.WHERE_COMPOUND_OPERATOR] = (
+  childClass: keyof typeof QUERY_WHERE,
+) => QUERY_WHERE[childClass];
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.SEARCH_USING_CLAUSE] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.SEARCH_USING_CLAUSE] = (path: any, print: any) =>
   concat(["USING", " ", path.call(print, "type")]);
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.USING_TYPE] = handleUsingType;
+nodeHandler[APEX_TYPES.USING_TYPE] = handleUsingType;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.BIND_CLAUSE] = handleBindClause;
+nodeHandler[APEX_TYPES.BIND_CLAUSE] = handleBindClause;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.BIND_EXPRESSION] = handleBindExpression;
+nodeHandler[APEX_TYPES.BIND_EXPRESSION] = handleBindExpression;
 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[apexTypes.WITH_IDENTIFIER] = (path: any, print: any) =>
+nodeHandler[APEX_TYPES.WITH_IDENTIFIER] = (path: any, print: any) =>
   concat(["WITH", " ", path.call(print, "identifier")]);
 
 function handleTrailingEmptyLines(doc: any, node: any) {
@@ -3108,7 +3117,7 @@ function genericPrint(path: any, options: any, print: any) {
   if (path.stack.length === 1) {
     // Hard code how to handle the root node here
     const docs = [];
-    docs.push(path.call(print, apexTypes.PARSER_OUTPUT, "unit"));
+    docs.push(path.call(print, APEX_TYPES.PARSER_OUTPUT, "unit"));
     // Optionally, adding a hardline as the last thing in the document
     if (options.apexInsertFinalNewline) {
       docs.push(hardline);

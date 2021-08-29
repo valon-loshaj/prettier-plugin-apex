@@ -95,7 +95,7 @@ const METADATA_TO_IGNORE = [
  * @param ast the Abstract Syntax Tree to compare
  * @param newObj the newly created object
  */
-export function massageAstNode(ast: any, newObj: any) {
+export function massageAstNode(ast: any, newObj: any): any {
   // Handling ApexDoc
   if (
     ast["@class"] &&

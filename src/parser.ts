@@ -401,7 +401,7 @@ function handleNodeLocation(node: any, sourceCode: any, commentNodes: any) {
  */
 function generateExtraMetadata(
   node: any,
-  emptyLineLocations: any,
+  emptyLineLocations: number[],
   allowTrailingEmptyLine: any,
 ) {
   const apexClass = node["@class"];
@@ -527,7 +527,7 @@ function getLineIndexes(sourceCode: any) {
   return lineIndexes;
 }
 
-function getEmptyLineLocations(sourceCode: any) {
+function getEmptyLineLocations(sourceCode: any): number[] {
   const whiteSpaceRegEx = /^\s*$/;
   const lines = sourceCode.split("\n");
   return lines
@@ -540,7 +540,7 @@ function getEmptyLineLocations(sourceCode: any) {
     }, []);
 }
 
-export default function parse(sourceCode: any, _: any, options: any) {
+export default function parse(sourceCode: any, _: any, options: any): any {
   const lineIndexes = getLineIndexes(sourceCode);
   let serializedAst;
   if (options.apexStandaloneParser === "built-in") {

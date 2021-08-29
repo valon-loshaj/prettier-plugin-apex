@@ -24,6 +24,7 @@ export type AnnotatedGenericComment = GenericComment & {
   enclosingNode?: any;
   followingNode?: any;
   precedingNode?: any;
+  trailingEmptyLine?: boolean;
 };
 
 /**
@@ -428,7 +429,7 @@ function handleModifierPrettierIgnoreComment(
 export function handleOwnLineComment(
   comment: AnnotatedGenericComment,
   sourceCode: string,
-) {
+): boolean {
   return (
     handleDanglingComment(comment) ||
     handleInBetweenConditionalComment(comment, sourceCode) ||
@@ -452,7 +453,7 @@ export function handleOwnLineComment(
 export function handleEndOfLineComment(
   comment: AnnotatedGenericComment,
   sourceCode: string,
-) {
+): boolean {
   return (
     handleDanglingComment(comment) ||
     handleInBetweenConditionalComment(comment, sourceCode) ||

@@ -37,12 +37,12 @@ interface WithLocation {
 }
 type Locatable = jorje.Locatable & WithLocation;
 
-function locStart(node: Locatable) {
+function locStart(node: Locatable): number {
   const location = node.loc ? node.loc : node.location;
   return location.startIndex;
 }
 
-function locEnd(node: Locatable) {
+function locEnd(node: Locatable): number {
   const location = node.loc ? node.loc : node.location;
   return location.endIndex;
 }
@@ -54,7 +54,7 @@ export const parsers = {
     locStart,
     locEnd,
     hasPragma,
-    preprocess: (text: string) => text.trim(),
+    preprocess: (text: string): string => text.trim(),
   },
   "apex-anonymous": {
     astFormat: "apex",
@@ -62,7 +62,7 @@ export const parsers = {
     locStart,
     locEnd,
     hasPragma,
-    preprocess: (text: string) => text.trim(),
+    preprocess: (text: string): string => text.trim(),
   },
 };
 
