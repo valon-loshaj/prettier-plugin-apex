@@ -12,6 +12,7 @@ module.exports = {
   collectCoverage: ENABLE_COVERAGE,
   collectCoverageFrom: [
     "src/**/*.ts",
+    "dist/**/*.js",
     "!<rootDir>/node_modules/",
     "!src/http-client.ts",
     "!src/http-server.ts",
