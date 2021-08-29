@@ -1,2 +1,2 @@
-// @ts-expect-error runSpec needs to be defined
+/// <reference path="../../typings/test-global.d.ts" />
 runSpec(__dirname, ["apex"], { apexInsertFinalNewline: false });

@@ -1,2 +1,2 @@
-// @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
+/// <reference path="../../typings/test-global.d.ts" />
 runSpec(__dirname, ["apex-anonymous"]);
