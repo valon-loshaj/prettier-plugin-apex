@@ -15,7 +15,7 @@ import { hasPragma, insertPragma } from "./pragma";
 import printFn from "./printer";
 import { massageAstNode } from "./util";
 
-const languages = [
+export const languages = [
   {
     name: "Apex",
     parsers: ["apex"],
@@ -47,7 +47,7 @@ function locEnd(node: Locatable) {
   return location.endIndex;
 }
 
-const parsers = {
+export const parsers = {
   apex: {
     astFormat: "apex",
     parse,
@@ -66,7 +66,7 @@ const parsers = {
   },
 };
 
-const printers = {
+export const printers = {
   apex: {
     print: printFn,
     massageAstNode,
@@ -86,7 +86,7 @@ const printers = {
 
 const CATEGORY_APEX = "apex";
 
-const options = {
+export const options = {
   apexStandaloneParser: {
     type: "choice",
     category: CATEGORY_APEX,
@@ -127,12 +127,4 @@ const options = {
   },
 };
 
-const defaultOptions = {};
-
-module.exports = {
-  languages,
-  printers,
-  parsers,
-  options,
-  defaultOptions,
-};
+export const defaultOptions = {};
