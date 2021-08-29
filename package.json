@@ -19,11 +19,12 @@
   "scripts": {
     "build": "tsc",
     "coverage": "codecov",
-    "pretest": "npm run lint",
+    "pretest": "npm run lint && npm run build",
     "test": "jest",
-    "start-server": "node bin/start-apex-server.js",
+    "jest": "jest",
+    "start-server": "node dist/bin/start-apex-server.js",
     "wait-server": "wait-on http://localhost:2117/api/ast/",
-    "stop-server": "node bin/stop-apex-server.js",
+    "stop-server": "node dist/bin/stop-apex-server.js",
     "lint": "eslint \"{src,tests_config}/**/*.{js,ts}\"",
     "prettier": "prettier --write \"{src,tests_config}/**/*.{js,ts}\" \"./*.md\"",
     "debug-check": "prettier --apex-standalone-parser built-in --apex-standalone-port 2117 --debug-check --plugin=."
@@ -35,6 +36,9 @@
   "author": "Dang Mai <contact@dangmai.net>",
   "license": "MIT",
   "devDependencies": {
+    "@types/jest": "^27.0.1",
+    "@types/node": "^16.7.5",
+    "@types/wait-on": "^5.3.1",
     "@typescript-eslint/eslint-plugin": "^4.29.3",
     "@typescript-eslint/parser": "^4.29.3",
     "codecov": "^3.5.0",
@@ -46,6 +50,7 @@
     "eslint-plugin-prettier": "^3.0.1",
     "jest": "^27.0.1",
     "prettier": "^2.0.5",
+    "ts-jest": "^27.0.5",
     "ts-migrate": "^0.1.21"
   },
   "peerDependencies": {

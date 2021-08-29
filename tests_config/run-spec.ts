@@ -1,8 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'fs'.
-const fs = require("fs");
-const { extname } = require("path");
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'prettier'.
-const prettier = require("prettier");
+import fs from "fs";
+import { extname } from "path";
+import prettier from "prettier";
 
 const { AST_COMPARE } = process.env;
 
@@ -20,10 +18,9 @@ function prettyPrint(src: any, filename: any, options: any) {
   });
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 function parse(string: any, opts: any) {
   // eslint-disable-next-line no-underscore-dangle
-  return prettier.__debug.parse(
+  return (prettier as any).__debug.parse(
     string,
     {
       apexStandaloneParser: "built-in",
@@ -47,7 +44,7 @@ function raw(string: any) {
   return { [Symbol.for("raw")]: string };
 }
 
-function runSpec(dirname: any, parsers: any, specOptions: any) {
+function runSpec(dirname: any, parsers: any, specOptions?: any): void {
   /* instabul ignore if */
   if (!parsers || !parsers.length) {
     throw new Error(`No parsers were specified for ${dirname}`);
@@ -59,7 +56,7 @@ function runSpec(dirname: any, parsers: any, specOptions: any) {
       extname(filename) !== ".snap" &&
       fs.lstatSync(path).isFile() &&
       filename[0] !== "." &&
-      filename !== "jsfmt.spec.js"
+      filename !== "jsfmt.spec.ts"
     ) {
       const source = read(path).replace(/\r\n/g, "\n");
 
@@ -77,9 +74,7 @@ function runSpec(dirname: any, parsers: any, specOptions: any) {
 
       mergedOptions.forEach((mergedOpts) => {
         const output = prettyPrint(source, path, mergedOpts);
-        // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
         test(`Format ${mergedOpts.parser}: ${filename}`, () => {
-          // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
           expect(raw(`${source}${"~".repeat(80)}\n${output}`)).toMatchSnapshot(
             filename,
           );
@@ -90,17 +85,12 @@ function runSpec(dirname: any, parsers: any, specOptions: any) {
           const ppast = parse(output, mergedOpts);
           const secondOutput = prettyPrint(output, path, mergedOpts);
 
-          // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
           test(`Verify AST: ${filename}`, () => {
-            // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
             expect(ppast).toBeDefined();
-            // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
             expect(ast).toEqual(ppast);
           });
 
-          // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
           test(`Stable format: ${filename}`, () => {
-            // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
             expect(secondOutput).toEqual(output);
           });
         }
@@ -108,4 +98,4 @@ function runSpec(dirname: any, parsers: any, specOptions: any) {
     }
   });
 }
-global.runSpec = runSpec;
+(global as any).runSpec = runSpec;

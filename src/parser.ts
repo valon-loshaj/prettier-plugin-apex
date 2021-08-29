@@ -1,7 +1,6 @@
 /* eslint no-param-reassign: 0 no-underscore-dangle: 0 */
 
 const childProcess = require("child_process");
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'path'.
 const path = require("path");
 
 const { spawnSync } = childProcess;
@@ -16,7 +15,10 @@ const apexTypes = constants.APEX_TYPES;
 const MAX_BUFFER = 8192 * 8192;
 
 function parseTextWithSpawn(text: any, anonymous: any) {
-  let serializerBin = path.join(__dirname, "../vendor/apex-ast-serializer/bin");
+  let serializerBin = path.join(
+    __dirname,
+    "../../vendor/apex-ast-serializer/bin",
+  );
   if (process.platform === "win32") {
     serializerBin = path.join(serializerBin, "apex-ast-serializer.bat");
   } else {
