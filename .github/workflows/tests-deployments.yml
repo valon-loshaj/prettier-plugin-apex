@@ -4,7 +4,7 @@ on:
   push:
   pull_request:
   schedule:
-    - cron: '0 8 * * *'
+    - cron: "0 8 * * *"
   repository_dispatch:
     types: manual-test-run
 
@@ -45,11 +45,14 @@ jobs:
 
       - uses: actions/setup-java@v2
         with:
-          distribution: 'adopt'
+          distribution: "adopt"
           java-version: ${{ matrix.java }}
 
       - name: Install NPM dependencies
         run: npm ci
+
+      - name: Compile Typescript to Javascript
+        run: npm run build
 
       - name: Run Apex parsing server
         run: nohup npm run start-server &

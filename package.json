@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc",
     "coverage": "codecov",
-    "pretest": "npm run lint && npm run build",
+    "pretest": "npm run lint",
     "test": "jest",
     "jest": "jest",
     "start-server": "node dist/bin/start-apex-server.js",
