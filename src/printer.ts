@@ -1,6 +1,5 @@
 /* eslint no-underscore-dangle: 0 */
 
-// @ts-expect-error ts-migrate(6200) FIXME: Definitions of the following identifiers conflict ... Remove this comment to see the full error message
 const prettier = require("prettier");
 
 const docBuilders = prettier.doc.builders;
@@ -16,11 +15,8 @@ const {
   printDanglingComment,
 } = require("./comments");
 const {
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'checkIfPar... Remove this comment to see the full error message
   checkIfParentIsDottedExpression,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'getPrecede... Remove this comment to see the full error message
   getPrecedence,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'isBinaryis... Remove this comment to see the full error message
   isBinaryish,
 } = require("./util");
 const constants = require("./constants");
@@ -394,7 +390,6 @@ function _getDanglingCommentDocs(path: any, print: any, options: any) {
   const danglingCommentParts: any = [];
   path.each((commentPath: any) => {
     danglingCommentParts.push(
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 3.
       printDanglingComment(commentPath, options, print),
     );
   }, "danglingComments");
@@ -3142,14 +3137,12 @@ function genericPrint(path: any, options: any, print: any) {
   );
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'options'.
-let options;
-module.exports = function printGenerically(path: any, opts: any, print: any) {
+let options: any;
+export default function printGenerically(path: any, opts: any, print: any) {
   if (typeof opts === "object") {
-    // @ts-expect-error ts-migrate(2588) FIXME: Cannot assign to 'options' because it is a constan... Remove this comment to see the full error message
     options = opts;
   }
   const node = path.getValue();
   const doc = genericPrint(path, options, print);
   return handleTrailingEmptyLines(doc, node);
-};
+}

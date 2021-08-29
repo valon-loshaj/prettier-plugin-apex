@@ -1,5 +1,6 @@
-// @ts-expect-error ts-migrate(6200) FIXME: Definitions of the following identifiers conflict ... Remove this comment to see the full error message
-const {
+import jorje from "../vendor/apex-ast-serializer/typings/jorje";
+
+import {
   canAttachComment,
   handleEndOfLineComment,
   handleOwnLineComment,
@@ -8,15 +9,11 @@ const {
   isBlockComment,
   printComment,
   willPrintOwnComments,
-} = require("./comments");
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
-const parse = require("./parser");
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'hasPragma'... Remove this comment to see the full error message
-const { hasPragma, insertPragma } = require("./pragma");
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'print'.
-const print = require("./printer");
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'massageAst... Remove this comment to see the full error message
-const { massageAstNode } = require("./util");
+} from "./comments";
+import parse from "./parser";
+import { hasPragma, insertPragma } from "./pragma";
+import printFn from "./printer";
+import { massageAstNode } from "./util";
 
 const languages = [
   {
@@ -35,12 +32,17 @@ const languages = [
   },
 ];
 
-function locStart(node: any) {
+interface WithLocation {
+  location: jorje.Location;
+}
+type Locatable = jorje.Locatable & WithLocation;
+
+function locStart(node: Locatable) {
   const location = node.loc ? node.loc : node.location;
   return location.startIndex;
 }
 
-function locEnd(node: any) {
+function locEnd(node: Locatable) {
   const location = node.loc ? node.loc : node.location;
   return location.endIndex;
 }
@@ -52,7 +54,7 @@ const parsers = {
     locStart,
     locEnd,
     hasPragma,
-    preprocess: (text: any) => text.trim(),
+    preprocess: (text: string) => text.trim(),
   },
   "apex-anonymous": {
     astFormat: "apex",
@@ -60,13 +62,13 @@ const parsers = {
     locStart,
     locEnd,
     hasPragma,
-    preprocess: (text: any) => text.trim(),
+    preprocess: (text: string) => text.trim(),
   },
 };
 
 const printers = {
   apex: {
-    print,
+    print: printFn,
     massageAstNode,
     hasPrettierIgnore,
     insertPragma,
@@ -84,7 +86,6 @@ const printers = {
 
 const CATEGORY_APEX = "apex";
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'options'.
 const options = {
   apexStandaloneParser: {
     type: "choice",

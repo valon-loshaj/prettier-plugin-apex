@@ -1,24 +1,20 @@
 /* eslint no-param-reassign: 0 no-underscore-dangle: 0 */
+import childProcess, { spawnSync } from "child_process";
+import path from "path";
 
-const childProcess = require("child_process");
-const path = require("path");
+import {
+  findNextUncommentedCharacter,
+  getSerializerBinDirectory,
+} from "./util";
 
-const { spawnSync } = childProcess;
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'constants'... Remove this comment to see the full error message
 const constants = require("./constants");
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'findNextUn... Remove this comment to see the full error message
-const { findNextUncommentedCharacter } = require("./util");
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apexTypes'... Remove this comment to see the full error message
 const apexTypes = constants.APEX_TYPES;
 
 const MAX_BUFFER = 8192 * 8192;
 
 function parseTextWithSpawn(text: any, anonymous: any) {
-  let serializerBin = path.join(
-    __dirname,
-    "../../vendor/apex-ast-serializer/bin",
-  );
+  let serializerBin = getSerializerBinDirectory();
   if (process.platform === "win32") {
     serializerBin = path.join(serializerBin, "apex-ast-serializer.bat");
   } else {
@@ -544,8 +540,7 @@ function getEmptyLineLocations(sourceCode: any) {
     }, []);
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
-function parse(sourceCode: any, _: any, options: any) {
+export default function parse(sourceCode: any, _: any, options: any) {
   const lineIndexes = getLineIndexes(sourceCode);
   let serializedAst;
   if (options.apexStandaloneParser === "built-in") {
@@ -600,5 +595,3 @@ function parse(sourceCode: any, _: any, options: any) {
   }
   return ast;
 }
-
-module.exports = parse;
