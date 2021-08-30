@@ -712,7 +712,7 @@ function handleJavaTypeRef(path: AstPath, print: printFn) {
   return concat(parts);
 }
 
-function _handleStatementBlockMember(modifier: any) {
+function _handleStatementBlockMember(modifier?: string) {
   return (path: AstPath, print: printFn) => {
     const statementDoc: Doc = path.call(print, "stmnt");
 
@@ -2482,8 +2482,8 @@ function handleUsingType(path: AstPath, print: printFn) {
   return concat(parts);
 }
 
-function handleModifier(childClass: keyof typeof MODIFIER) {
-  const modifierValue = MODIFIER[childClass] || "";
+function handleModifier(childClass: string) {
+  const modifierValue = MODIFIER[childClass as keyof typeof MODIFIER] || "";
   if (!modifierValue) {
     throw new Error(
       `Modifier ${childClass} is not supported. Please file a bug report.`,
@@ -2662,106 +2662,66 @@ function handleForInit(path: AstPath, print: printFn) {
   return parts;
 }
 
-const nodeHandler = {};
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+type singleNodeHandler = (path: AstPath, print: printFn, options: any) => Doc;
+type childNodeHandler = (
+  childClass: string,
+  path: AstPath,
+  print: printFn,
+  options: any,
+) => Doc;
+
+const nodeHandler: { [key: string]: singleNodeHandler | childNodeHandler } = {};
 nodeHandler[APEX_TYPES.IF_ELSE_BLOCK] = handleIfElseBlock;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.IF_BLOCK] = handleIfBlock;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ELSE_BLOCK] = handleElseBlock;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.EXPRESSION_STATEMENT] = handleExpressionStatement;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.RETURN_STATEMENT] = handleReturnStatement;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.TRIGGER_USAGE] = (path: AstPath, print: printFn) =>
   TRIGGER_USAGE[path.call(print, "$") as keyof typeof TRIGGER_USAGE];
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.JAVA_TYPE_REF] = handleJavaTypeRef;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.CLASS_TYPE_REF] = handleClassTypeRef;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ARRAY_TYPE_REF] = handleArrayTypeRef;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.LOCATION_IDENTIFIER] = _handlePassthroughCall("value");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.MODIFIER_PARAMETER_REF] = handleModifierParameterRef;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.EMPTY_MODIFIER_PARAMETER_REF] =
   handleEmptyModifierParameterRef;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.BLOCK_STATEMENT] = handleBlockStatement;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.VARIABLE_DECLARATION_STATEMENT] =
   _handlePassthroughCall("variableDecls");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.VARIABLE_DECLARATIONS] = handleVariableDeclarations;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.NAME_VALUE_PARAMETER] = handleNameValueParameter;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ANNOTATION] = handleAnnotation;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ANNOTATION_KEY_VALUE] = handleAnnotationKeyValue;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ANNOTATION_VALUE] = handleAnnotationValue;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ANNOTATION_STRING] = handleAnnotationString;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.MODIFIER] = handleModifier;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.RUN_AS_BLOCK] = handleRunAsBlock;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.DO_LOOP] = handleDoLoop;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WHILE_LOOP] = handleWhileLoop;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.FOR_LOOP] = handleForLoop;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.FOR_C_STYLE_CONTROL] = handleForCStyleControl;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.FOR_ENHANCED_CONTROL] = handleForEnhancedControl;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.FOR_INITS] = handleForInits;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.FOR_INIT] = handleForInit;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.BREAK_STATEMENT] = () => "break;";
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.CONTINUE_STATEMENT] = () => "continue;";
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.THROW_STATEMENT] = (path: AstPath, print: printFn) =>
   concat(["throw", " ", path.call(print, "expr"), ";"]);
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.TRY_CATCH_FINALLY_BLOCK] = handleTryCatchFinallyBlock;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.CATCH_BLOCK] = handleCatchBlock;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.FINALLY_BLOCK] = handleFinallyBlock;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.STATEMENT] = handleStatement;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.DML_MERGE_STATEMENT] = handleDmlMergeStatement;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.SWITCH_STATEMENT] = handleSwitchStatement;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.VALUE_WHEN] = handleValueWhen;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ELSE_WHEN] = handleElseWhen;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.TYPE_WHEN] = handleTypeWhen;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ENUM_CASE] = handleEnumCase;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.LITERAL_CASE] = _handlePassthroughCall("expr");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.PROPERTY_DECLATION] = handlePropertyDeclaration;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.PROPERTY_GETTER] = _handlePropertyGetterSetter("get");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.PROPERTY_SETTER] = _handlePropertyGetterSetter("set");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.STRUCTURED_VERSION] = handleStructuredVersion;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.REQUEST_VERSION] = () => "Request";
 (nodeHandler as any).int = (path: AstPath, print: printFn) =>
   path.call(print, "$");
@@ -2769,314 +2729,181 @@ nodeHandler[APEX_TYPES.REQUEST_VERSION] = () => "Request";
   concat(["'", path.call(print, "$"), "'"]);
 
 // Operator
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ASSIGNMENT_OPERATOR] = handleAssignmentOperation;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.BINARY_OPERATOR] = handleBinaryOperation;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.BOOLEAN_OPERATOR] = handleBooleanOperation;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.POSTFIX_OPERATOR] = handlePostfixOperator;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.PREFIX_OPERATOR] = handlePrefixOperator;
 
 // Declaration
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.CLASS_DECLARATION] = handleClassDeclaration;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.INTERFACE_DECLARATION] = handleInterfaceDeclaration;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.METHOD_DECLARATION] = handleMethodDeclaration;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.VARIABLE_DECLARATION] = handleVariableDeclaration;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ENUM_DECLARATION] = handleEnumDeclaration;
 
 // Compilation Unit: we're not handling  InvalidDeclUnit
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.TRIGGER_DECLARATION_UNIT] = handleTriggerDeclarationUnit;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.CLASS_DECLARATION_UNIT] = _handlePassthroughCall("body");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ENUM_DECLARATION_UNIT] = _handlePassthroughCall("body");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.INTERFACE_DECLARATION_UNIT] =
   _handlePassthroughCall("body");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ANONYMOUS_BLOCK_UNIT] = handleAnonymousBlockUnit;
 
 // Block Member
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.PROPERTY_MEMBER] =
   _handlePassthroughCall("propertyDecl");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.FIELD_MEMBER] = _handlePassthroughCall("variableDecls");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.STATEMENT_BLOCK_MEMBER] = _handleStatementBlockMember();
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.STATIC_STATEMENT_BLOCK_MEMBER] =
   _handleStatementBlockMember("static");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.METHOD_MEMBER] = _handlePassthroughCall("methodDecl");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.INNER_CLASS_MEMBER] = _handlePassthroughCall("body");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.INNER_ENUM_MEMBER] = _handlePassthroughCall("body");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.INNER_INTERFACE_MEMBER] = _handlePassthroughCall("body");
 
 // Expression
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.TERNARY_EXPRESSION] = handleTernaryExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.BOOLEAN_EXPRESSION] = handleBinaryishExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ASSIGNMENT_EXPRESSION] = handleAssignmentExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.NESTED_EXPRESSION] = handleNestedExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.VARIABLE_EXPRESSION] = handleVariableExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.JAVA_VARIABLE_EXPRESSION] = handleJavaVariableExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.LITERAL_EXPRESSION] = handleLiteralExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.BINARY_EXPRESSION] = handleBinaryishExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.TRIGGER_VARIABLE_EXPRESSION] = (
   path: AstPath,
   print: printFn,
 ) => concat(["Trigger", ".", path.call(print, "variable")]);
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.NEW_EXPRESSION] = handleNewExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.METHOD_CALL_EXPRESSION] = handleMethodCallExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.JAVA_METHOD_CALL_EXPRESSION] =
   handleJavaMethodCallExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.THIS_VARIABLE_EXPRESSION] = () => "this";
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.SUPER_VARIABLE_EXPRESSION] = () => "super";
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.POSTFIX_EXPRESSION] = handlePostfixExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.PREFIX_EXPRESSION] = handlePrefixExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.CAST_EXPRESSION] = handleCastExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.INSTANCE_OF_EXPRESSION] = handleInstanceOfExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.PACKAGE_VERSION_EXPRESSION] =
   handlePackageVersionExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ARRAY_EXPRESSION] = handleArrayExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.CLASS_REF_EXPRESSION] = (
   path: AstPath,
   print: printFn,
 ) => concat([path.call(print, "type"), ".", "class"]);
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.THIS_METHOD_CALL_EXPRESSION] =
   handleThisMethodCallExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.SUPER_METHOD_CALL_EXPRESSION] =
   handleSuperMethodCallExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.SOQL_EXPRESSION] = handleSoqlExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.SOSL_EXPRESSION] = handleSoslExpression;
 
 // New Object Init
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.NEW_SET_INIT] = handleNewSetInit;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.NEW_SET_LITERAL] = handleNewSetLiteral;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.NEW_LIST_INIT] = handleNewListInit;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.NEW_MAP_INIT] = handleNewMapInit;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.NEW_MAP_LITERAL] = handleNewMapLiteral;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.MAP_LITERAL_KEY_VALUE] = handleMapLiteralKeyValue;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.NEW_LIST_LITERAL] = handleNewListLiteral;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.NEW_STANDARD] = handleNewStandard;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.NEW_KEY_VALUE] = handleNewKeyValue;
 
 // SOSL
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.SEARCH] = handleSearch;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.FIND_CLAUSE] = handleFindClause;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.FIND_VALUE] = handleFindValue;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.IN_CLAUSE] = handleInClause;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WITH_DIVISION_CLAUSE] = handleDivisionClause;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.DIVISION_VALUE] = handleDivisionValue;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WITH_DATA_CATEGORY_CLAUSE] = handleWithDataCategories;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.SEARCH_WITH_CLAUSE] = handleSearchWithClause;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.SEARCH_WITH_CLAUSE_VALUE] = handleSearchWithClauseValue;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.RETURNING_CLAUSE] = handleReturningClause;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.RETURNING_EXPRESSION] = handleReturningExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.RETURNING_SELECT_EXPRESSION] =
   handleReturningSelectExpression;
 
 // SOQL
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.QUERY] = handleQuery;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.SELECT_COLUMN_CLAUSE] = handleColumnClause;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.SELECT_COUNT_CLAUSE] = () =>
   concat(["SELECT", " ", "COUNT()"]);
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.SELECT_COLUMN_EXPRESSION] = handleColumnExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.SELECT_INNER_QUERY] = handleSelectInnerQuery;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.SELECT_CASE_EXPRESSION] = _handlePassthroughCall("expr");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.CASE_EXPRESSION] = handleCaseExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WHEN_OPERATOR] = _handlePassthroughCall("identifier");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WHEN_EXPRESSION] = handleWhenExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.CASE_OPERATOR] = _handlePassthroughCall("identifier");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ELSE_EXPRESSION] = handleElseExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.FIELD] = handleField;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.FIELD_IDENTIFIER] = handleFieldIdentifier;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.FROM_CLAUSE] = handleFromClause;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.FROM_EXPRESSION] = handleFromExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.GROUP_BY_CLAUSE] = handleGroupByClause;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.GROUP_BY_EXPRESSION] = _handlePassthroughCall("field");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.GROUP_BY_TYPE] = handleGroupByType;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.HAVING_CLAUSE] = handleHavingClause;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WHERE_CLAUSE] = handleWhereClause;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WHERE_INNER_EXPRESSION] = handleWhereInnerExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WHERE_OPERATION_EXPRESSION] =
   handleWhereOperationExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WHERE_OPERATION_EXPRESSIONS] =
   handleWhereOperationExpressions;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WHERE_COMPOUND_EXPRESSION] =
   handleWhereCompoundExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WHERE_UNARY_EXPRESSION] = handleWhereUnaryExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WHERE_UNARY_OPERATOR] = () => "NOT";
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.SELECT_DISTANCE_EXPRESSION] =
   handleSelectDistanceExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WHERE_DISTANCE_EXPRESSION] =
   handleWhereDistanceExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.DISTANCE_FUNCTION_EXPRESSION] =
   handleDistanceFunctionExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.GEOLOCATION_LITERAL] = handleGeolocationLiteral;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.NUMBER_LITERAL] = _handlePassthroughCall("number", "$");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.NUMBER_EXPRESSION] = _handlePassthroughCall("expr");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.QUERY_LITERAL_EXPRESSION] =
   _handlePassthroughCall("literal");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.QUERY_LITERAL] = handleWhereQueryLiteral;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.APEX_EXPRESSION] = _handlePassthroughCall("expr");
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.COLON_EXPRESSION] = handleColonExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ORDER_BY_CLAUSE] = handleOrderByClause;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.ORDER_BY_EXPRESSION] = handleOrderByExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WITH_VALUE] = handleWithValue;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WITH_DATA_CATEGORIES] = handleWithDataCategories;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.DATA_CATEGORY] = handleDataCategory;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.DATA_CATEGORY_OPERATOR] = handleDataCategoryOperator;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.LIMIT_VALUE] = (path: AstPath, print: printFn) =>
   concat(["LIMIT", " ", path.call(print, "i")]);
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.LIMIT_EXPRESSION] = (path: AstPath, print: printFn) =>
   concat(["LIMIT", " ", path.call(print, "expr")]);
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.OFFSET_VALUE] = (path: AstPath, print: printFn) =>
   concat(["OFFSET", " ", path.call(print, "i")]);
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.OFFSET_EXPRESSION] = (path: AstPath, print: printFn) =>
   concat(["OFFSET", " ", path.call(print, "expr")]);
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[APEX_TYPES.QUERY_OPERATOR] = (childClass: any) => QUERY[childClass];
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+nodeHandler[APEX_TYPES.QUERY_OPERATOR] = (childClass: string) =>
+  QUERY[childClass as keyof typeof QUERY];
 nodeHandler[APEX_TYPES.SOQL_ORDER] = handleOrderOperation;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.SOQL_ORDER_NULL] = handleNullOrderOperation;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.TRACKING_TYPE] = handleTrackingType;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.QUERY_OPTION] = handleQueryOption;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.QUERY_USING_CLAUSE] = handleQueryUsingClause;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.USING_EXPRESSION] = handleUsingExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.UPDATE_STATS_CLAUSE] = handleUpdateStatsClause;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.UPDATE_STATS_OPTION] = handleUpdateStatsOption;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WHERE_CALC_EXPRESSION] = handleWhereCalcExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WHERE_CALC_OPERATOR_PLUS] = () => "+";
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WHERE_CALC_OPERATOR_MINUS] = () => "-";
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-nodeHandler[APEX_TYPES.WHERE_COMPOUND_OPERATOR] = (
-  childClass: keyof typeof QUERY_WHERE,
-) => QUERY_WHERE[childClass];
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+nodeHandler[APEX_TYPES.WHERE_COMPOUND_OPERATOR] = (childClass: string) =>
+  QUERY_WHERE[childClass as keyof typeof QUERY_WHERE];
 nodeHandler[APEX_TYPES.SEARCH_USING_CLAUSE] = (path: AstPath, print: printFn) =>
   concat(["USING", " ", path.call(print, "type")]);
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.USING_TYPE] = handleUsingType;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.BIND_CLAUSE] = handleBindClause;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.BIND_EXPRESSION] = handleBindExpression;
-// @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
 nodeHandler[APEX_TYPES.WITH_IDENTIFIER] = (path: AstPath, print: printFn) =>
   concat(["WITH", " ", path.call(print, "identifier")]);
 
@@ -3127,16 +2954,19 @@ function genericPrint(path: AstPath, options: any, print: printFn) {
     return "";
   }
   if (apexClass in nodeHandler) {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-    return nodeHandler[apexClass](path, print, options);
+    return (nodeHandler[apexClass] as singleNodeHandler)(path, print, options);
   }
   const separatorIndex = apexClass.indexOf("$");
   if (separatorIndex !== -1) {
     const parentClass = apexClass.substring(0, separatorIndex);
     const childClass = apexClass.substring(separatorIndex + 1);
     if (parentClass in nodeHandler) {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      return nodeHandler[parentClass](childClass, path, print, options);
+      return (nodeHandler[parentClass] as childNodeHandler)(
+        childClass,
+        path,
+        print,
+        options,
+      );
     }
   }
   throw new Error(
