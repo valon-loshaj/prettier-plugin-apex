@@ -1,5 +1,7 @@
 import prettier, { AstPath, Doc } from "prettier";
+import { builders } from "prettier/doc";
 import {
+  AnnotatedGenericComment,
   getTrailingComments,
   printComment,
   printDanglingComment,
@@ -24,6 +26,8 @@ import {
   QUERY,
   QUERY_WHERE,
 } from "./constants";
+import jorje from "../vendor/apex-ast-serializer/typings/jorje";
+import Concat = builders.Concat;
 
 const docBuilders = prettier.doc.builders;
 const { align, concat, join, hardline, line, softline, group, indent, dedent } =
@@ -58,11 +62,11 @@ function pushIfExist(
 ): Doc[] {
   if (doc) {
     if (preDocs) {
-      preDocs.forEach((preDoc: any) => parts.push(preDoc));
+      preDocs.forEach((preDoc: Doc) => parts.push(preDoc));
     }
     parts.push(doc);
     if (postDocs) {
-      postDocs.forEach((postDoc: any) => parts.push(postDoc));
+      postDocs.forEach((postDoc: Doc) => parts.push(postDoc));
     }
   }
   return parts;
@@ -411,9 +415,9 @@ function getDanglingCommentDocs(path: AstPath, print: printFn, options: any) {
     return [];
   }
   node.danglingComments = node.comments.filter(
-    (comment: any) => !comment.leading && !comment.trailing,
+    (comment: AnnotatedGenericComment) => !comment.leading && !comment.trailing,
   );
-  const danglingCommentParts: any = [];
+  const danglingCommentParts: Doc[] = [];
   path.each((commentPath: AstPath) => {
     danglingCommentParts.push(printDanglingComment(commentPath, options));
   }, "danglingComments");
@@ -427,10 +431,10 @@ function handleAnonymousBlockUnit(path: AstPath, print: printFn): Doc {
   const parts: Doc[] = [];
   const memberParts = path
     .map(print, "members")
-    .filter((member: any) => member);
+    .filter((member: Doc) => member);
 
   const memberDocs: Doc[] = memberParts.map(
-    (memberDoc: any, index: any, allMemberDocs: any) => {
+    (memberDoc: Doc, index: number, allMemberDocs: Doc[]) => {
       if (index !== allMemberDocs.length - 1) {
         return concat([memberDoc, hardline]);
       }
@@ -477,10 +481,10 @@ function handleTriggerDeclarationUnit(
   parts.push("{");
   const memberParts = path
     .map(print, "members")
-    .filter((member: any) => member);
+    .filter((member: Doc) => member);
 
   const memberDocs: Doc[] = memberParts.map(
-    (memberDoc: any, index: any, allMemberDocs: any) => {
+    (memberDoc: Doc, index: number, allMemberDocs: Doc[]) => {
       if (index !== allMemberDocs.length - 1) {
         return concat([memberDoc, hardline]);
       }
@@ -507,7 +511,7 @@ function handleInterfaceDeclaration(
   const modifierDocs: Doc[] = path.map(print, "modifiers");
   const memberParts = path
     .map(print, "members")
-    .filter((member: any) => member);
+    .filter((member: Doc) => member);
   const danglingCommentDocs: Doc[] = getDanglingCommentDocs(
     path,
     print,
@@ -515,7 +519,7 @@ function handleInterfaceDeclaration(
   );
 
   const memberDocs: Doc[] = memberParts.map(
-    (memberDoc: any, index: any, allMemberDocs: any) => {
+    (memberDoc: Doc, index: number, allMemberDocs: Doc[]) => {
       if (index !== allMemberDocs.length - 1) {
         return concat([memberDoc, hardline]);
       }
@@ -564,7 +568,7 @@ function handleClassDeclaration(
   const modifierDocs: Doc[] = path.map(print, "modifiers");
   const memberParts = path
     .map(print, "members")
-    .filter((member: any) => member);
+    .filter((member: Doc) => member);
   const danglingCommentDocs: Doc[] = getDanglingCommentDocs(
     path,
     print,
@@ -572,7 +576,7 @@ function handleClassDeclaration(
   );
 
   const memberDocs: Doc[] = memberParts.map(
-    (memberDoc: any, index: any, allMemberDocs: any) => {
+    (memberDoc: Doc, index: number, allMemberDocs: Doc[]) => {
       if (index !== allMemberDocs.length - 1) {
         return concat([memberDoc, hardline]);
       }
@@ -620,7 +624,7 @@ function handleClassDeclaration(
 function handleAnnotation(path: AstPath, print: printFn): Doc {
   const node = path.getValue();
   const parts: Doc[] = [];
-  const trailingParts: any = [];
+  const trailingParts: Doc[] = [];
   const parameterParts = [];
   const parameterDocs: Doc[] = path.map(print, "parameters");
   if (node.comments) {
@@ -666,7 +670,7 @@ function handleAnnotationKeyValue(path: AstPath, print: printFn): Doc {
 }
 
 function handleAnnotationValue(
-  childClass: any,
+  childClass: string,
   path: AstPath,
   print: printFn,
 ): Doc {
@@ -904,7 +908,7 @@ function handleEnumDeclaration(
   const memberDocs: Doc[] = path.map(print, "members");
   const danglingCommentDocs = getDanglingCommentDocs(path, print, options);
 
-  const parts: any = [];
+  const parts: Doc[] = [];
   pushIfExist(parts, join("", modifierDocs));
   parts.push("enum");
   parts.push(" ");
@@ -1376,19 +1380,20 @@ function handleNewListInit(path: AstPath, print: printFn): Doc {
   // We use List<Object>(param) otherwise.
   // This should provide compatibility for all known types without knowing
   // if the parameter is a variable (copy constructor) or literal size.
-
+  const node = path.getValue();
   const expressionDoc: Doc = path.call(print, "expr", "value");
   const parts: Doc[] = [];
-  const typePart: any = path.map(print, "types");
+  const typeParts = path.map(print, "types") as Concat[];
   const hasLiteralNumberInitializer =
-    (typePart.group || (typePart.length && typePart[0].parts.length < 4)) &&
-    !Number.isNaN(parseInt(expressionDoc as string, 10));
+    typeParts.length &&
+    typeParts[0].parts.length < 4 &&
+    node.expr?.value?.type?.$ === "INTEGER";
 
   // Type
   if (!hasLiteralNumberInitializer) {
     parts.push("List<");
   }
-  parts.push(join(".", typePart));
+  parts.push(join(".", typeParts));
   if (!hasLiteralNumberInitializer) {
     parts.push(">");
   }
@@ -1486,7 +1491,8 @@ function handleIfElseBlock(path: AstPath, print: printFn): Doc {
   //   b = 2;
   // }
   const ifBlockContainsBlockStatement = node.ifBlocks.map(
-    (ifBlock: any) => ifBlock.stmnt["@class"] === APEX_TYPES.BLOCK_STATEMENT,
+    (ifBlock: jorje.IfBlock) =>
+      ifBlock.stmnt["@class"] === APEX_TYPES.BLOCK_STATEMENT,
   );
 
   ifBlockDocs.forEach((ifBlockDoc: Doc, index: number) => {
@@ -1662,7 +1668,11 @@ function handleFindClause(path: AstPath, print: printFn): Doc {
   return groupConcat(parts);
 }
 
-function handleFindValue(childClass: any, path: AstPath, print: printFn): Doc {
+function handleFindValue(
+  childClass: string,
+  path: AstPath,
+  print: printFn,
+): Doc {
   let doc: Doc;
   switch (childClass) {
     case "FindString":
@@ -1697,7 +1707,7 @@ function handleDivisionClause(path: AstPath, print: printFn): Doc {
 }
 
 function handleDivisionValue(
-  childClass: any,
+  childClass: string,
   path: AstPath,
   print: printFn,
 ): Doc {
@@ -1727,7 +1737,7 @@ function handleSearchWithClause(path: AstPath, print: printFn): Doc {
 }
 
 function handleSearchWithClauseValue(
-  childClass: any,
+  childClass: string,
   path: AstPath,
   print: printFn,
 ): Doc {
@@ -2288,7 +2298,7 @@ function handleOrderByClause(path: AstPath, print: printFn): Doc {
 }
 
 function handleOrderByExpression(
-  childClass: any,
+  childClass: string,
   path: AstPath,
   print: printFn,
 ): Doc {
@@ -2653,7 +2663,7 @@ function handleForCStyleControl(path: AstPath, print: printFn): Doc {
   const conditionDoc: Doc = path.call(print, "condition", "value");
   const controlDoc: Doc = path.call(print, "control", "value");
 
-  const parts: any = [];
+  const parts: Doc[] = [];
   pushIfExist(parts, initsDoc);
   parts.push(";");
   pushIfExist(parts, conditionDoc, null, [line]);
@@ -2664,25 +2674,25 @@ function handleForCStyleControl(path: AstPath, print: printFn): Doc {
 
 function handleForInits(path: AstPath, print: printFn): Doc {
   const typeDoc: Doc = path.call(print, "type", "value");
-  const initDocsParts = path.map(print, "inits");
+  const initDocsParts = path.map(print, "inits") as [Doc, Doc][];
 
   // See the note in handleForInit to see why we have to do this
   // In this situation:
   // for (Integer i; i < 4; i++) {}
   // the second element of initDocParts is null, and so we do not want to add the initialization in
-  const initDocs = initDocsParts.map((initDocParts: any) =>
-    initDocParts[1]
-      ? join(concat([" ", "=", " "]), initDocParts)
-      : initDocParts[0],
+  const initDocs = initDocsParts.map((initDocPart: [Doc, Doc]) =>
+    initDocPart[1]
+      ? join(concat([" ", "=", " "]), initDocPart)
+      : initDocPart[0],
   );
 
-  const parts: any = [];
+  const parts: Doc[] = [];
   pushIfExist(parts, typeDoc, [" "]);
   parts.push(join(concat([",", line]), initDocs));
   return groupIndentConcat(parts);
 }
 
-function handleForInit(path: AstPath, print: printFn): Doc {
+function handleForInit(path: AstPath, print: printFn): Doc[] {
   // This is one of the weird cases that does not really match the way that we print things.
   // ForInit is used by both C style for loop and enhanced for loop, and there's no way to tell
   // which operator we should use for init in this context, for example:
@@ -2760,9 +2770,8 @@ nodeHandler[APEX_TYPES.PROPERTY_GETTER] = handlePropertyGetterSetter("get");
 nodeHandler[APEX_TYPES.PROPERTY_SETTER] = handlePropertyGetterSetter("set");
 nodeHandler[APEX_TYPES.STRUCTURED_VERSION] = handleStructuredVersion;
 nodeHandler[APEX_TYPES.REQUEST_VERSION] = () => "Request";
-(nodeHandler as any).int = (path: AstPath, print: printFn) =>
-  path.call(print, "$");
-(nodeHandler as any).string = (path: AstPath, print: printFn) =>
+nodeHandler.int = (path: AstPath, print: printFn) => path.call(print, "$");
+nodeHandler.string = (path: AstPath, print: printFn) =>
   concat(["'", path.call(print, "$"), "'"]);
 
 // Operator
