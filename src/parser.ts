@@ -12,6 +12,7 @@ import {
   ALLOW_TRAILING_EMPTY_LINE,
   TRAILING_EMPTY_LINE_AFTER_LAST_NODE,
 } from "./constants";
+import jorje from "../vendor/apex-ast-serializer/typings/jorje";
 
 const MAX_BUFFER = 8192 * 8192;
 
@@ -535,7 +536,15 @@ function getEmptyLineLocations(sourceCode: string): number[] {
     );
 }
 
-export default function parse(sourceCode: string, _: any, options: any): any {
+type SerializedAst = {
+  [APEX_TYPES.PARSER_OUTPUT]: jorje.ParserOutput;
+};
+
+export default function parse(
+  sourceCode: string,
+  _: any,
+  options: any,
+): SerializedAst | Record<string, never> {
   const lineIndexes = getLineIndexes(sourceCode);
   let serializedAst;
   if (options.apexStandaloneParser === "built-in") {
@@ -551,26 +560,21 @@ export default function parse(sourceCode: string, _: any, options: any): any {
       options.parser === "apex-anonymous",
     );
   }
-  let ast = {};
   if (serializedAst) {
-    ast = JSON.parse(serializedAst);
+    let ast: SerializedAst = JSON.parse(serializedAst);
     if (
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       ast[APEX_TYPES.PARSER_OUTPUT] &&
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       ast[APEX_TYPES.PARSER_OUTPUT].parseErrors.length > 0
     ) {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       const errors = ast[APEX_TYPES.PARSER_OUTPUT].parseErrors.map(
         (err: any) => `${err.message}. ${err.detailMessage}`,
       );
       throw new Error(errors.join("\r\n"));
     }
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     const commentNodes = ast[APEX_TYPES.PARSER_OUTPUT].hiddenTokenMap
-      .map((item: any) => item[1])
+      .map((item) => item[1])
       .filter(
-        (node: any) =>
+        (node) =>
           node["@class"] === APEX_TYPES.BLOCK_COMMENT ||
           node["@class"] === APEX_TYPES.INLINE_COMMENT,
       );
@@ -579,7 +583,6 @@ export default function parse(sourceCode: string, _: any, options: any): any {
     ast = resolveLineIndexes(ast, lineIndexes);
 
     generateExtraMetadata(ast, getEmptyLineLocations(sourceCode), true);
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     (ast as any).comments = ast[APEX_TYPES.PARSER_OUTPUT].hiddenTokenMap
       .map((token: any) => token[1])
       .filter(
@@ -587,6 +590,7 @@ export default function parse(sourceCode: string, _: any, options: any): any {
           node["@class"] === APEX_TYPES.INLINE_COMMENT ||
           node["@class"] === APEX_TYPES.BLOCK_COMMENT,
       );
+    return ast;
   }
-  return ast;
+  return {};
 }

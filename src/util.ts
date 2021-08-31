@@ -6,7 +6,7 @@ import { accessSync } from "fs";
 import jorje from "../vendor/apex-ast-serializer/typings/jorje";
 import { APEX_TYPES as apexTypes } from "./constants";
 
-export type GenericComment = jorje.BlockComment | jorje.InlineComment;
+export type GenericComment = jorje.HiddenToken;
 
 export function isBinaryish(node: jorje.Expr): boolean {
   return (

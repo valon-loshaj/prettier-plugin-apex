@@ -1,2635 +1,2513 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 2.32.889 on 2021-08-27 18:11:42.
-
-export interface ParserOutput {
-    internalErrors: InternalException[];
-    parseErrors: ParseException[];
-    unit: CompilationUnit;
-    hiddenTokenMap: { [index: string]: HiddenToken };
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.semantic.compiler.parser.ParserOutput";
-}
-
-export interface CompilationUnitBuilder {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.CompilationUnitBuilder";
-}
-
-export interface Identifier extends Locatable {
-    value: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface Identifiers {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.Identifiers";
-}
-
-export interface LocationIdentifier extends Identifier {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.Identifiers$LocationIdentifier";
-}
-
-export interface SyntheticIdentifier extends Identifier {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.Identifiers$SyntheticIdentifier";
-}
-
-export interface IndexLocation extends Location {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.IndexLocation";
-}
-
-export interface JadtTester {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.JadtTester";
-}
-
-export interface Locatable {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface Locatables {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.Locatables";
-}
-
-export interface Location extends Locatable {
-    startIndex: number;
-    column: number;
-    endIndex: number;
-    line: number;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface LocationBlocks {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.LocationBlocks";
-}
-
-export interface Locations {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.Locations";
-}
-
-export interface PositionLocation extends Location {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.PositionLocation";
-}
-
-export interface SwitchTester {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.SwitchTester";
-}
-
-export interface TypeRefBuilder {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.TypeRefBuilder";
-}
-
-export interface AnnotationParameter {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface AnnotationKeyValue extends AnnotationParameter {
-    loc: Location;
-    key: Identifier;
-    value: AnnotationValue;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.AnnotationParameter$AnnotationKeyValue";
-}
-
-export interface AnnotationString extends AnnotationParameter {
-    loc: Location;
-    value: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.AnnotationParameter$AnnotationString";
-}
-
-export interface AnnotationValue {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface FalseAnnotationValue extends AnnotationValue {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.AnnotationValue$FalseAnnotationValue";
-}
-
-export interface StringAnnotationValue extends AnnotationValue {
-    loc: Location;
-    value: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.AnnotationValue$StringAnnotationValue";
-}
-
-export interface TrueAnnotationValue extends AnnotationValue {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.AnnotationValue$TrueAnnotationValue";
-}
-
-export interface BlockMember {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface FieldMember extends BlockMember {
-    variableDecls: VariableDecls;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.BlockMember$FieldMember";
-}
-
-export interface InnerClassMember extends BlockMember {
-    body: ClassDecl;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.BlockMember$InnerClassMember";
-}
-
-export interface InnerEnumMember extends BlockMember {
-    body: EnumDecl;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.BlockMember$InnerEnumMember";
-}
-
-export interface InnerInterfaceMember extends BlockMember {
-    body: InterfaceDecl;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.BlockMember$InnerInterfaceMember";
-}
-
-export interface MethodMember extends BlockMember {
-    methodDecl: MethodDecl;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.BlockMember$MethodMember";
-}
-
-export interface PropertyMember extends BlockMember {
-    propertyDecl: PropertyDecl;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.BlockMember$PropertyMember";
-}
-
-export interface StaticStmntBlockMember extends BlockMember {
-    loc: Location;
-    stmnt: Stmnt;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.BlockMember$StaticStmntBlockMember";
-}
-
-export interface StmntBlockMember extends BlockMember {
-    stmnt: Stmnt;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.BlockMember$StmntBlockMember";
-}
-
-export interface CatchBlock {
-    loc: Location;
-    parameter: ParameterRef;
-    stmnt: Stmnt;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.CatchBlock";
-}
-
-export interface ClassDecl {
-    loc: Location;
-    modifiers: Modifier[];
-    name: Identifier;
-    typeArguments?: Identifier[];
-    members: BlockMember[];
-    superClass?: TypeRef;
-    interfaces: TypeRef[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.ClassDecl";
-}
-
-export interface CompilationUnit {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface AnonymousBlockUnit extends CompilationUnit {
-    members: BlockMember[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.CompilationUnit$AnonymousBlockUnit";
-}
-
-export interface ClassDeclUnit extends CompilationUnit {
-    body: ClassDecl;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.CompilationUnit$ClassDeclUnit";
-}
-
-export interface EnumDeclUnit extends CompilationUnit {
-    body: EnumDecl;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.CompilationUnit$EnumDeclUnit";
-}
-
-export interface InterfaceDeclUnit extends CompilationUnit {
-    body: InterfaceDecl;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.CompilationUnit$InterfaceDeclUnit";
-}
-
-export interface InvalidDeclUnit extends CompilationUnit {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.CompilationUnit$InvalidDeclUnit";
-}
-
-export interface TriggerDeclUnit extends CompilationUnit {
-    loc: Location;
-    name: Identifier;
-    target: Identifier[];
-    isBulk: boolean;
-    usages: TriggerUsage[];
-    members: BlockMember[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.CompilationUnit$TriggerDeclUnit";
-}
-
-export interface ElseBlock {
-    loc: Location;
-    stmnt: Stmnt;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.ElseBlock";
-}
-
-export interface EnumDecl {
-    loc: Location;
-    modifiers: Modifier[];
-    name: Identifier;
-    members: Identifier[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.EnumDecl";
-}
-
-export interface Expr {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface ArrayExpr extends Expr {
-    expr: Expr;
-    index: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$ArrayExpr";
-}
-
-export interface AssignmentExpr extends Expr {
-    left: Expr;
-    op: AssignmentOp;
-    right: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$AssignmentExpr";
-}
-
-export interface BinaryExpr extends Expr {
-    left: Expr;
-    op: BinaryOp;
-    right: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$BinaryExpr";
-}
-
-export interface BooleanExpr extends Expr {
-    left: Expr;
-    op: BooleanOp;
-    right: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$BooleanExpr";
-}
-
-export interface CastExpr extends Expr {
-    loc: Location;
-    expr: Expr;
-    type: TypeRef;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$CastExpr";
-}
-
-export interface ClassRefExpr extends Expr {
-    loc: Location;
-    type: TypeRef;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$ClassRefExpr";
-}
-
-export interface InstanceOf extends Expr {
-    expr: Expr;
-    type: TypeRef;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$InstanceOf";
-}
-
-export interface JavaMethodCallExpr extends Expr {
-    loc: Location;
-    names: Identifier[];
-    inputParameters: Expr[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$JavaMethodCallExpr";
-}
-
-export interface JavaVariableExpr extends Expr {
-    loc: Location;
-    names: Identifier[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$JavaVariableExpr";
-}
-
-export interface ExprLiteralExpr extends Expr {
-    loc: Location;
-    type: LiteralType;
-    literal: any;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$LiteralExpr";
-}
-
-export interface MethodCallExpr extends Expr {
-    dottedExpr?: Expr;
-    isSafeNav: boolean;
-    names: Identifier[];
-    inputParameters: Expr[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$MethodCallExpr";
-}
-
-export interface NestedExpr extends Expr {
-    expr: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$NestedExpr";
-}
-
-export interface NewExpr extends Expr {
-    loc: Location;
-    creator: NewObject;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$NewExpr";
-}
-
-export interface PackageVersionExpr extends Expr {
-    loc: Location;
-    version: VersionRef;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$PackageVersionExpr";
-}
-
-export interface PostfixExpr extends Expr {
-    loc: Location;
-    expr: Expr;
-    op: PostfixOp;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$PostfixExpr";
-}
-
-export interface PrefixExpr extends Expr {
-    loc: Location;
-    expr: Expr;
-    op: PrefixOp;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$PrefixExpr";
-}
-
-export interface SoqlExpr extends Expr {
-    loc: Location;
-    rawQuery: string;
-    query: Query;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$SoqlExpr";
-}
-
-export interface SoslExpr extends Expr {
-    loc: Location;
-    rawQuery: string;
-    search: Search;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$SoslExpr";
-}
-
-export interface SuperMethodCallExpr extends Expr {
-    loc: Location;
-    inputParameters: Expr[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$SuperMethodCallExpr";
-}
-
-export interface SuperVariableExpr extends Expr {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$SuperVariableExpr";
-}
-
-export interface TernaryExpr extends Expr {
-    condition: Expr;
-    trueExpr: Expr;
-    falseExpr: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$TernaryExpr";
-}
-
-export interface ThisMethodCallExpr extends Expr {
-    loc: Location;
-    inputParameters: Expr[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$ThisMethodCallExpr";
-}
-
-export interface ThisVariableExpr extends Expr {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$ThisVariableExpr";
-}
-
-export interface TriggerVariableExpr extends Expr {
-    loc: Location;
-    variable: Identifier;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$TriggerVariableExpr";
-}
-
-export interface VariableExpr extends Expr {
-    dottedExpr?: Expr;
-    isSafeNav: boolean;
-    names: Identifier[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Expr$VariableExpr";
-}
-
-export interface FinallyBlock {
-    loc: Location;
-    stmnt: Stmnt;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.FinallyBlock";
-}
-
-export interface ForControl {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface CStyleForControl extends ForControl {
-    inits?: ForInits;
-    condition?: Expr;
-    control?: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.ForControl$CStyleForControl";
-}
-
-export interface EnhancedForControl extends ForControl {
-    type: TypeRef;
-    init: ForInit;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.ForControl$EnhancedForControl";
-}
-
-export interface ForInit {
-    name: Identifier[];
-    expr?: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.ForInit";
-}
-
-export interface ForInits {
-    type?: TypeRef;
-    inits: ForInit[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.ForInits";
-}
-
-export interface IfBlock {
-    loc: Location;
-    expr: Expr;
-    stmnt: Stmnt;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.IfBlock";
-}
-
-export interface InterfaceDecl {
-    loc: Location;
-    modifiers: Modifier[];
-    name: Identifier;
-    typeArguments?: Identifier[];
-    members: BlockMember[];
-    superInterface?: TypeRef;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.InterfaceDecl";
-}
-
-export interface MapLiteralKeyValue {
-    key: Expr;
-    value: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.MapLiteralKeyValue";
-}
-
-export interface MethodDecl {
-    modifiers: Modifier[];
-    type?: TypeRef;
-    name: Identifier;
-    parameters: ParameterRef[];
-    stmnt?: Stmnt;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.MethodDecl";
-}
-
-export interface Modifier {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
+// Generated using typescript-generator version 2.32.889 on 2021-08-30 20:32:34.
 
 export interface AbstractModifier extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$AbstractModifier";
     loc: Location;
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$AbstractModifier";
 }
 
 export interface Annotation extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$Annotation";
     loc: Location;
     name: Identifier;
     parameters: AnnotationParameter[];
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$Annotation";
 }
 
-export interface FinalModifier extends Modifier {
+export interface AnnotationKeyValue extends AnnotationParameter {
+    "@class": "apex.jorje.data.ast.AnnotationParameter$AnnotationKeyValue";
+    key: Identifier;
     loc: Location;
+    value: AnnotationValue;
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$FinalModifier";
 }
 
-export interface GlobalModifier extends Modifier {
+export interface AnnotationParameter {
+    "@class": "apex.jorje.data.ast.AnnotationParameter$AnnotationKeyValue" | "apex.jorje.data.ast.AnnotationParameter$AnnotationString";
+}
+
+export interface AnnotationString extends AnnotationParameter {
+    "@class": "apex.jorje.data.ast.AnnotationParameter$AnnotationString";
     loc: Location;
+    value: string;
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$GlobalModifier";
 }
 
-export interface InheritedSharingModifier extends Modifier {
-    loc: Location;
+export interface AnnotationValue {
+    "@class": "apex.jorje.data.ast.AnnotationValue$FalseAnnotationValue" | "apex.jorje.data.ast.AnnotationValue$StringAnnotationValue" | "apex.jorje.data.ast.AnnotationValue$TrueAnnotationValue";
+}
+
+export interface AnonymousBlockUnit extends CompilationUnit {
+    "@class": "apex.jorje.data.ast.CompilationUnit$AnonymousBlockUnit";
+    members: BlockMember[];
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$InheritedSharingModifier";
 }
 
-export interface OverrideModifier extends Modifier {
-    loc: Location;
+export interface ApexExpr extends QueryExpr {
+    "@class": "apex.jorje.data.soql.QueryExpr$ApexExpr";
+    expr: ColonExpr;
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$OverrideModifier";
 }
 
-export interface PrivateModifier extends Modifier {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$PrivateModifier";
-}
-
-export interface ProtectedModifier extends Modifier {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$ProtectedModifier";
-}
-
-export interface PublicModifier extends Modifier {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$PublicModifier";
-}
-
-export interface StaticModifier extends Modifier {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$StaticModifier";
-}
-
-export interface TestMethodModifier extends Modifier {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$TestMethodModifier";
-}
-
-export interface TransientModifier extends Modifier {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$TransientModifier";
-}
-
-export interface VirtualModifier extends Modifier {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$VirtualModifier";
-}
-
-export interface WebServiceModifier extends Modifier {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$WebServiceModifier";
-}
-
-export interface WithSharingModifier extends Modifier {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$WithSharingModifier";
-}
-
-export interface WithoutSharingModifier extends Modifier {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Modifier$WithoutSharingModifier";
-}
-
-export interface NameValueParameter {
-    name: Identifier;
-    value: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.NameValueParameter";
-}
-
-export interface NewObject {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface NewKeyValue extends NewObject {
-    type: TypeRef;
-    keyValues: NameValueParameter[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.NewObject$NewKeyValue";
-}
-
-export interface NewListInit extends NewObject {
-    types: TypeRef[];
-    expr?: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.NewObject$NewListInit";
-}
-
-export interface NewListLiteral extends NewObject {
-    types: TypeRef[];
-    values: Expr[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.NewObject$NewListLiteral";
-}
-
-export interface NewMapInit extends NewObject {
-    types: TypeRef[];
-    expr?: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.NewObject$NewMapInit";
-}
-
-export interface NewMapLiteral extends NewObject {
-    types: TypeRef[];
-    pairs: MapLiteralKeyValue[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.NewObject$NewMapLiteral";
-}
-
-export interface NewSetInit extends NewObject {
-    types: TypeRef[];
-    expr?: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.NewObject$NewSetInit";
-}
-
-export interface NewSetLiteral extends NewObject {
-    types: TypeRef[];
-    values: Expr[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.NewObject$NewSetLiteral";
-}
-
-export interface NewStandard extends NewObject {
-    type: TypeRef;
-    inputParameters: Expr[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.NewObject$NewStandard";
-}
-
-export interface ParameterRef {
-    modifiers: Modifier[];
-    name: Identifier;
-    type: TypeRef;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface ParameterRefs {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.ParameterRefs";
-}
-
-export interface EmptyModifierParameterRef extends ParameterRef {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.ParameterRefs$EmptyModifierParameterRef";
-}
-
-export interface ModifierParameterRef extends ParameterRef {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.ParameterRefs$ModifierParameterRef";
-}
-
-export interface PrinterBlocks {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.PrinterBlocks";
-}
-
-export interface PropertyDecl {
-    modifiers: Modifier[];
-    type: TypeRef;
-    name: Identifier;
-    getter?: PropertyGetter;
-    setter?: PropertySetter;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.PropertyDecl";
-}
-
-export interface PropertyGetter {
-    loc: Location;
-    modifier?: Modifier;
-    stmnt?: Stmnt;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.PropertyGetter";
-}
-
-export interface PropertySetter {
-    loc: Location;
-    modifier?: Modifier;
-    stmnt?: Stmnt;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.PropertySetter";
-}
-
-export interface Stmnt {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface BlockStmnt extends Stmnt {
-    loc: Location;
-    stmnts: Stmnt[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$BlockStmnt";
-}
-
-export interface BreakStmnt extends Stmnt {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$BreakStmnt";
-}
-
-export interface ContinueStmnt extends Stmnt {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$ContinueStmnt";
-}
-
-export interface DmlDeleteStmnt extends Stmnt {
-    loc: Location;
+export interface ArrayExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$ArrayExpr";
     expr: Expr;
+    index: Expr;
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$DmlDeleteStmnt";
-}
-
-export interface DmlInsertStmnt extends Stmnt {
-    loc: Location;
-    expr: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$DmlInsertStmnt";
-}
-
-export interface DmlMergeStmnt extends Stmnt {
-    loc: Location;
-    expr1: Expr;
-    expr2: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$DmlMergeStmnt";
-}
-
-export interface DmlUndeleteStmnt extends Stmnt {
-    loc: Location;
-    expr: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$DmlUndeleteStmnt";
-}
-
-export interface DmlUpdateStmnt extends Stmnt {
-    loc: Location;
-    expr: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$DmlUpdateStmnt";
-}
-
-export interface DmlUpsertStmnt extends Stmnt {
-    loc: Location;
-    expr: Expr;
-    id?: FieldIdentifier;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$DmlUpsertStmnt";
-}
-
-export interface DoLoop extends Stmnt {
-    loc: Location;
-    stmnt: Stmnt;
-    condition: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$DoLoop";
-}
-
-export interface ExpressionStmnt extends Stmnt {
-    loc: Location;
-    expr: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$ExpressionStmnt";
-}
-
-export interface ForLoop extends Stmnt {
-    loc: Location;
-    forControl: ForControl;
-    stmnt?: Stmnt;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$ForLoop";
-}
-
-export interface IfElseBlock extends Stmnt {
-    ifBlocks: IfBlock[];
-    elseBlock?: ElseBlock;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$IfElseBlock";
-}
-
-export interface ReturnStmnt extends Stmnt {
-    loc: Location;
-    expr?: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$ReturnStmnt";
-}
-
-export interface RunAsBlock extends Stmnt {
-    loc: Location;
-    inputParameters: Expr[];
-    stmnt: Stmnt;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$RunAsBlock";
-}
-
-export interface SwitchStmnt extends Stmnt {
-    loc: Location;
-    expr: Expr;
-    whenBlocks: WhenBlock[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$SwitchStmnt";
-}
-
-export interface ThrowStmnt extends Stmnt {
-    loc: Location;
-    expr: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$ThrowStmnt";
-}
-
-export interface TryCatchFinallyBlock extends Stmnt {
-    loc: Location;
-    tryBlock: Stmnt;
-    catchBlocks: CatchBlock[];
-    finallyBlock?: FinallyBlock;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$TryCatchFinallyBlock";
-}
-
-export interface VariableDeclStmnt extends Stmnt {
-    variableDecls: VariableDecls;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$VariableDeclStmnt";
-}
-
-export interface WhileLoop extends Stmnt {
-    loc: Location;
-    condition: Expr;
-    stmnt?: Stmnt;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.Stmnt$WhileLoop";
-}
-
-export interface TypeRef {
-    typeArguments: TypeRef[];
-    names: Identifier[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface TypeRefs {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.TypeRefs";
 }
 
 export interface ArrayTypeRef extends TypeRef {
+    "@class": "apex.jorje.data.ast.TypeRefs$ArrayTypeRef";
     heldType: TypeRef;
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.ast.TypeRefs$ArrayTypeRef";
 }
 
-export interface ClassTypeRef extends TypeRef {
+export interface AssignmentExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$AssignmentExpr";
+    left: Expr;
+    op: AssignmentOp;
+    right: Expr;
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.ast.TypeRefs$ClassTypeRef";
 }
 
-export interface JavaTypeRef extends TypeRef {
+export interface BinaryExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$BinaryExpr";
+    left: Expr;
+    op: BinaryOp;
+    right: Expr;
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.ast.TypeRefs$JavaTypeRef";
-}
-
-export interface VariableDecl {
-    name: Identifier;
-    assignment?: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.VariableDecl";
-}
-
-export interface VariableDecls {
-    modifiers: Modifier[];
-    type: TypeRef;
-    decls: VariableDecl[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.VariableDecls";
-}
-
-export interface VersionRef {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface RequestVersion extends VersionRef {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.VersionRef$RequestVersion";
-}
-
-export interface StructuredVersion extends VersionRef {
-    major: number;
-    minor: number;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.VersionRef$StructuredVersion";
-}
-
-export interface WhenBlock {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface ElseWhen extends WhenBlock {
-    stmnt: Stmnt;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.WhenBlock$ElseWhen";
-}
-
-export interface TypeWhen extends WhenBlock {
-    typeRef: TypeRef;
-    name: Identifier;
-    stmnt: Stmnt;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.WhenBlock$TypeWhen";
-}
-
-export interface ValueWhen extends WhenBlock {
-    whenCases: WhenCase[];
-    stmnt: Stmnt;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.WhenBlock$ValueWhen";
-}
-
-export interface WhenCase {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface EnumCase extends WhenCase {
-    identifiers: Identifier[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.WhenCase$EnumCase";
-}
-
-export interface LiteralCase extends WhenCase {
-    expr: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.ast.WhenCase$LiteralCase";
-}
-
-export interface LexicalError {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface InvalidControlChar extends LexicalError {
-    loc: Location;
-    character: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.LexicalError$InvalidControlChar";
-}
-
-export interface InvalidDate extends LexicalError {
-    loc: Location;
-    date: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.LexicalError$InvalidDate";
-}
-
-export interface InvalidDateTime extends LexicalError {
-    loc: Location;
-    dateTime: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.LexicalError$InvalidDateTime";
-}
-
-export interface InvalidIdentifier extends LexicalError {
-    loc: Location;
-    identifier: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.LexicalError$InvalidIdentifier";
-}
-
-export interface InvalidSymbol extends LexicalError {
-    loc: Location;
-    symbol: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.LexicalError$InvalidSymbol";
-}
-
-export interface InvalidTime extends LexicalError {
-    loc: Location;
-    time: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.LexicalError$InvalidTime";
-}
-
-export interface SymbolInUnexpectedSet extends LexicalError {
-    loc: Location;
-    found: string;
-    unexpected: string[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.LexicalError$SymbolInUnexpectedSet";
-}
-
-export interface SymbolNotInExpectedSet extends LexicalError {
-    loc: Location;
-    found: string;
-    expected: string[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.LexicalError$SymbolNotInExpectedSet";
-}
-
-export interface SymbolNotInRange extends LexicalError {
-    loc: Location;
-    found: string;
-    begin: string;
-    end: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.LexicalError$SymbolNotInRange";
-}
-
-export interface UnexpectedLexicalError extends LexicalError {
-    loc: Location;
-    message: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.LexicalError$UnexpectedLexicalError";
-}
-
-export interface UnexpectedSymbol extends LexicalError {
-    loc: Location;
-    found: string;
-    expected: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.LexicalError$UnexpectedSymbol";
-}
-
-export interface UnrecognizedSymbol extends LexicalError {
-    loc: Location;
-    symbol: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.LexicalError$UnrecognizedSymbol";
-}
-
-export interface UnterminatedComment extends LexicalError {
-    loc: Location;
-    closeComment: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.LexicalError$UnterminatedComment";
-}
-
-export interface UnterminatedString extends LexicalError {
-    loc: Location;
-    quote: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.LexicalError$UnterminatedString";
-}
-
-export interface SyntaxError {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface IllegalDecimalLiteral extends SyntaxError {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.SyntaxError$IllegalDecimalLiteral";
-}
-
-export interface IllegalDoubleLiteral extends SyntaxError {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.SyntaxError$IllegalDoubleLiteral";
-}
-
-export interface IllegalIntegerLiteral extends SyntaxError {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.SyntaxError$IllegalIntegerLiteral";
-}
-
-export interface IllegalLongLiteral extends SyntaxError {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.SyntaxError$IllegalLongLiteral";
-}
-
-export interface IllegalStringLiteral extends SyntaxError {
-    loc: Location;
-    message: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.SyntaxError$IllegalStringLiteral";
-}
-
-export interface MismatchedSyntax extends SyntaxError {
-    loc: Location;
-    actual: string;
-    expected: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.SyntaxError$MismatchedSyntax";
-}
-
-export interface MissingSyntax extends SyntaxError {
-    loc: Location;
-    actual: string;
-    expected: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.SyntaxError$MissingSyntax";
-}
-
-export interface UnexpectedEof extends SyntaxError {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.SyntaxError$UnexpectedEof";
-}
-
-export interface UnexpectedSyntaxError extends SyntaxError {
-    loc: Location;
-    message: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.SyntaxError$UnexpectedSyntaxError";
-}
-
-export interface UnexpectedToken extends SyntaxError {
-    loc: Location;
-    token: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.SyntaxError$UnexpectedToken";
-}
-
-export interface UnmatchedSyntax extends SyntaxError {
-    loc: Location;
-    actual: string;
-    expected: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.SyntaxError$UnmatchedSyntax";
-}
-
-export interface UserError {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface Lexical extends UserError {
-    error: LexicalError;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.UserError$Lexical";
-}
-
-export interface Syntax extends UserError {
-    error: SyntaxError;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.errors.UserError$Syntax";
 }
 
 export interface BindClause {
-    loc: Location;
+    "@class": "apex.jorje.data.soql.BindClause";
     exprs: BindExpr[];
+    loc: Location;
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.soql.BindClause";
 }
 
 export interface BindExpr {
+    "@class": "apex.jorje.data.soql.BindExpr";
     field: FieldIdentifier;
     value: QueryLiteral;
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.soql.BindExpr";
 }
 
-export interface CaseExpr {
-    loc: Location;
-    op: CaseOp;
-    whenBranches: WhenExpr[];
-    elseBranch?: ElseExpr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.CaseExpr";
-}
-
-export interface CaseOp {
-    identifier: FieldIdentifier;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.CaseOp";
-}
-
-export interface ColonExpr {
-    loc: Location;
-    expr: Expr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.ColonExpr";
-}
-
-export interface DataCategory {
-    type: FieldIdentifier;
-    op: DataCategoryOperator;
-    categories: FieldIdentifier[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.DataCategory";
-}
-
-export interface DataCategoryOperator {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface DataCategoryAbove extends DataCategoryOperator {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.DataCategoryOperator$DataCategoryAbove";
-}
-
-export interface DataCategoryAboveOrBelow extends DataCategoryOperator {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.DataCategoryOperator$DataCategoryAboveOrBelow";
-}
-
-export interface DataCategoryAt extends DataCategoryOperator {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.DataCategoryOperator$DataCategoryAt";
-}
-
-export interface DataCategoryBelow extends DataCategoryOperator {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.DataCategoryOperator$DataCategoryBelow";
-}
-
-export interface DistanceFunctionExpr {
-    loc: Location;
-    field: FieldIdentifier;
-    location: Geolocation;
-    unit: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.DistanceFunctionExpr";
-}
-
-export interface ElseExpr {
-    loc: Location;
-    identifiers: FieldIdentifier[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.ElseExpr";
-}
-
-export interface Field {
-    field: FieldIdentifier;
-    function1?: Identifier;
-    function2?: Identifier;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.Field";
-}
-
-export interface FieldIdentifier {
-    entity?: FieldIdentifier;
-    field: Identifier;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.FieldIdentifier";
-}
-
-export interface FromClause {
-    loc: Location;
-    exprs: FromExpr[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.FromClause";
-}
-
-export interface FromExpr {
-    table: FieldIdentifier;
-    alias?: Identifier;
-    using?: QueryUsingClause;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.FromExpr";
-}
-
-export interface Geolocation {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface GeolocationExpr extends Geolocation {
-    expr: ColonExpr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.Geolocation$GeolocationExpr";
-}
-
-export interface GeolocationLiteral extends Geolocation {
-    latitude: NumberClause;
-    longitude: NumberClause;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.Geolocation$GeolocationLiteral";
-}
-
-export interface GroupByClause {
-    loc: Location;
-    type?: GroupByType;
-    exprs: GroupByExpr[];
-    having?: HavingClause;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.GroupByClause";
-}
-
-export interface GroupByExpr {
-    field: Field;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.GroupByExpr";
-}
-
-export interface GroupByType {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface GroupByCube extends GroupByType {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.GroupByType$GroupByCube";
-}
-
-export interface GroupByRollUp extends GroupByType {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.GroupByType$GroupByRollUp";
-}
-
-export interface HavingClause {
-    loc: Location;
-    expr: WhereExpr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.HavingClause";
-}
-
-export interface LimitClause {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface LimitExpr extends LimitClause {
-    loc: Location;
-    expr: ColonExpr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.LimitClause$LimitExpr";
-}
-
-export interface LimitValue extends LimitClause {
-    loc: Location;
-    i: number;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.LimitClause$LimitValue";
-}
-
-export interface NumberClause {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface NumberExpr extends NumberClause {
-    expr: ColonExpr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.NumberClause$NumberExpr";
-}
-
-export interface NumberLiteral extends NumberClause {
-    number: number;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.NumberClause$NumberLiteral";
-}
-
-export interface OffsetClause {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface OffsetExpr extends OffsetClause {
-    loc: Location;
-    expr: ColonExpr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.OffsetClause$OffsetExpr";
-}
-
-export interface OffsetValue extends OffsetClause {
-    loc: Location;
-    i: number;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.OffsetClause$OffsetValue";
-}
-
-export interface Order {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface OrderAsc extends Order {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.Order$OrderAsc";
-}
-
-export interface OrderDesc extends Order {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.Order$OrderDesc";
-}
-
-export interface OrderByClause {
-    loc: Location;
-    exprs: OrderByExpr[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.OrderByClause";
-}
-
-export interface OrderByExpr {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface OrderByDistance extends OrderByExpr {
-    distance: DistanceFunctionExpr;
-    order: Order;
-    nullOrder: OrderNull;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.OrderByExpr$OrderByDistance";
-}
-
-export interface OrderByValue extends OrderByExpr {
-    field: Field;
-    order: Order;
-    nullOrder: OrderNull;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.OrderByExpr$OrderByValue";
-}
-
-export interface OrderNull {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface OrderNullFirst extends OrderNull {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.OrderNull$OrderNullFirst";
-}
-
-export interface OrderNullLast extends OrderNull {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.OrderNull$OrderNullLast";
-}
-
-export interface Query {
-    select: SelectClause;
-    from: FromClause;
-    where?: WhereClause;
-    with?: WithClause;
-    withIdentifiers: WithIdentifierClause[];
-    groupBy?: GroupByClause;
-    orderBy?: OrderByClause;
-    limit?: LimitClause;
-    offset?: OffsetClause;
-    bind?: BindClause;
-    tracking?: TrackingType;
-    updateStats?: UpdateStatsClause;
-    options?: QueryOption;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.Query";
-}
-
-export interface QueryExpr {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface ApexExpr extends QueryExpr {
-    expr: ColonExpr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryExpr$ApexExpr";
-}
-
-export interface QueryExprLiteralExpr extends QueryExpr {
-    literal: QueryLiteral;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryExpr$LiteralExpr";
-}
-
-export interface QueryLiteral {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface QueryDate extends QueryLiteral {
-    loc: Location;
-    literal: Date;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryLiteral$QueryDate";
-}
-
-export interface QueryDateFormula extends QueryLiteral {
-    loc: Location;
-    dateFormula: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryLiteral$QueryDateFormula";
-}
-
-export interface QueryDateTime extends QueryLiteral {
-    loc: Location;
-    literal: Date;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryLiteral$QueryDateTime";
-}
-
-export interface QueryFalse extends QueryLiteral {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryLiteral$QueryFalse";
-}
-
-export interface QueryMultiCurrency extends QueryLiteral {
-    loc: Location;
-    literal: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryLiteral$QueryMultiCurrency";
-}
-
-export interface QueryNull extends QueryLiteral {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryLiteral$QueryNull";
-}
-
-export interface QueryNumber extends QueryLiteral {
-    loc: Location;
-    literal: number;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryLiteral$QueryNumber";
-}
-
-export interface QueryString extends QueryLiteral {
-    loc: Location;
-    literal: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryLiteral$QueryString";
-}
-
-export interface QueryTime extends QueryLiteral {
-    loc: Location;
-    literal: Date;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryLiteral$QueryTime";
-}
-
-export interface QueryTrue extends QueryLiteral {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryLiteral$QueryTrue";
-}
-
-export interface QueryOp {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface QueryDoubleEqual extends QueryOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOp$QueryDoubleEqual";
-}
-
-export interface QueryEqual extends QueryOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOp$QueryEqual";
-}
-
-export interface QueryExcludes extends QueryOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOp$QueryExcludes";
-}
-
-export interface QueryGreaterThan extends QueryOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOp$QueryGreaterThan";
-}
-
-export interface QueryGreaterThanEqual extends QueryOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOp$QueryGreaterThanEqual";
-}
-
-export interface QueryIn extends QueryOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOp$QueryIn";
-}
-
-export interface QueryIncludes extends QueryOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOp$QueryIncludes";
-}
-
-export interface QueryLessThan extends QueryOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOp$QueryLessThan";
-}
-
-export interface QueryLessThanEqual extends QueryOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOp$QueryLessThanEqual";
-}
-
-export interface QueryLike extends QueryOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOp$QueryLike";
-}
-
-export interface QueryNotEqual extends QueryOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOp$QueryNotEqual";
-}
-
-export interface QueryNotIn extends QueryOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOp$QueryNotIn";
-}
-
-export interface QueryNotTripleEqual extends QueryOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOp$QueryNotTripleEqual";
-}
-
-export interface QueryTripleEqual extends QueryOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOp$QueryTripleEqual";
-}
-
-export interface QueryOption {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface IncludeDeleted extends QueryOption {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOption$IncludeDeleted";
-}
-
-export interface LockRows extends QueryOption {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryOption$LockRows";
-}
-
-export interface QueryUsingClause {
-    loc: Location;
-    exprs: UsingExpr[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.QueryUsingClause";
-}
-
-export interface SelectClause {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface SelectColumnClause extends SelectClause {
-    loc: Location;
-    exprs: SelectExpr[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.SelectClause$SelectColumnClause";
-}
-
-export interface SelectCountClause extends SelectClause {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.SelectClause$SelectCountClause";
-}
-
-export interface SelectExpr {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface SelectCaseExpr extends SelectExpr {
-    expr: CaseExpr;
-    alias?: Identifier;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.SelectExpr$SelectCaseExpr";
-}
-
-export interface SelectColumnExpr extends SelectExpr {
-    field: Field;
-    alias?: Identifier;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.SelectExpr$SelectColumnExpr";
-}
-
-export interface SelectDistanceExpr extends SelectExpr {
-    expr: DistanceFunctionExpr;
-    alias?: Identifier;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.SelectExpr$SelectDistanceExpr";
-}
-
-export interface SelectInnerQuery extends SelectExpr {
-    query: Query;
-    alias?: Identifier;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.SelectExpr$SelectInnerQuery";
-}
-
-export interface TrackingType {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface ForReference extends TrackingType {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.TrackingType$ForReference";
-}
-
-export interface ForView extends TrackingType {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.TrackingType$ForView";
-}
-
-export interface UpdateStatsClause {
-    loc: Location;
-    options: UpdateStatsOption[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.UpdateStatsClause";
-}
-
-export interface UpdateStatsOption {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface UpdateTracking extends UpdateStatsOption {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.UpdateStatsOption$UpdateTracking";
-}
-
-export interface UpdateViewStat extends UpdateStatsOption {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.UpdateStatsOption$UpdateViewStat";
-}
-
-export interface UsingExpr {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface Using extends UsingExpr {
-    name: Identifier;
-    field: Identifier;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.UsingExpr$Using";
-}
-
-export interface UsingEquals extends UsingExpr {
-    name: Identifier;
-    field: Identifier;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.UsingExpr$UsingEquals";
-}
-
-export interface UsingId extends UsingExpr {
-    name: Identifier;
-    id: Identifier;
-    field: Identifier;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.UsingExpr$UsingId";
-}
-
-export interface WhenExpr {
-    loc: Location;
-    op: WhenOp;
-    identifiers: FieldIdentifier[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WhenExpr";
-}
-
-export interface WhenOp {
-    identifier: Identifier;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WhenOp";
-}
-
-export interface WhereCalcOp {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface WhereCalcMinus extends WhereCalcOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WhereCalcOp$WhereCalcMinus";
-}
-
-export interface WhereCalcPlus extends WhereCalcOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WhereCalcOp$WhereCalcPlus";
-}
-
-export interface WhereClause {
-    loc: Location;
-    expr: WhereExpr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WhereClause";
-}
-
-export interface WhereCompoundOp {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface QueryAnd extends WhereCompoundOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WhereCompoundOp$QueryAnd";
-}
-
-export interface QueryOr extends WhereCompoundOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WhereCompoundOp$QueryOr";
-}
-
-export interface WhereExpr {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface WhereCalcExpr extends WhereExpr {
-    field1: FieldIdentifier;
-    calc: WhereCalcOp;
-    field2: FieldIdentifier;
-    op: QueryOp;
-    expr: QueryExpr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WhereExpr$WhereCalcExpr";
-}
-
-export interface WhereCompoundExpr extends WhereExpr {
-    op: WhereCompoundOp;
-    expr: WhereExpr[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WhereExpr$WhereCompoundExpr";
-}
-
-export interface WhereDistanceExpr extends WhereExpr {
-    distance: DistanceFunctionExpr;
-    op: QueryOp;
-    expr: QueryExpr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WhereExpr$WhereDistanceExpr";
-}
-
-export interface WhereInnerExpr extends WhereExpr {
-    field: Field;
-    op: QueryOp;
-    inner: Query;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WhereExpr$WhereInnerExpr";
-}
-
-export interface WhereOpExpr extends WhereExpr {
-    field: Field;
-    op: QueryOp;
-    expr: QueryExpr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WhereExpr$WhereOpExpr";
-}
-
-export interface WhereOpExprs extends WhereExpr {
-    field: Field;
-    op: QueryOp;
-    expr: QueryExpr[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WhereExpr$WhereOpExprs";
-}
-
-export interface WhereUnaryExpr extends WhereExpr {
-    op: WhereUnaryOp;
-    expr: WhereExpr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WhereExpr$WhereUnaryExpr";
-}
-
-export interface WhereUnaryOp {
-    loc: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WhereUnaryOp";
-}
-
-export interface WithClause {
+export interface BlockComment extends HiddenToken {
+    "@class": "apex.jorje.parser.impl.HiddenTokens$BlockComment";
     "@id"?: string;
     "@reference"?: string;
-    "@class"?: string;
 }
 
-export interface WithDataCategories extends WithClause {
-    loc: Location;
-    categories: DataCategory[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WithClause$WithDataCategories";
+export interface BlockMember {
+    "@class": "apex.jorje.data.ast.BlockMember$FieldMember" | "apex.jorje.data.ast.BlockMember$InnerClassMember" | "apex.jorje.data.ast.BlockMember$InnerEnumMember" | "apex.jorje.data.ast.BlockMember$InnerInterfaceMember" | "apex.jorje.data.ast.BlockMember$MethodMember" | "apex.jorje.data.ast.BlockMember$PropertyMember" | "apex.jorje.data.ast.BlockMember$StaticStmntBlockMember" | "apex.jorje.data.ast.BlockMember$StmntBlockMember";
 }
 
-export interface WithValue extends WithClause {
+export interface BlockStmnt extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$BlockStmnt";
     loc: Location;
-    name: FieldIdentifier;
-    expr: QueryExpr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WithClause$WithValue";
-}
-
-export interface WithIdentifierClause {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface WithIdentifier extends WithIdentifierClause {
-    identifier: Identifier;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WithIdentifierClause$WithIdentifier";
-}
-
-export interface WithIdentifierTuple extends WithIdentifierClause {
-    identifier: Identifier;
-    keyValues: WithKeyValue[];
+    stmnts: Stmnt[];
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WithIdentifierClause$WithIdentifierTuple";
 }
 
-export interface WithKeyValue {
+export interface BooleanExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$BooleanExpr";
+    left: Expr;
+    op: BooleanOp;
+    right: Expr;
     "@id"?: string;
     "@reference"?: string;
-    "@class"?: string;
 }
 
 export interface BooleanKeyValue extends WithKeyValue {
+    "@class": "apex.jorje.data.soql.WithKeyValue$BooleanKeyValue";
     identifier: Identifier;
     value: boolean;
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WithKeyValue$BooleanKeyValue";
 }
 
-export interface NumberKeyValue extends WithKeyValue {
-    identifier: Identifier;
-    value: number;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WithKeyValue$NumberKeyValue";
-}
-
-export interface StringKeyValue extends WithKeyValue {
-    identifier: Identifier;
-    value: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.soql.WithKeyValue$StringKeyValue";
-}
-
-export interface DivisionValue {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface DivisionExpr extends DivisionValue {
-    expr: ColonExpr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.DivisionValue$DivisionExpr";
-}
-
-export interface DivisionLiteral extends DivisionValue {
+export interface BreakStmnt extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$BreakStmnt";
     loc: Location;
-    literal: string;
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.DivisionValue$DivisionLiteral";
 }
 
-export interface FindClause {
+export interface CStyleForControl extends ForControl {
+    "@class": "apex.jorje.data.ast.ForControl$CStyleForControl";
+    condition?: Expr;
+    control?: Expr;
+    inits?: ForInits;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface CaseExpr {
+    "@class": "apex.jorje.data.soql.CaseExpr";
+    elseBranch?: ElseExpr;
     loc: Location;
-    search: FindValue;
+    op: CaseOp;
+    whenBranches: WhenExpr[];
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.FindClause";
 }
 
-export interface FindValue {
+export interface CaseOp {
+    "@class": "apex.jorje.data.soql.CaseOp";
+    identifier: FieldIdentifier;
     "@id"?: string;
     "@reference"?: string;
-    "@class"?: string;
 }
 
-export interface FindExpr extends FindValue {
-    expr: ColonExpr;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.FindValue$FindExpr";
-}
-
-export interface FindString extends FindValue {
-    value: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.FindValue$FindString";
-}
-
-export interface InClause {
+export interface CastExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$CastExpr";
+    expr: Expr;
     loc: Location;
-    scope: string;
+    type: TypeRef;
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.InClause";
 }
 
-export interface ReturningClause {
+export interface CatchBlock {
+    "@class": "apex.jorje.data.ast.CatchBlock";
     loc: Location;
-    exprs: ReturningExpr[];
+    parameter: ParameterRef;
+    stmnt: Stmnt;
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.ReturningClause";
 }
 
-export interface ReturningExpr {
+export interface ClassDecl {
+    "@class": "apex.jorje.data.ast.ClassDecl";
+    interfaces: TypeRef[];
+    loc: Location;
+    members: BlockMember[];
+    modifiers: Modifier[];
     name: Identifier;
-    select?: ReturningSelectExpr;
+    superClass?: TypeRef;
+    typeArguments?: Identifier[];
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.ReturningExpr";
 }
 
-export interface ReturningSelectExpr {
+export interface ClassDeclUnit extends CompilationUnit {
+    "@class": "apex.jorje.data.ast.CompilationUnit$ClassDeclUnit";
+    body: ClassDecl;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ClassRefExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$ClassRefExpr";
     loc: Location;
-    fields: Field[];
-    using?: QueryUsingClause;
-    where?: WhereClause;
-    orderBy?: OrderByClause;
-    limit?: LimitClause;
-    offset?: OffsetClause;
-    bind?: BindClause;
+    type: TypeRef;
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.ReturningSelectExpr";
 }
 
-export interface Search {
-    find: FindClause;
-    in?: InClause;
-    returning?: ReturningClause;
-    division?: WithDivisionClause;
-    dataCategory?: WithDataCategoryClause;
-    withs: SearchWithClause[];
-    using?: SearchUsingClause;
-    limit?: LimitClause;
-    updateStats?: UpdateStatsClause;
+export interface ClassTypeRef extends TypeRef {
+    "@class": "apex.jorje.data.ast.TypeRefs$ClassTypeRef";
     "@id"?: string;
     "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.Search";
 }
 
-export interface SearchUsingClause {
+export interface ColonExpr {
+    "@class": "apex.jorje.data.soql.ColonExpr";
+    expr: Expr;
     loc: Location;
-    type: UsingType;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.SearchUsingClause";
-}
-
-export interface SearchWithClause {
-    name: Identifier;
-    value?: SearchWithClauseValue;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.SearchWithClause";
-}
-
-export interface SearchWithClauseValue {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface SearchWithFalseValue extends SearchWithClauseValue {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithFalseValue";
-}
-
-export interface SearchWithStringValue extends SearchWithClauseValue {
-    values: string[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithStringValue";
-}
-
-export interface SearchWithTargetValue extends SearchWithClauseValue {
-    target: Identifier;
-    value: number;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithTargetValue";
-}
-
-export interface SearchWithTrueValue extends SearchWithClauseValue {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithTrueValue";
-}
-
-export interface SoslValues {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.SoslValues";
-}
-
-export interface UsingType {
-    filter: Identifier;
-    value: Identifier;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.UsingType";
-}
-
-export interface WithDataCategoryClause {
-    loc: Location;
-    categories: DataCategory[];
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.WithDataCategoryClause";
-}
-
-export interface WithDivisionClause {
-    loc: Location;
-    value: DivisionValue;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.data.sosl.WithDivisionClause";
-}
-
-export interface HiddenToken {
-    value: string;
-    location: Location;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface HiddenTokenDecorator extends TokenSourceDecorator {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.parser.impl.HiddenTokenDecorator";
-}
-
-export interface HiddenTokens {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.parser.impl.HiddenTokens";
-}
-
-export interface BlockComment extends HiddenToken {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.parser.impl.HiddenTokens$BlockComment";
-}
-
-export interface InlineComment extends HiddenToken {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.parser.impl.HiddenTokens$InlineComment";
-}
-
-export interface InternalException extends CompilationException {
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.services.exception.InternalException";
-}
-
-export interface ParseException extends CompilationException {
-    userError: UserError;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class": "apex.jorje.services.exception.ParseException";
-}
-
-export interface TokenSourceDecorator extends TokenSource {
-    hiddenTokenMap: { [index: string]: HiddenToken };
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
-}
-
-export interface Throwable extends Serializable {
-    cause: Throwable;
-    stackTrace: StackTraceElement[];
-    message: string;
-    suppressed: Throwable[];
-    localizedMessage: string;
-    "@id"?: string;
-    "@reference"?: string;
-}
-
-export interface StackTraceElement extends Serializable {
-    classLoaderName: string;
-    moduleName: string;
-    moduleVersion: string;
-    methodName: string;
-    fileName: string;
-    lineNumber: number;
-    className: string;
-    nativeMethod: boolean;
     "@id"?: string;
     "@reference"?: string;
 }
 
 export interface CompilationException extends RuntimeException, Locatable {
+    "@class": "apex.jorje.services.exception.InternalException" | "apex.jorje.services.exception.ParseException";
     error: string;
-    "@id"?: string;
-    "@reference"?: string;
-    "@class"?: string;
 }
 
-export interface TokenSource {
-    sourceName: string;
-    "@id"?: string;
-    "@reference"?: string;
+export interface CompilationUnit {
+    "@class": "apex.jorje.data.ast.CompilationUnit$AnonymousBlockUnit" | "apex.jorje.data.ast.CompilationUnit$ClassDeclUnit" | "apex.jorje.data.ast.CompilationUnit$EnumDeclUnit" | "apex.jorje.data.ast.CompilationUnit$InterfaceDeclUnit" | "apex.jorje.data.ast.CompilationUnit$InvalidDeclUnit" | "apex.jorje.data.ast.CompilationUnit$TriggerDeclUnit";
 }
 
-export interface Serializable {
+export interface CompilationUnitBuilder {
+    "@class": "apex.jorje.data.CompilationUnitBuilder";
     "@id"?: string;
     "@reference"?: string;
 }
 
-export interface RuntimeException extends Exception {
+export interface ContinueStmnt extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$ContinueStmnt";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface DataCategory {
+    "@class": "apex.jorje.data.soql.DataCategory";
+    categories: FieldIdentifier[];
+    op: DataCategoryOperator;
+    type: FieldIdentifier;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface DataCategoryAbove extends DataCategoryOperator {
+    "@class": "apex.jorje.data.soql.DataCategoryOperator$DataCategoryAbove";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface DataCategoryAboveOrBelow extends DataCategoryOperator {
+    "@class": "apex.jorje.data.soql.DataCategoryOperator$DataCategoryAboveOrBelow";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface DataCategoryAt extends DataCategoryOperator {
+    "@class": "apex.jorje.data.soql.DataCategoryOperator$DataCategoryAt";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface DataCategoryBelow extends DataCategoryOperator {
+    "@class": "apex.jorje.data.soql.DataCategoryOperator$DataCategoryBelow";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface DataCategoryOperator {
+    "@class": "apex.jorje.data.soql.DataCategoryOperator$DataCategoryAbove" | "apex.jorje.data.soql.DataCategoryOperator$DataCategoryAboveOrBelow" | "apex.jorje.data.soql.DataCategoryOperator$DataCategoryAt" | "apex.jorje.data.soql.DataCategoryOperator$DataCategoryBelow";
+}
+
+export interface DistanceFunctionExpr {
+    "@class": "apex.jorje.data.soql.DistanceFunctionExpr";
+    field: FieldIdentifier;
+    loc: Location;
+    location: Geolocation;
+    unit: string;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface DivisionExpr extends DivisionValue {
+    "@class": "apex.jorje.data.sosl.DivisionValue$DivisionExpr";
+    expr: ColonExpr;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface DivisionLiteral extends DivisionValue {
+    "@class": "apex.jorje.data.sosl.DivisionValue$DivisionLiteral";
+    literal: string;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface DivisionValue {
+    "@class": "apex.jorje.data.sosl.DivisionValue$DivisionExpr" | "apex.jorje.data.sosl.DivisionValue$DivisionLiteral";
+}
+
+export interface DmlDeleteStmnt extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$DmlDeleteStmnt";
+    expr: Expr;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface DmlInsertStmnt extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$DmlInsertStmnt";
+    expr: Expr;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface DmlMergeStmnt extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$DmlMergeStmnt";
+    expr1: Expr;
+    expr2: Expr;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface DmlUndeleteStmnt extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$DmlUndeleteStmnt";
+    expr: Expr;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface DmlUpdateStmnt extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$DmlUpdateStmnt";
+    expr: Expr;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface DmlUpsertStmnt extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$DmlUpsertStmnt";
+    expr: Expr;
+    id?: FieldIdentifier;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface DoLoop extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$DoLoop";
+    condition: Expr;
+    loc: Location;
+    stmnt: Stmnt;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ElseBlock {
+    "@class": "apex.jorje.data.ast.ElseBlock";
+    loc: Location;
+    stmnt: Stmnt;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ElseExpr {
+    "@class": "apex.jorje.data.soql.ElseExpr";
+    identifiers: FieldIdentifier[];
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ElseWhen extends WhenBlock {
+    "@class": "apex.jorje.data.ast.WhenBlock$ElseWhen";
+    stmnt: Stmnt;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface EmptyModifierParameterRef extends ParameterRef {
+    "@class": "apex.jorje.data.ast.ParameterRefs$EmptyModifierParameterRef";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface EnhancedForControl extends ForControl {
+    "@class": "apex.jorje.data.ast.ForControl$EnhancedForControl";
+    init: ForInit;
+    type: TypeRef;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface EnumCase extends WhenCase {
+    "@class": "apex.jorje.data.ast.WhenCase$EnumCase";
+    identifiers: Identifier[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface EnumDecl {
+    "@class": "apex.jorje.data.ast.EnumDecl";
+    loc: Location;
+    members: Identifier[];
+    modifiers: Modifier[];
+    name: Identifier;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface EnumDeclUnit extends CompilationUnit {
+    "@class": "apex.jorje.data.ast.CompilationUnit$EnumDeclUnit";
+    body: EnumDecl;
     "@id"?: string;
     "@reference"?: string;
 }
 
 export interface Exception extends Throwable {
+    "@class": "java.lang.Exception" | "java.lang.RuntimeException" | "apex.jorje.services.exception.InternalException" | "apex.jorje.services.exception.ParseException";
+}
+
+export interface Expr {
+    "@class": "apex.jorje.data.ast.Expr$ArrayExpr" | "apex.jorje.data.ast.Expr$AssignmentExpr" | "apex.jorje.data.ast.Expr$BinaryExpr" | "apex.jorje.data.ast.Expr$BooleanExpr" | "apex.jorje.data.ast.Expr$CastExpr" | "apex.jorje.data.ast.Expr$ClassRefExpr" | "apex.jorje.data.ast.Expr$InstanceOf" | "apex.jorje.data.ast.Expr$JavaMethodCallExpr" | "apex.jorje.data.ast.Expr$JavaVariableExpr" | "apex.jorje.data.ast.Expr$LiteralExpr" | "apex.jorje.data.ast.Expr$MethodCallExpr" | "apex.jorje.data.ast.Expr$NestedExpr" | "apex.jorje.data.ast.Expr$NewExpr" | "apex.jorje.data.ast.Expr$PackageVersionExpr" | "apex.jorje.data.ast.Expr$PostfixExpr" | "apex.jorje.data.ast.Expr$PrefixExpr" | "apex.jorje.data.ast.Expr$SoqlExpr" | "apex.jorje.data.ast.Expr$SoslExpr" | "apex.jorje.data.ast.Expr$SuperMethodCallExpr" | "apex.jorje.data.ast.Expr$SuperVariableExpr" | "apex.jorje.data.ast.Expr$TernaryExpr" | "apex.jorje.data.ast.Expr$ThisMethodCallExpr" | "apex.jorje.data.ast.Expr$ThisVariableExpr" | "apex.jorje.data.ast.Expr$TriggerVariableExpr" | "apex.jorje.data.ast.Expr$VariableExpr";
+}
+
+export interface ExprLiteralExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$LiteralExpr";
+    literal: any;
+    loc: Location;
+    type: LiteralType;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ExpressionStmnt extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$ExpressionStmnt";
+    expr: Expr;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface FalseAnnotationValue extends AnnotationValue {
+    "@class": "apex.jorje.data.ast.AnnotationValue$FalseAnnotationValue";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface Field {
+    "@class": "apex.jorje.data.soql.Field";
+    field: FieldIdentifier;
+    function1?: Identifier;
+    function2?: Identifier;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface FieldIdentifier {
+    "@class": "apex.jorje.data.soql.FieldIdentifier";
+    entity?: FieldIdentifier;
+    field: Identifier;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface FieldMember extends BlockMember {
+    "@class": "apex.jorje.data.ast.BlockMember$FieldMember";
+    variableDecls: VariableDecls;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface FinalModifier extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$FinalModifier";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface FinallyBlock {
+    "@class": "apex.jorje.data.ast.FinallyBlock";
+    loc: Location;
+    stmnt: Stmnt;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface FindClause {
+    "@class": "apex.jorje.data.sosl.FindClause";
+    loc: Location;
+    search: FindValue;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface FindExpr extends FindValue {
+    "@class": "apex.jorje.data.sosl.FindValue$FindExpr";
+    expr: ColonExpr;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface FindString extends FindValue {
+    "@class": "apex.jorje.data.sosl.FindValue$FindString";
+    value: string;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface FindValue {
+    "@class": "apex.jorje.data.sosl.FindValue$FindExpr" | "apex.jorje.data.sosl.FindValue$FindString";
+}
+
+export interface ForControl {
+    "@class": "apex.jorje.data.ast.ForControl$CStyleForControl" | "apex.jorje.data.ast.ForControl$EnhancedForControl";
+}
+
+export interface ForInit {
+    "@class": "apex.jorje.data.ast.ForInit";
+    expr?: Expr;
+    name: Identifier[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ForInits {
+    "@class": "apex.jorje.data.ast.ForInits";
+    inits: ForInit[];
+    type?: TypeRef;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ForLoop extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$ForLoop";
+    forControl: ForControl;
+    loc: Location;
+    stmnt?: Stmnt;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ForReference extends TrackingType {
+    "@class": "apex.jorje.data.soql.TrackingType$ForReference";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ForView extends TrackingType {
+    "@class": "apex.jorje.data.soql.TrackingType$ForView";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface FromClause {
+    "@class": "apex.jorje.data.soql.FromClause";
+    exprs: FromExpr[];
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface FromExpr {
+    "@class": "apex.jorje.data.soql.FromExpr";
+    alias?: Identifier;
+    table: FieldIdentifier;
+    using?: QueryUsingClause;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface Geolocation {
+    "@class": "apex.jorje.data.soql.Geolocation$GeolocationExpr" | "apex.jorje.data.soql.Geolocation$GeolocationLiteral";
+}
+
+export interface GeolocationExpr extends Geolocation {
+    "@class": "apex.jorje.data.soql.Geolocation$GeolocationExpr";
+    expr: ColonExpr;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface GeolocationLiteral extends Geolocation {
+    "@class": "apex.jorje.data.soql.Geolocation$GeolocationLiteral";
+    latitude: NumberClause;
+    longitude: NumberClause;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface GlobalModifier extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$GlobalModifier";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface GroupByClause {
+    "@class": "apex.jorje.data.soql.GroupByClause";
+    exprs: GroupByExpr[];
+    having?: HavingClause;
+    loc: Location;
+    type?: GroupByType;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface GroupByCube extends GroupByType {
+    "@class": "apex.jorje.data.soql.GroupByType$GroupByCube";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface GroupByExpr {
+    "@class": "apex.jorje.data.soql.GroupByExpr";
+    field: Field;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface GroupByRollUp extends GroupByType {
+    "@class": "apex.jorje.data.soql.GroupByType$GroupByRollUp";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface GroupByType {
+    "@class": "apex.jorje.data.soql.GroupByType$GroupByCube" | "apex.jorje.data.soql.GroupByType$GroupByRollUp";
+}
+
+export interface HavingClause {
+    "@class": "apex.jorje.data.soql.HavingClause";
+    expr: WhereExpr;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface HiddenToken {
+    "@class": "apex.jorje.parser.impl.HiddenTokens$BlockComment" | "apex.jorje.parser.impl.HiddenTokens$InlineComment";
+    location: Location;
+    value: string;
+}
+
+export interface HiddenTokens {
+    "@class": "apex.jorje.parser.impl.HiddenTokens";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface Identifier extends Locatable {
+    "@class": "apex.jorje.data.Identifiers$LocationIdentifier" | "apex.jorje.data.Identifiers$SyntheticIdentifier";
+    value: string;
+}
+
+export interface Identifiers {
+    "@class": "apex.jorje.data.Identifiers";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface IfBlock {
+    "@class": "apex.jorje.data.ast.IfBlock";
+    expr: Expr;
+    loc: Location;
+    stmnt: Stmnt;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface IfElseBlock extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$IfElseBlock";
+    elseBlock?: ElseBlock;
+    ifBlocks: IfBlock[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface IllegalDecimalLiteral extends SyntaxError {
+    "@class": "apex.jorje.data.errors.SyntaxError$IllegalDecimalLiteral";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface IllegalDoubleLiteral extends SyntaxError {
+    "@class": "apex.jorje.data.errors.SyntaxError$IllegalDoubleLiteral";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface IllegalIntegerLiteral extends SyntaxError {
+    "@class": "apex.jorje.data.errors.SyntaxError$IllegalIntegerLiteral";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface IllegalLongLiteral extends SyntaxError {
+    "@class": "apex.jorje.data.errors.SyntaxError$IllegalLongLiteral";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface IllegalStringLiteral extends SyntaxError {
+    "@class": "apex.jorje.data.errors.SyntaxError$IllegalStringLiteral";
+    loc: Location;
+    message: string;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InClause {
+    "@class": "apex.jorje.data.sosl.InClause";
+    loc: Location;
+    scope: string;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface IncludeDeleted extends QueryOption {
+    "@class": "apex.jorje.data.soql.QueryOption$IncludeDeleted";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface IndexLocation extends Location {
+    "@class": "apex.jorje.data.IndexLocation";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InheritedSharingModifier extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$InheritedSharingModifier";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InlineComment extends HiddenToken {
+    "@class": "apex.jorje.parser.impl.HiddenTokens$InlineComment";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InnerClassMember extends BlockMember {
+    "@class": "apex.jorje.data.ast.BlockMember$InnerClassMember";
+    body: ClassDecl;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InnerEnumMember extends BlockMember {
+    "@class": "apex.jorje.data.ast.BlockMember$InnerEnumMember";
+    body: EnumDecl;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InnerInterfaceMember extends BlockMember {
+    "@class": "apex.jorje.data.ast.BlockMember$InnerInterfaceMember";
+    body: InterfaceDecl;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InstanceOf extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$InstanceOf";
+    expr: Expr;
+    type: TypeRef;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InterfaceDecl {
+    "@class": "apex.jorje.data.ast.InterfaceDecl";
+    loc: Location;
+    members: BlockMember[];
+    modifiers: Modifier[];
+    name: Identifier;
+    superInterface?: TypeRef;
+    typeArguments?: Identifier[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InterfaceDeclUnit extends CompilationUnit {
+    "@class": "apex.jorje.data.ast.CompilationUnit$InterfaceDeclUnit";
+    body: InterfaceDecl;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InternalException extends CompilationException {
+    "@class": "apex.jorje.services.exception.InternalException";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InvalidControlChar extends LexicalError {
+    "@class": "apex.jorje.data.errors.LexicalError$InvalidControlChar";
+    character: string;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InvalidDate extends LexicalError {
+    "@class": "apex.jorje.data.errors.LexicalError$InvalidDate";
+    date: string;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InvalidDateTime extends LexicalError {
+    "@class": "apex.jorje.data.errors.LexicalError$InvalidDateTime";
+    dateTime: string;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InvalidDeclUnit extends CompilationUnit {
+    "@class": "apex.jorje.data.ast.CompilationUnit$InvalidDeclUnit";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InvalidIdentifier extends LexicalError {
+    "@class": "apex.jorje.data.errors.LexicalError$InvalidIdentifier";
+    identifier: string;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InvalidSymbol extends LexicalError {
+    "@class": "apex.jorje.data.errors.LexicalError$InvalidSymbol";
+    loc: Location;
+    symbol: string;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface InvalidTime extends LexicalError {
+    "@class": "apex.jorje.data.errors.LexicalError$InvalidTime";
+    loc: Location;
+    time: string;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface JadtTester {
+    "@class": "apex.jorje.data.JadtTester";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface JavaMethodCallExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$JavaMethodCallExpr";
+    inputParameters: Expr[];
+    loc: Location;
+    names: Identifier[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface JavaTypeRef extends TypeRef {
+    "@class": "apex.jorje.data.ast.TypeRefs$JavaTypeRef";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface JavaVariableExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$JavaVariableExpr";
+    loc: Location;
+    names: Identifier[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface Lexical extends UserError {
+    "@class": "apex.jorje.data.errors.UserError$Lexical";
+    error: LexicalError;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface LexicalError {
+    "@class": "apex.jorje.data.errors.LexicalError$InvalidControlChar" | "apex.jorje.data.errors.LexicalError$InvalidDate" | "apex.jorje.data.errors.LexicalError$InvalidDateTime" | "apex.jorje.data.errors.LexicalError$InvalidIdentifier" | "apex.jorje.data.errors.LexicalError$InvalidSymbol" | "apex.jorje.data.errors.LexicalError$InvalidTime" | "apex.jorje.data.errors.LexicalError$SymbolInUnexpectedSet" | "apex.jorje.data.errors.LexicalError$SymbolNotInExpectedSet" | "apex.jorje.data.errors.LexicalError$SymbolNotInRange" | "apex.jorje.data.errors.LexicalError$UnexpectedLexicalError" | "apex.jorje.data.errors.LexicalError$UnexpectedSymbol" | "apex.jorje.data.errors.LexicalError$UnrecognizedSymbol" | "apex.jorje.data.errors.LexicalError$UnterminatedComment" | "apex.jorje.data.errors.LexicalError$UnterminatedString";
+}
+
+export interface LimitClause {
+    "@class": "apex.jorje.data.soql.LimitClause$LimitExpr" | "apex.jorje.data.soql.LimitClause$LimitValue";
+}
+
+export interface LimitExpr extends LimitClause {
+    "@class": "apex.jorje.data.soql.LimitClause$LimitExpr";
+    expr: ColonExpr;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface LimitValue extends LimitClause {
+    "@class": "apex.jorje.data.soql.LimitClause$LimitValue";
+    i: number;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface LiteralCase extends WhenCase {
+    "@class": "apex.jorje.data.ast.WhenCase$LiteralCase";
+    expr: Expr;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface Locatable {
+    "@class": "apex.jorje.data.Identifiers$LocationIdentifier" | "apex.jorje.data.Identifiers$SyntheticIdentifier" | "apex.jorje.data.IndexLocation" | "apex.jorje.data.PositionLocation" | "apex.jorje.services.exception.InternalException" | "apex.jorje.services.exception.ParseException";
+    loc: Location;
+}
+
+export interface Locatables {
+    "@class": "apex.jorje.data.Locatables";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface Location extends Locatable {
+    "@class": "apex.jorje.data.IndexLocation" | "apex.jorje.data.PositionLocation";
+    column: number;
+    endIndex: number;
+    line: number;
+    startIndex: number;
+}
+
+export interface LocationBlocks {
+    "@class": "apex.jorje.data.LocationBlocks";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface LocationIdentifier extends Identifier {
+    "@class": "apex.jorje.data.Identifiers$LocationIdentifier";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface Locations {
+    "@class": "apex.jorje.data.Locations";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface LockRows extends QueryOption {
+    "@class": "apex.jorje.data.soql.QueryOption$LockRows";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface MapLiteralKeyValue {
+    "@class": "apex.jorje.data.ast.MapLiteralKeyValue";
+    key: Expr;
+    value: Expr;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface MethodCallExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$MethodCallExpr";
+    dottedExpr?: Expr;
+    inputParameters: Expr[];
+    isSafeNav: boolean;
+    names: Identifier[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface MethodDecl {
+    "@class": "apex.jorje.data.ast.MethodDecl";
+    modifiers: Modifier[];
+    name: Identifier;
+    parameters: ParameterRef[];
+    stmnt?: Stmnt;
+    type?: TypeRef;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface MethodMember extends BlockMember {
+    "@class": "apex.jorje.data.ast.BlockMember$MethodMember";
+    methodDecl: MethodDecl;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface MismatchedSyntax extends SyntaxError {
+    "@class": "apex.jorje.data.errors.SyntaxError$MismatchedSyntax";
+    actual: string;
+    expected: string;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface MissingSyntax extends SyntaxError {
+    "@class": "apex.jorje.data.errors.SyntaxError$MissingSyntax";
+    actual: string;
+    expected: string;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$AbstractModifier" | "apex.jorje.data.ast.Modifier$Annotation" | "apex.jorje.data.ast.Modifier$FinalModifier" | "apex.jorje.data.ast.Modifier$GlobalModifier" | "apex.jorje.data.ast.Modifier$InheritedSharingModifier" | "apex.jorje.data.ast.Modifier$OverrideModifier" | "apex.jorje.data.ast.Modifier$PrivateModifier" | "apex.jorje.data.ast.Modifier$ProtectedModifier" | "apex.jorje.data.ast.Modifier$PublicModifier" | "apex.jorje.data.ast.Modifier$StaticModifier" | "apex.jorje.data.ast.Modifier$TestMethodModifier" | "apex.jorje.data.ast.Modifier$TransientModifier" | "apex.jorje.data.ast.Modifier$VirtualModifier" | "apex.jorje.data.ast.Modifier$WebServiceModifier" | "apex.jorje.data.ast.Modifier$WithSharingModifier" | "apex.jorje.data.ast.Modifier$WithoutSharingModifier";
+}
+
+export interface ModifierParameterRef extends ParameterRef {
+    "@class": "apex.jorje.data.ast.ParameterRefs$ModifierParameterRef";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface NameValueParameter {
+    "@class": "apex.jorje.data.ast.NameValueParameter";
+    name: Identifier;
+    value: Expr;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface NestedExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$NestedExpr";
+    expr: Expr;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface NewExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$NewExpr";
+    creator: NewObject;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface NewKeyValue extends NewObject {
+    "@class": "apex.jorje.data.ast.NewObject$NewKeyValue";
+    keyValues: NameValueParameter[];
+    type: TypeRef;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface NewListInit extends NewObject {
+    "@class": "apex.jorje.data.ast.NewObject$NewListInit";
+    expr?: Expr;
+    types: TypeRef[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface NewListLiteral extends NewObject {
+    "@class": "apex.jorje.data.ast.NewObject$NewListLiteral";
+    types: TypeRef[];
+    values: Expr[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface NewMapInit extends NewObject {
+    "@class": "apex.jorje.data.ast.NewObject$NewMapInit";
+    expr?: Expr;
+    types: TypeRef[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface NewMapLiteral extends NewObject {
+    "@class": "apex.jorje.data.ast.NewObject$NewMapLiteral";
+    pairs: MapLiteralKeyValue[];
+    types: TypeRef[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface NewObject {
+    "@class": "apex.jorje.data.ast.NewObject$NewKeyValue" | "apex.jorje.data.ast.NewObject$NewListInit" | "apex.jorje.data.ast.NewObject$NewListLiteral" | "apex.jorje.data.ast.NewObject$NewMapInit" | "apex.jorje.data.ast.NewObject$NewMapLiteral" | "apex.jorje.data.ast.NewObject$NewSetInit" | "apex.jorje.data.ast.NewObject$NewSetLiteral" | "apex.jorje.data.ast.NewObject$NewStandard";
+}
+
+export interface NewSetInit extends NewObject {
+    "@class": "apex.jorje.data.ast.NewObject$NewSetInit";
+    expr?: Expr;
+    types: TypeRef[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface NewSetLiteral extends NewObject {
+    "@class": "apex.jorje.data.ast.NewObject$NewSetLiteral";
+    types: TypeRef[];
+    values: Expr[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface NewStandard extends NewObject {
+    "@class": "apex.jorje.data.ast.NewObject$NewStandard";
+    inputParameters: Expr[];
+    type: TypeRef;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface NumberClause {
+    "@class": "apex.jorje.data.soql.NumberClause$NumberExpr" | "apex.jorje.data.soql.NumberClause$NumberLiteral";
+}
+
+export interface NumberExpr extends NumberClause {
+    "@class": "apex.jorje.data.soql.NumberClause$NumberExpr";
+    expr: ColonExpr;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface NumberKeyValue extends WithKeyValue {
+    "@class": "apex.jorje.data.soql.WithKeyValue$NumberKeyValue";
+    identifier: Identifier;
+    value: number;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface NumberLiteral extends NumberClause {
+    "@class": "apex.jorje.data.soql.NumberClause$NumberLiteral";
+    number: number;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface OffsetClause {
+    "@class": "apex.jorje.data.soql.OffsetClause$OffsetExpr" | "apex.jorje.data.soql.OffsetClause$OffsetValue";
+}
+
+export interface OffsetExpr extends OffsetClause {
+    "@class": "apex.jorje.data.soql.OffsetClause$OffsetExpr";
+    expr: ColonExpr;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface OffsetValue extends OffsetClause {
+    "@class": "apex.jorje.data.soql.OffsetClause$OffsetValue";
+    i: number;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface Order {
+    "@class": "apex.jorje.data.soql.Order$OrderAsc" | "apex.jorje.data.soql.Order$OrderDesc";
+}
+
+export interface OrderAsc extends Order {
+    "@class": "apex.jorje.data.soql.Order$OrderAsc";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface OrderByClause {
+    "@class": "apex.jorje.data.soql.OrderByClause";
+    exprs: OrderByExpr[];
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface OrderByDistance extends OrderByExpr {
+    "@class": "apex.jorje.data.soql.OrderByExpr$OrderByDistance";
+    distance: DistanceFunctionExpr;
+    nullOrder: OrderNull;
+    order: Order;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface OrderByExpr {
+    "@class": "apex.jorje.data.soql.OrderByExpr$OrderByDistance" | "apex.jorje.data.soql.OrderByExpr$OrderByValue";
+}
+
+export interface OrderByValue extends OrderByExpr {
+    "@class": "apex.jorje.data.soql.OrderByExpr$OrderByValue";
+    field: Field;
+    nullOrder: OrderNull;
+    order: Order;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface OrderDesc extends Order {
+    "@class": "apex.jorje.data.soql.Order$OrderDesc";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface OrderNull {
+    "@class": "apex.jorje.data.soql.OrderNull$OrderNullFirst" | "apex.jorje.data.soql.OrderNull$OrderNullLast";
+}
+
+export interface OrderNullFirst extends OrderNull {
+    "@class": "apex.jorje.data.soql.OrderNull$OrderNullFirst";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface OrderNullLast extends OrderNull {
+    "@class": "apex.jorje.data.soql.OrderNull$OrderNullLast";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface OverrideModifier extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$OverrideModifier";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface PackageVersionExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$PackageVersionExpr";
+    loc: Location;
+    version: VersionRef;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ParameterRef {
+    "@class": "apex.jorje.data.ast.ParameterRefs$EmptyModifierParameterRef" | "apex.jorje.data.ast.ParameterRefs$ModifierParameterRef";
+    modifiers: Modifier[];
+    name: Identifier;
+    type: TypeRef;
+}
+
+export interface ParameterRefs {
+    "@class": "apex.jorje.data.ast.ParameterRefs";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ParseException extends CompilationException {
+    "@class": "apex.jorje.services.exception.ParseException";
+    userError: UserError;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ParserOutput {
+    "@class": "apex.jorje.semantic.compiler.parser.ParserOutput";
+    hiddenTokenMap: [{"@class": string}, HiddenToken][];
+    internalErrors: InternalException[];
+    parseErrors: ParseException[];
+    unit: CompilationUnit;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface PositionLocation extends Location {
+    "@class": "apex.jorje.data.PositionLocation";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface PostfixExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$PostfixExpr";
+    expr: Expr;
+    loc: Location;
+    op: PostfixOp;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface PrefixExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$PrefixExpr";
+    expr: Expr;
+    loc: Location;
+    op: PrefixOp;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface PrinterBlocks {
+    "@class": "apex.jorje.data.ast.PrinterBlocks";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface PrivateModifier extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$PrivateModifier";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface PropertyDecl {
+    "@class": "apex.jorje.data.ast.PropertyDecl";
+    getter?: PropertyGetter;
+    modifiers: Modifier[];
+    name: Identifier;
+    setter?: PropertySetter;
+    type: TypeRef;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface PropertyGetter {
+    "@class": "apex.jorje.data.ast.PropertyGetter";
+    loc: Location;
+    modifier?: Modifier;
+    stmnt?: Stmnt;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface PropertyMember extends BlockMember {
+    "@class": "apex.jorje.data.ast.BlockMember$PropertyMember";
+    propertyDecl: PropertyDecl;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface PropertySetter {
+    "@class": "apex.jorje.data.ast.PropertySetter";
+    loc: Location;
+    modifier?: Modifier;
+    stmnt?: Stmnt;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ProtectedModifier extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$ProtectedModifier";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface PublicModifier extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$PublicModifier";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface Query {
+    "@class": "apex.jorje.data.soql.Query";
+    bind?: BindClause;
+    from: FromClause;
+    groupBy?: GroupByClause;
+    limit?: LimitClause;
+    offset?: OffsetClause;
+    options?: QueryOption;
+    orderBy?: OrderByClause;
+    select: SelectClause;
+    tracking?: TrackingType;
+    updateStats?: UpdateStatsClause;
+    where?: WhereClause;
+    with?: WithClause;
+    withIdentifiers: WithIdentifierClause[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryAnd extends WhereCompoundOp {
+    "@class": "apex.jorje.data.soql.WhereCompoundOp$QueryAnd";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryDate extends QueryLiteral {
+    "@class": "apex.jorje.data.soql.QueryLiteral$QueryDate";
+    literal: Date;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryDateFormula extends QueryLiteral {
+    "@class": "apex.jorje.data.soql.QueryLiteral$QueryDateFormula";
+    dateFormula: string;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryDateTime extends QueryLiteral {
+    "@class": "apex.jorje.data.soql.QueryLiteral$QueryDateTime";
+    literal: Date;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryDoubleEqual extends QueryOp {
+    "@class": "apex.jorje.data.soql.QueryOp$QueryDoubleEqual";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryEqual extends QueryOp {
+    "@class": "apex.jorje.data.soql.QueryOp$QueryEqual";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryExcludes extends QueryOp {
+    "@class": "apex.jorje.data.soql.QueryOp$QueryExcludes";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryExpr {
+    "@class": "apex.jorje.data.soql.QueryExpr$ApexExpr" | "apex.jorje.data.soql.QueryExpr$LiteralExpr";
+}
+
+export interface QueryExprLiteralExpr extends QueryExpr {
+    "@class": "apex.jorje.data.soql.QueryExpr$LiteralExpr";
+    literal: QueryLiteral;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryFalse extends QueryLiteral {
+    "@class": "apex.jorje.data.soql.QueryLiteral$QueryFalse";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryGreaterThan extends QueryOp {
+    "@class": "apex.jorje.data.soql.QueryOp$QueryGreaterThan";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryGreaterThanEqual extends QueryOp {
+    "@class": "apex.jorje.data.soql.QueryOp$QueryGreaterThanEqual";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryIn extends QueryOp {
+    "@class": "apex.jorje.data.soql.QueryOp$QueryIn";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryIncludes extends QueryOp {
+    "@class": "apex.jorje.data.soql.QueryOp$QueryIncludes";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryLessThan extends QueryOp {
+    "@class": "apex.jorje.data.soql.QueryOp$QueryLessThan";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryLessThanEqual extends QueryOp {
+    "@class": "apex.jorje.data.soql.QueryOp$QueryLessThanEqual";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryLike extends QueryOp {
+    "@class": "apex.jorje.data.soql.QueryOp$QueryLike";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryLiteral {
+    "@class": "apex.jorje.data.soql.QueryLiteral$QueryDate" | "apex.jorje.data.soql.QueryLiteral$QueryDateFormula" | "apex.jorje.data.soql.QueryLiteral$QueryDateTime" | "apex.jorje.data.soql.QueryLiteral$QueryFalse" | "apex.jorje.data.soql.QueryLiteral$QueryMultiCurrency" | "apex.jorje.data.soql.QueryLiteral$QueryNull" | "apex.jorje.data.soql.QueryLiteral$QueryNumber" | "apex.jorje.data.soql.QueryLiteral$QueryString" | "apex.jorje.data.soql.QueryLiteral$QueryTime" | "apex.jorje.data.soql.QueryLiteral$QueryTrue";
+}
+
+export interface QueryMultiCurrency extends QueryLiteral {
+    "@class": "apex.jorje.data.soql.QueryLiteral$QueryMultiCurrency";
+    literal: string;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryNotEqual extends QueryOp {
+    "@class": "apex.jorje.data.soql.QueryOp$QueryNotEqual";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryNotIn extends QueryOp {
+    "@class": "apex.jorje.data.soql.QueryOp$QueryNotIn";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryNotTripleEqual extends QueryOp {
+    "@class": "apex.jorje.data.soql.QueryOp$QueryNotTripleEqual";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryNull extends QueryLiteral {
+    "@class": "apex.jorje.data.soql.QueryLiteral$QueryNull";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryNumber extends QueryLiteral {
+    "@class": "apex.jorje.data.soql.QueryLiteral$QueryNumber";
+    literal: number;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryOp {
+    "@class": "apex.jorje.data.soql.QueryOp$QueryDoubleEqual" | "apex.jorje.data.soql.QueryOp$QueryEqual" | "apex.jorje.data.soql.QueryOp$QueryExcludes" | "apex.jorje.data.soql.QueryOp$QueryGreaterThan" | "apex.jorje.data.soql.QueryOp$QueryGreaterThanEqual" | "apex.jorje.data.soql.QueryOp$QueryIn" | "apex.jorje.data.soql.QueryOp$QueryIncludes" | "apex.jorje.data.soql.QueryOp$QueryLessThan" | "apex.jorje.data.soql.QueryOp$QueryLessThanEqual" | "apex.jorje.data.soql.QueryOp$QueryLike" | "apex.jorje.data.soql.QueryOp$QueryNotEqual" | "apex.jorje.data.soql.QueryOp$QueryNotIn" | "apex.jorje.data.soql.QueryOp$QueryNotTripleEqual" | "apex.jorje.data.soql.QueryOp$QueryTripleEqual";
+}
+
+export interface QueryOption {
+    "@class": "apex.jorje.data.soql.QueryOption$IncludeDeleted" | "apex.jorje.data.soql.QueryOption$LockRows";
+}
+
+export interface QueryOr extends WhereCompoundOp {
+    "@class": "apex.jorje.data.soql.WhereCompoundOp$QueryOr";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryString extends QueryLiteral {
+    "@class": "apex.jorje.data.soql.QueryLiteral$QueryString";
+    literal: string;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryTime extends QueryLiteral {
+    "@class": "apex.jorje.data.soql.QueryLiteral$QueryTime";
+    literal: Date;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryTripleEqual extends QueryOp {
+    "@class": "apex.jorje.data.soql.QueryOp$QueryTripleEqual";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryTrue extends QueryLiteral {
+    "@class": "apex.jorje.data.soql.QueryLiteral$QueryTrue";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface QueryUsingClause {
+    "@class": "apex.jorje.data.soql.QueryUsingClause";
+    exprs: UsingExpr[];
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface RequestVersion extends VersionRef {
+    "@class": "apex.jorje.data.ast.VersionRef$RequestVersion";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ReturnStmnt extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$ReturnStmnt";
+    expr?: Expr;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ReturningClause {
+    "@class": "apex.jorje.data.sosl.ReturningClause";
+    exprs: ReturningExpr[];
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ReturningExpr {
+    "@class": "apex.jorje.data.sosl.ReturningExpr";
+    name: Identifier;
+    select?: ReturningSelectExpr;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ReturningSelectExpr {
+    "@class": "apex.jorje.data.sosl.ReturningSelectExpr";
+    bind?: BindClause;
+    fields: Field[];
+    limit?: LimitClause;
+    loc: Location;
+    offset?: OffsetClause;
+    orderBy?: OrderByClause;
+    using?: QueryUsingClause;
+    where?: WhereClause;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface RunAsBlock extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$RunAsBlock";
+    inputParameters: Expr[];
+    loc: Location;
+    stmnt: Stmnt;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface RuntimeException extends Exception {
+    "@class": "java.lang.RuntimeException" | "apex.jorje.services.exception.InternalException" | "apex.jorje.services.exception.ParseException";
+}
+
+export interface Search {
+    "@class": "apex.jorje.data.sosl.Search";
+    dataCategory?: WithDataCategoryClause;
+    division?: WithDivisionClause;
+    find: FindClause;
+    in?: InClause;
+    limit?: LimitClause;
+    returning?: ReturningClause;
+    updateStats?: UpdateStatsClause;
+    using?: SearchUsingClause;
+    withs: SearchWithClause[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SearchUsingClause {
+    "@class": "apex.jorje.data.sosl.SearchUsingClause";
+    loc: Location;
+    type: UsingType;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SearchWithClause {
+    "@class": "apex.jorje.data.sosl.SearchWithClause";
+    name: Identifier;
+    value?: SearchWithClauseValue;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SearchWithClauseValue {
+    "@class": "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithFalseValue" | "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithStringValue" | "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithTargetValue" | "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithTrueValue";
+}
+
+export interface SearchWithFalseValue extends SearchWithClauseValue {
+    "@class": "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithFalseValue";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SearchWithStringValue extends SearchWithClauseValue {
+    "@class": "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithStringValue";
+    values: string[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SearchWithTargetValue extends SearchWithClauseValue {
+    "@class": "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithTargetValue";
+    target: Identifier;
+    value: number;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SearchWithTrueValue extends SearchWithClauseValue {
+    "@class": "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithTrueValue";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SelectCaseExpr extends SelectExpr {
+    "@class": "apex.jorje.data.soql.SelectExpr$SelectCaseExpr";
+    alias?: Identifier;
+    expr: CaseExpr;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SelectClause {
+    "@class": "apex.jorje.data.soql.SelectClause$SelectColumnClause" | "apex.jorje.data.soql.SelectClause$SelectCountClause";
+}
+
+export interface SelectColumnClause extends SelectClause {
+    "@class": "apex.jorje.data.soql.SelectClause$SelectColumnClause";
+    exprs: SelectExpr[];
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SelectColumnExpr extends SelectExpr {
+    "@class": "apex.jorje.data.soql.SelectExpr$SelectColumnExpr";
+    alias?: Identifier;
+    field: Field;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SelectCountClause extends SelectClause {
+    "@class": "apex.jorje.data.soql.SelectClause$SelectCountClause";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SelectDistanceExpr extends SelectExpr {
+    "@class": "apex.jorje.data.soql.SelectExpr$SelectDistanceExpr";
+    alias?: Identifier;
+    expr: DistanceFunctionExpr;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SelectExpr {
+    "@class": "apex.jorje.data.soql.SelectExpr$SelectCaseExpr" | "apex.jorje.data.soql.SelectExpr$SelectColumnExpr" | "apex.jorje.data.soql.SelectExpr$SelectDistanceExpr" | "apex.jorje.data.soql.SelectExpr$SelectInnerQuery";
+}
+
+export interface SelectInnerQuery extends SelectExpr {
+    "@class": "apex.jorje.data.soql.SelectExpr$SelectInnerQuery";
+    alias?: Identifier;
+    query: Query;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface Serializable {
+    "@class": "java.lang.Throwable" | "java.lang.Exception" | "java.lang.RuntimeException" | "apex.jorje.services.exception.InternalException" | "apex.jorje.services.exception.ParseException" | "java.lang.StackTraceElement";
+}
+
+export interface SoqlExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$SoqlExpr";
+    loc: Location;
+    query: Query;
+    rawQuery: string;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SoslExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$SoslExpr";
+    loc: Location;
+    rawQuery: string;
+    search: Search;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SoslValues {
+    "@class": "apex.jorje.data.sosl.SoslValues";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface StackTraceElement extends Serializable {
+    "@class": "java.lang.StackTraceElement";
+    classLoaderName: string;
+    className: string;
+    fileName: string;
+    lineNumber: number;
+    methodName: string;
+    moduleName: string;
+    moduleVersion: string;
+    nativeMethod: boolean;
+}
+
+export interface StaticModifier extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$StaticModifier";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface StaticStmntBlockMember extends BlockMember {
+    "@class": "apex.jorje.data.ast.BlockMember$StaticStmntBlockMember";
+    loc: Location;
+    stmnt: Stmnt;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$BlockStmnt" | "apex.jorje.data.ast.Stmnt$BreakStmnt" | "apex.jorje.data.ast.Stmnt$ContinueStmnt" | "apex.jorje.data.ast.Stmnt$DmlDeleteStmnt" | "apex.jorje.data.ast.Stmnt$DmlInsertStmnt" | "apex.jorje.data.ast.Stmnt$DmlMergeStmnt" | "apex.jorje.data.ast.Stmnt$DmlUndeleteStmnt" | "apex.jorje.data.ast.Stmnt$DmlUpdateStmnt" | "apex.jorje.data.ast.Stmnt$DmlUpsertStmnt" | "apex.jorje.data.ast.Stmnt$DoLoop" | "apex.jorje.data.ast.Stmnt$ExpressionStmnt" | "apex.jorje.data.ast.Stmnt$ForLoop" | "apex.jorje.data.ast.Stmnt$IfElseBlock" | "apex.jorje.data.ast.Stmnt$ReturnStmnt" | "apex.jorje.data.ast.Stmnt$RunAsBlock" | "apex.jorje.data.ast.Stmnt$SwitchStmnt" | "apex.jorje.data.ast.Stmnt$ThrowStmnt" | "apex.jorje.data.ast.Stmnt$TryCatchFinallyBlock" | "apex.jorje.data.ast.Stmnt$VariableDeclStmnt" | "apex.jorje.data.ast.Stmnt$WhileLoop";
+}
+
+export interface StmntBlockMember extends BlockMember {
+    "@class": "apex.jorje.data.ast.BlockMember$StmntBlockMember";
+    stmnt: Stmnt;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface StringAnnotationValue extends AnnotationValue {
+    "@class": "apex.jorje.data.ast.AnnotationValue$StringAnnotationValue";
+    loc: Location;
+    value: string;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface StringKeyValue extends WithKeyValue {
+    "@class": "apex.jorje.data.soql.WithKeyValue$StringKeyValue";
+    identifier: Identifier;
+    value: string;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface StructuredVersion extends VersionRef {
+    "@class": "apex.jorje.data.ast.VersionRef$StructuredVersion";
+    major: number;
+    minor: number;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SuperMethodCallExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$SuperMethodCallExpr";
+    inputParameters: Expr[];
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SuperVariableExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$SuperVariableExpr";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SwitchStmnt extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$SwitchStmnt";
+    expr: Expr;
+    loc: Location;
+    whenBlocks: WhenBlock[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SwitchTester {
+    "@class": "apex.jorje.data.SwitchTester";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SymbolInUnexpectedSet extends LexicalError {
+    "@class": "apex.jorje.data.errors.LexicalError$SymbolInUnexpectedSet";
+    found: string;
+    loc: Location;
+    unexpected: string[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SymbolNotInExpectedSet extends LexicalError {
+    "@class": "apex.jorje.data.errors.LexicalError$SymbolNotInExpectedSet";
+    expected: string[];
+    found: string;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SymbolNotInRange extends LexicalError {
+    "@class": "apex.jorje.data.errors.LexicalError$SymbolNotInRange";
+    begin: string;
+    end: string;
+    found: string;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface Syntax extends UserError {
+    "@class": "apex.jorje.data.errors.UserError$Syntax";
+    error: SyntaxError;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface SyntaxError {
+    "@class": "apex.jorje.data.errors.SyntaxError$IllegalDecimalLiteral" | "apex.jorje.data.errors.SyntaxError$IllegalDoubleLiteral" | "apex.jorje.data.errors.SyntaxError$IllegalIntegerLiteral" | "apex.jorje.data.errors.SyntaxError$IllegalLongLiteral" | "apex.jorje.data.errors.SyntaxError$IllegalStringLiteral" | "apex.jorje.data.errors.SyntaxError$MismatchedSyntax" | "apex.jorje.data.errors.SyntaxError$MissingSyntax" | "apex.jorje.data.errors.SyntaxError$UnexpectedEof" | "apex.jorje.data.errors.SyntaxError$UnexpectedSyntaxError" | "apex.jorje.data.errors.SyntaxError$UnexpectedToken" | "apex.jorje.data.errors.SyntaxError$UnmatchedSyntax";
+}
+
+export interface SyntheticIdentifier extends Identifier {
+    "@class": "apex.jorje.data.Identifiers$SyntheticIdentifier";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface TernaryExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$TernaryExpr";
+    condition: Expr;
+    falseExpr: Expr;
+    trueExpr: Expr;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface TestMethodModifier extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$TestMethodModifier";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ThisMethodCallExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$ThisMethodCallExpr";
+    inputParameters: Expr[];
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ThisVariableExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$ThisVariableExpr";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ThrowStmnt extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$ThrowStmnt";
+    expr: Expr;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface Throwable extends Serializable {
+    "@class": "java.lang.Throwable" | "java.lang.Exception" | "java.lang.RuntimeException" | "apex.jorje.services.exception.InternalException" | "apex.jorje.services.exception.ParseException";
+    cause: Throwable;
+    localizedMessage: string;
+    message: string;
+    stackTrace: StackTraceElement[];
+    suppressed: Throwable[];
+}
+
+export interface TrackingType {
+    "@class": "apex.jorje.data.soql.TrackingType$ForReference" | "apex.jorje.data.soql.TrackingType$ForView";
+}
+
+export interface TransientModifier extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$TransientModifier";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface TriggerDeclUnit extends CompilationUnit {
+    "@class": "apex.jorje.data.ast.CompilationUnit$TriggerDeclUnit";
+    isBulk: boolean;
+    loc: Location;
+    members: BlockMember[];
+    name: Identifier;
+    target: Identifier[];
+    usages: TriggerUsage[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface TriggerVariableExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$TriggerVariableExpr";
+    loc: Location;
+    variable: Identifier;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface TrueAnnotationValue extends AnnotationValue {
+    "@class": "apex.jorje.data.ast.AnnotationValue$TrueAnnotationValue";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface TryCatchFinallyBlock extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$TryCatchFinallyBlock";
+    catchBlocks: CatchBlock[];
+    finallyBlock?: FinallyBlock;
+    loc: Location;
+    tryBlock: Stmnt;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface TypeRef {
+    "@class": "apex.jorje.data.ast.TypeRefs$ArrayTypeRef" | "apex.jorje.data.ast.TypeRefs$ClassTypeRef" | "apex.jorje.data.ast.TypeRefs$JavaTypeRef";
+    names: Identifier[];
+    typeArguments: TypeRef[];
+}
+
+export interface TypeRefBuilder {
+    "@class": "apex.jorje.data.TypeRefBuilder";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface TypeRefs {
+    "@class": "apex.jorje.data.ast.TypeRefs";
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface TypeWhen extends WhenBlock {
+    "@class": "apex.jorje.data.ast.WhenBlock$TypeWhen";
+    name: Identifier;
+    stmnt: Stmnt;
+    typeRef: TypeRef;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UnexpectedEof extends SyntaxError {
+    "@class": "apex.jorje.data.errors.SyntaxError$UnexpectedEof";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UnexpectedLexicalError extends LexicalError {
+    "@class": "apex.jorje.data.errors.LexicalError$UnexpectedLexicalError";
+    loc: Location;
+    message: string;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UnexpectedSymbol extends LexicalError {
+    "@class": "apex.jorje.data.errors.LexicalError$UnexpectedSymbol";
+    expected: string;
+    found: string;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UnexpectedSyntaxError extends SyntaxError {
+    "@class": "apex.jorje.data.errors.SyntaxError$UnexpectedSyntaxError";
+    loc: Location;
+    message: string;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UnexpectedToken extends SyntaxError {
+    "@class": "apex.jorje.data.errors.SyntaxError$UnexpectedToken";
+    loc: Location;
+    token: string;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UnmatchedSyntax extends SyntaxError {
+    "@class": "apex.jorje.data.errors.SyntaxError$UnmatchedSyntax";
+    actual: string;
+    expected: string;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UnrecognizedSymbol extends LexicalError {
+    "@class": "apex.jorje.data.errors.LexicalError$UnrecognizedSymbol";
+    loc: Location;
+    symbol: string;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UnterminatedComment extends LexicalError {
+    "@class": "apex.jorje.data.errors.LexicalError$UnterminatedComment";
+    closeComment: string;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UnterminatedString extends LexicalError {
+    "@class": "apex.jorje.data.errors.LexicalError$UnterminatedString";
+    loc: Location;
+    quote: string;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UpdateStatsClause {
+    "@class": "apex.jorje.data.soql.UpdateStatsClause";
+    loc: Location;
+    options: UpdateStatsOption[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UpdateStatsOption {
+    "@class": "apex.jorje.data.soql.UpdateStatsOption$UpdateTracking" | "apex.jorje.data.soql.UpdateStatsOption$UpdateViewStat";
+}
+
+export interface UpdateTracking extends UpdateStatsOption {
+    "@class": "apex.jorje.data.soql.UpdateStatsOption$UpdateTracking";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UpdateViewStat extends UpdateStatsOption {
+    "@class": "apex.jorje.data.soql.UpdateStatsOption$UpdateViewStat";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UserError {
+    "@class": "apex.jorje.data.errors.UserError$Lexical" | "apex.jorje.data.errors.UserError$Syntax";
+}
+
+export interface Using extends UsingExpr {
+    "@class": "apex.jorje.data.soql.UsingExpr$Using";
+    field: Identifier;
+    name: Identifier;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UsingEquals extends UsingExpr {
+    "@class": "apex.jorje.data.soql.UsingExpr$UsingEquals";
+    field: Identifier;
+    name: Identifier;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UsingExpr {
+    "@class": "apex.jorje.data.soql.UsingExpr$Using" | "apex.jorje.data.soql.UsingExpr$UsingEquals" | "apex.jorje.data.soql.UsingExpr$UsingId";
+}
+
+export interface UsingId extends UsingExpr {
+    "@class": "apex.jorje.data.soql.UsingExpr$UsingId";
+    field: Identifier;
+    id: Identifier;
+    name: Identifier;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface UsingType {
+    "@class": "apex.jorje.data.sosl.UsingType";
+    filter: Identifier;
+    value: Identifier;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface ValueWhen extends WhenBlock {
+    "@class": "apex.jorje.data.ast.WhenBlock$ValueWhen";
+    stmnt: Stmnt;
+    whenCases: WhenCase[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface VariableDecl {
+    "@class": "apex.jorje.data.ast.VariableDecl";
+    assignment?: Expr;
+    name: Identifier;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface VariableDeclStmnt extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$VariableDeclStmnt";
+    variableDecls: VariableDecls;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface VariableDecls {
+    "@class": "apex.jorje.data.ast.VariableDecls";
+    decls: VariableDecl[];
+    modifiers: Modifier[];
+    type: TypeRef;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface VariableExpr extends Expr {
+    "@class": "apex.jorje.data.ast.Expr$VariableExpr";
+    dottedExpr?: Expr;
+    isSafeNav: boolean;
+    names: Identifier[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface VersionRef {
+    "@class": "apex.jorje.data.ast.VersionRef$RequestVersion" | "apex.jorje.data.ast.VersionRef$StructuredVersion";
+}
+
+export interface VirtualModifier extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$VirtualModifier";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WebServiceModifier extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$WebServiceModifier";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WhenBlock {
+    "@class": "apex.jorje.data.ast.WhenBlock$ElseWhen" | "apex.jorje.data.ast.WhenBlock$TypeWhen" | "apex.jorje.data.ast.WhenBlock$ValueWhen";
+}
+
+export interface WhenCase {
+    "@class": "apex.jorje.data.ast.WhenCase$EnumCase" | "apex.jorje.data.ast.WhenCase$LiteralCase";
+}
+
+export interface WhenExpr {
+    "@class": "apex.jorje.data.soql.WhenExpr";
+    identifiers: FieldIdentifier[];
+    loc: Location;
+    op: WhenOp;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WhenOp {
+    "@class": "apex.jorje.data.soql.WhenOp";
+    identifier: Identifier;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WhereCalcExpr extends WhereExpr {
+    "@class": "apex.jorje.data.soql.WhereExpr$WhereCalcExpr";
+    calc: WhereCalcOp;
+    expr: QueryExpr;
+    field1: FieldIdentifier;
+    field2: FieldIdentifier;
+    op: QueryOp;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WhereCalcMinus extends WhereCalcOp {
+    "@class": "apex.jorje.data.soql.WhereCalcOp$WhereCalcMinus";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WhereCalcOp {
+    "@class": "apex.jorje.data.soql.WhereCalcOp$WhereCalcMinus" | "apex.jorje.data.soql.WhereCalcOp$WhereCalcPlus";
+}
+
+export interface WhereCalcPlus extends WhereCalcOp {
+    "@class": "apex.jorje.data.soql.WhereCalcOp$WhereCalcPlus";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WhereClause {
+    "@class": "apex.jorje.data.soql.WhereClause";
+    expr: WhereExpr;
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WhereCompoundExpr extends WhereExpr {
+    "@class": "apex.jorje.data.soql.WhereExpr$WhereCompoundExpr";
+    expr: WhereExpr[];
+    op: WhereCompoundOp;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WhereCompoundOp {
+    "@class": "apex.jorje.data.soql.WhereCompoundOp$QueryAnd" | "apex.jorje.data.soql.WhereCompoundOp$QueryOr";
+}
+
+export interface WhereDistanceExpr extends WhereExpr {
+    "@class": "apex.jorje.data.soql.WhereExpr$WhereDistanceExpr";
+    distance: DistanceFunctionExpr;
+    expr: QueryExpr;
+    op: QueryOp;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WhereExpr {
+    "@class": "apex.jorje.data.soql.WhereExpr$WhereCalcExpr" | "apex.jorje.data.soql.WhereExpr$WhereCompoundExpr" | "apex.jorje.data.soql.WhereExpr$WhereDistanceExpr" | "apex.jorje.data.soql.WhereExpr$WhereInnerExpr" | "apex.jorje.data.soql.WhereExpr$WhereOpExpr" | "apex.jorje.data.soql.WhereExpr$WhereOpExprs" | "apex.jorje.data.soql.WhereExpr$WhereUnaryExpr";
+}
+
+export interface WhereInnerExpr extends WhereExpr {
+    "@class": "apex.jorje.data.soql.WhereExpr$WhereInnerExpr";
+    field: Field;
+    inner: Query;
+    op: QueryOp;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WhereOpExpr extends WhereExpr {
+    "@class": "apex.jorje.data.soql.WhereExpr$WhereOpExpr";
+    expr: QueryExpr;
+    field: Field;
+    op: QueryOp;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WhereOpExprs extends WhereExpr {
+    "@class": "apex.jorje.data.soql.WhereExpr$WhereOpExprs";
+    expr: QueryExpr[];
+    field: Field;
+    op: QueryOp;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WhereUnaryExpr extends WhereExpr {
+    "@class": "apex.jorje.data.soql.WhereExpr$WhereUnaryExpr";
+    expr: WhereExpr;
+    op: WhereUnaryOp;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WhereUnaryOp {
+    "@class": "apex.jorje.data.soql.WhereUnaryOp";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WhileLoop extends Stmnt {
+    "@class": "apex.jorje.data.ast.Stmnt$WhileLoop";
+    condition: Expr;
+    loc: Location;
+    stmnt?: Stmnt;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WithClause {
+    "@class": "apex.jorje.data.soql.WithClause$WithDataCategories" | "apex.jorje.data.soql.WithClause$WithValue";
+}
+
+export interface WithDataCategories extends WithClause {
+    "@class": "apex.jorje.data.soql.WithClause$WithDataCategories";
+    categories: DataCategory[];
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WithDataCategoryClause {
+    "@class": "apex.jorje.data.sosl.WithDataCategoryClause";
+    categories: DataCategory[];
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WithDivisionClause {
+    "@class": "apex.jorje.data.sosl.WithDivisionClause";
+    loc: Location;
+    value: DivisionValue;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WithIdentifier extends WithIdentifierClause {
+    "@class": "apex.jorje.data.soql.WithIdentifierClause$WithIdentifier";
+    identifier: Identifier;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WithIdentifierClause {
+    "@class": "apex.jorje.data.soql.WithIdentifierClause$WithIdentifier" | "apex.jorje.data.soql.WithIdentifierClause$WithIdentifierTuple";
+}
+
+export interface WithIdentifierTuple extends WithIdentifierClause {
+    "@class": "apex.jorje.data.soql.WithIdentifierClause$WithIdentifierTuple";
+    identifier: Identifier;
+    keyValues: WithKeyValue[];
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WithKeyValue {
+    "@class": "apex.jorje.data.soql.WithKeyValue$BooleanKeyValue" | "apex.jorje.data.soql.WithKeyValue$NumberKeyValue" | "apex.jorje.data.soql.WithKeyValue$StringKeyValue";
+}
+
+export interface WithSharingModifier extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$WithSharingModifier";
+    loc: Location;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WithValue extends WithClause {
+    "@class": "apex.jorje.data.soql.WithClause$WithValue";
+    expr: QueryExpr;
+    loc: Location;
+    name: FieldIdentifier;
+    "@id"?: string;
+    "@reference"?: string;
+}
+
+export interface WithoutSharingModifier extends Modifier {
+    "@class": "apex.jorje.data.ast.Modifier$WithoutSharingModifier";
+    loc: Location;
     "@id"?: string;
     "@reference"?: string;
 }
