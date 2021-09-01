@@ -128,7 +128,7 @@ export function canAttachComment(node: any): boolean {
  * @param comment The current comment node.
  * @returns {boolean} whether it is a block comment.
  */
-export function isBlockComment(comment: any): boolean {
+export function isBlockComment(comment: GenericComment): boolean {
   return comment["@class"] === apexTypes.BLOCK_COMMENT;
 }
 
