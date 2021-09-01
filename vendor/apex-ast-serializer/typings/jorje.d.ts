@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 2.32.889 on 2021-08-30 20:32:34.
+// Generated using typescript-generator version 2.32.889 on 2021-09-01 15:02:30.
 
 export interface AbstractModifier extends Modifier {
     "@class": "apex.jorje.data.ast.Modifier$AbstractModifier";
@@ -75,7 +75,7 @@ export interface ArrayTypeRef extends TypeRef {
 export interface AssignmentExpr extends Expr {
     "@class": "apex.jorje.data.ast.Expr$AssignmentExpr";
     left: Expr;
-    op: AssignmentOp;
+    op: { $: AssignmentOp; "@class": "apex.jorje.data.ast.AssignmentOp"; };
     right: Expr;
     "@id"?: string;
     "@reference"?: string;
@@ -84,7 +84,7 @@ export interface AssignmentExpr extends Expr {
 export interface BinaryExpr extends Expr {
     "@class": "apex.jorje.data.ast.Expr$BinaryExpr";
     left: Expr;
-    op: BinaryOp;
+    op: { $: BinaryOp; "@class": "apex.jorje.data.ast.BinaryOp"; };
     right: Expr;
     "@id"?: string;
     "@reference"?: string;
@@ -127,7 +127,7 @@ export interface BlockStmnt extends Stmnt {
 export interface BooleanExpr extends Expr {
     "@class": "apex.jorje.data.ast.Expr$BooleanExpr";
     left: Expr;
-    op: BooleanOp;
+    op: { $: BooleanOp; "@class": "apex.jorje.data.ast.BooleanOp"; };
     right: Expr;
     "@id"?: string;
     "@reference"?: string;
@@ -458,7 +458,7 @@ export interface ExprLiteralExpr extends Expr {
     "@class": "apex.jorje.data.ast.Expr$LiteralExpr";
     literal: any;
     loc: Location;
-    type: LiteralType;
+    type: { $: LiteralType; "@class": "apex.jorje.data.ast.LiteralType"; };
     "@id"?: string;
     "@reference"?: string;
 }
@@ -1323,7 +1323,7 @@ export interface PostfixExpr extends Expr {
     "@class": "apex.jorje.data.ast.Expr$PostfixExpr";
     expr: Expr;
     loc: Location;
-    op: PostfixOp;
+    op: { $: PostfixOp; "@class": "apex.jorje.data.ast.PostfixOp"; };
     "@id"?: string;
     "@reference"?: string;
 }
@@ -1332,7 +1332,7 @@ export interface PrefixExpr extends Expr {
     "@class": "apex.jorje.data.ast.Expr$PrefixExpr";
     expr: Expr;
     loc: Location;
-    op: PrefixOp;
+    op: { $: PrefixOp; "@class": "apex.jorje.data.ast.PrefixOp"; };
     "@id"?: string;
     "@reference"?: string;
 }
@@ -2045,7 +2045,7 @@ export interface TriggerDeclUnit extends CompilationUnit {
     members: BlockMember[];
     name: Identifier;
     target: Identifier[];
-    usages: TriggerUsage[];
+    usages: { $: TriggerUsage; "@class": "apex.jorje.data.ast.TriggerUsage"; }[];
     "@id"?: string;
     "@reference"?: string;
 }

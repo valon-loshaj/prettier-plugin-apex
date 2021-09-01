@@ -100,11 +100,16 @@ function handleReturnStatement(path: AstPath, print: printFn): Doc {
   return groupConcat(docs);
 }
 
-function getOperator(node: any): string {
+function handleTriggerUsage(path: AstPath): Doc {
+  const node: jorje.TriggerDeclUnit["usages"][number] = path.getValue();
+  return TRIGGER_USAGE[node.$];
+}
+
+function getOperator(node: jorje.BinaryExpr | jorje.BooleanExpr): string {
   if (node.op["@class"] === APEX_TYPES.BOOLEAN_OPERATOR) {
-    return BOOLEAN[node.op.$ as keyof typeof BOOLEAN];
+    return BOOLEAN[node.op.$];
   }
-  return BINARY[node.op.$ as keyof typeof BINARY];
+  return BINARY[node.op.$];
 }
 
 function handleBinaryishExpression(path: AstPath, print: printFn): Doc {
@@ -395,18 +400,18 @@ function handleLiteralExpression(
 }
 
 function handleBinaryOperation(path: AstPath): Doc {
-  const node = path.getValue();
-  return BINARY[node.$ as keyof typeof BINARY];
+  const node: jorje.BinaryExpr["op"] = path.getValue();
+  return BINARY[node.$];
 }
 
 function handleBooleanOperation(path: AstPath): Doc {
-  const node = path.getValue();
-  return BOOLEAN[node.$ as keyof typeof BOOLEAN];
+  const node: jorje.BooleanExpr["op"] = path.getValue();
+  return BOOLEAN[node.$];
 }
 
 function handleAssignmentOperation(path: AstPath): Doc {
-  const node = path.getValue();
-  return ASSIGNMENT[node.$ as keyof typeof ASSIGNMENT];
+  const node: jorje.AssignmentExpr["op"] = path.getValue();
+  return ASSIGNMENT[node.$];
 }
 
 function getDanglingCommentDocs(path: AstPath, print: printFn, options: any) {
@@ -2723,8 +2728,7 @@ nodeHandler[APEX_TYPES.IF_BLOCK] = handleIfBlock;
 nodeHandler[APEX_TYPES.ELSE_BLOCK] = handleElseBlock;
 nodeHandler[APEX_TYPES.EXPRESSION_STATEMENT] = handleExpressionStatement;
 nodeHandler[APEX_TYPES.RETURN_STATEMENT] = handleReturnStatement;
-nodeHandler[APEX_TYPES.TRIGGER_USAGE] = (path: AstPath, print: printFn) =>
-  TRIGGER_USAGE[path.call(print, "$") as keyof typeof TRIGGER_USAGE];
+nodeHandler[APEX_TYPES.TRIGGER_USAGE] = handleTriggerUsage;
 nodeHandler[APEX_TYPES.JAVA_TYPE_REF] = handleJavaTypeRef;
 nodeHandler[APEX_TYPES.CLASS_TYPE_REF] = handleClassTypeRef;
 nodeHandler[APEX_TYPES.ARRAY_TYPE_REF] = handleArrayTypeRef;
