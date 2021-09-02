@@ -19,7 +19,8 @@
   "scripts": {
     "build": "tsc",
     "coverage": "codecov",
-    "pretest": "npm run lint",
+    "dev": "tsc --watch",
+    "pretest": "npm run lint && npm run build",
     "test": "jest",
     "jest": "jest",
     "start-server": "ts-node bin/start-apex-server.ts",

@@ -51,9 +51,6 @@ jobs:
       - name: Install NPM dependencies
         run: npm ci
 
-      - name: Compile Typescript to Javascript
-        run: npm run build
-
       - name: Run Apex parsing server
         run: nohup npm run start-server &
 
