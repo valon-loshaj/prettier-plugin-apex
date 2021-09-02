@@ -21,9 +21,6 @@ export function isBinaryish(node: jorje.Expr): boolean {
  * @param comment the comment to check.
  */
 export function isApexDocComment(comment: jorje.BlockComment): boolean {
-  if (comment.value === undefined) {
-    return false;
-  }
   const lines = comment.value.split("\n");
   return (
     lines.length > 1 &&
