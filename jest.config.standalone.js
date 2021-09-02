@@ -18,4 +18,9 @@ module.exports = {
   ],
   coveragePathIgnorePatterns: ["/node_modules/", "/tests/", "/tests_config/"],
   transform: {},
+  globals: {
+    "ts-jest": {
+      tsconfig: "./tsconfig.test.json",
+    },
+  },
 };

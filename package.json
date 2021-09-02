@@ -17,10 +17,10 @@
     "/vendor"
   ],
   "scripts": {
-    "build:test": "tsc -c tsconfig.test.json",
-    "build": "tsc",
+    "build:test": "tsc --project tsconfig.test.json",
+    "build": "tsc --project tsconfig.json",
     "coverage": "codecov",
-    "dev": "tsc -c tsconfig.test.json --watch",
+    "dev": "tsc --project tsconfig.test.json --watch",
     "pretest": "npm run lint && npm run build:test",
     "test": "jest",
     "jest": "jest",
