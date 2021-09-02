@@ -1,14 +1,15 @@
 import fs from "fs";
 import { extname } from "path";
 import prettier from "prettier";
+import { wrap } from "jest-snapshot-serializer-raw";
 
 const { AST_COMPARE } = process.env;
 
-function read(filename: any) {
+function read(filename: string) {
   return fs.readFileSync(filename, "utf8");
 }
 
-function prettyPrint(src: any, filename: any, options: any) {
+function prettyPrint(src: string, filename: string, options: any) {
   return prettier.format(src, {
     filepath: filename,
     apexStandaloneParser: "built-in",
@@ -18,7 +19,7 @@ function prettyPrint(src: any, filename: any, options: any) {
   });
 }
 
-function parse(string: any, opts: any) {
+function parse(string: string, opts: any) {
   // eslint-disable-next-line no-underscore-dangle
   return (prettier as any).__debug.parse(
     string,
@@ -32,19 +33,7 @@ function parse(string: any, opts: any) {
   ).ast;
 }
 
-/**
- * Wraps a string in a marker object that is used by `./raw-serializer.js` to
- * directly print that string in a snapshot without escaping all double quotes.
- * Backticks will still be escaped.
- */
-function raw(string: any) {
-  if (typeof string !== "string") {
-    throw new Error("Raw snapshots have to be strings.");
-  }
-  return { [Symbol.for("raw")]: string };
-}
-
-function runSpec(dirname: any, parsers: any, specOptions?: any): void {
+function runSpec(dirname: string, parsers: any, specOptions?: any): void {
   /* instabul ignore if */
   if (!parsers || !parsers.length) {
     throw new Error(`No parsers were specified for ${dirname}`);
@@ -75,7 +64,7 @@ function runSpec(dirname: any, parsers: any, specOptions?: any): void {
       mergedOptions.forEach((mergedOpts) => {
         const output = prettyPrint(source, path, mergedOpts);
         test(`Format ${mergedOpts.parser}: ${filename}`, () => {
-          expect(raw(`${source}${"~".repeat(80)}\n${output}`)).toMatchSnapshot(
+          expect(wrap(`${source}${"~".repeat(80)}\n${output}`)).toMatchSnapshot(
             filename,
           );
         });

@@ -50,6 +50,7 @@
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-prettier": "^3.0.1",
     "jest": "^27.0.1",
+    "jest-snapshot-serializer-raw": "^1.2.0",
     "prettier": "^2.0.5",
     "ts-jest": "^27.0.5",
     "ts-migrate": "^0.1.21",

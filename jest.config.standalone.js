@@ -1,13 +1,13 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 const ENABLE_COVERAGE = !!process.env.CI;
 
 // This config does not start up the standalone parser by default
+/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
   displayName: "test",
   setupFiles: ["<rootDir>/tests_config/run-spec.ts"],
-  snapshotSerializers: ["<rootDir>/tests_config/raw-serializer.ts"],
+  snapshotSerializers: ["jest-snapshot-serializer-raw"],
   testPathIgnorePatterns: [],
   collectCoverage: ENABLE_COVERAGE,
   collectCoverageFrom: [
