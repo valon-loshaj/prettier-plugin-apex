@@ -316,56 +316,64 @@ export const PREFIX = {
   DEC: "--" as const,
 };
 export const QUERY = {
-  QueryIncludes: "INCLUDES" as const,
-  QueryExcludes: "EXCLUDES" as const,
-  QueryEqual: "=" as const,
-  QueryDoubleEqual: "==" as const,
-  QueryTripleEqual: "===" as const,
-  QueryNotEqual: "!=" as const,
-  QueryNotTripleEqual: "!==" as const,
-  QueryLike: "LIKE" as const,
-  QueryLessThanEqual: "<=" as const,
-  QueryGreaterThanEqual: ">=" as const,
-  QueryLessThan: "<" as const,
-  QueryGreaterThan: ">" as const,
-  QueryIn: "IN" as const,
-  QueryNotIn: "NOT IN" as const,
+  "apex.jorje.data.soql.QueryOp$QueryIncludes": "INCLUDES" as const,
+  "apex.jorje.data.soql.QueryOp$QueryExcludes": "EXCLUDES" as const,
+  "apex.jorje.data.soql.QueryOp$QueryEqual": "=" as const,
+  "apex.jorje.data.soql.QueryOp$QueryDoubleEqual": "==" as const,
+  "apex.jorje.data.soql.QueryOp$QueryTripleEqual": "===" as const,
+  "apex.jorje.data.soql.QueryOp$QueryNotEqual": "!=" as const,
+  "apex.jorje.data.soql.QueryOp$QueryNotTripleEqual": "!==" as const,
+  "apex.jorje.data.soql.QueryOp$QueryLike": "LIKE" as const,
+  "apex.jorje.data.soql.QueryOp$QueryLessThanEqual": "<=" as const,
+  "apex.jorje.data.soql.QueryOp$QueryGreaterThanEqual": ">=" as const,
+  "apex.jorje.data.soql.QueryOp$QueryLessThan": "<" as const,
+  "apex.jorje.data.soql.QueryOp$QueryGreaterThan": ">" as const,
+  "apex.jorje.data.soql.QueryOp$QueryIn": "IN" as const,
+  "apex.jorje.data.soql.QueryOp$QueryNotIn": "NOT IN" as const,
 };
 export const ORDER = {
-  OrderDesc: "DESC" as const,
-  OrderAsc: "ASC" as const,
+  "apex.jorje.data.soql.Order$OrderDesc": "DESC" as const,
+  "apex.jorje.data.soql.Order$OrderAsc": "ASC" as const,
 };
 export const ORDER_NULL = {
-  OrderNullFirst: "NULLS FIRST" as const,
-  OrderNullLast: "NULLS LAST" as const,
+  "apex.jorje.data.soql.OrderNull$OrderNullFirst": "NULLS FIRST" as const,
+  "apex.jorje.data.soql.OrderNull$OrderNullLast": "NULLS LAST" as const,
 };
 export const QUERY_WHERE = {
-  QueryAnd: "AND" as const,
-  QueryOr: "OR" as const,
+  "apex.jorje.data.soql.WhereCompoundOp$QueryAnd": "AND" as const,
+  "apex.jorje.data.soql.WhereCompoundOp$QueryOr": "OR" as const,
 };
 export const MODIFIER = {
-  PublicModifier: "public" as const,
-  PrivateModifier: "private" as const,
-  VirtualModifier: "virtual" as const,
-  HiddenModifier: "hidden" as const,
-  ProtectedModifier: "protected" as const,
-  AbstractModifier: "abstract" as const,
-  StaticModifier: "static" as const,
-  TestMethodModifier: "testMethod" as const,
-  WebServiceModifier: "webService" as const,
-  FinalModifier: "final" as const,
-  TransientModifier: "transient" as const,
-  GlobalModifier: "global" as const,
-  WithoutSharingModifier: "without sharing" as const,
-  WithSharingModifier: "with sharing" as const,
-  InheritedSharingModifier: "inherited sharing" as const,
-  OverrideModifier: "override" as const,
+  "apex.jorje.data.ast.Modifier$PublicModifier": "public" as const,
+  "apex.jorje.data.ast.Modifier$PrivateModifier": "private" as const,
+  "apex.jorje.data.ast.Modifier$VirtualModifier": "virtual" as const,
+  "apex.jorje.data.ast.Modifier$HiddenModifier": "hidden" as const,
+  "apex.jorje.data.ast.Modifier$ProtectedModifier": "protected" as const,
+  "apex.jorje.data.ast.Modifier$AbstractModifier": "abstract" as const,
+  "apex.jorje.data.ast.Modifier$StaticModifier": "static" as const,
+  "apex.jorje.data.ast.Modifier$TestMethodModifier": "testMethod" as const,
+  "apex.jorje.data.ast.Modifier$WebServiceModifier": "webService" as const,
+  "apex.jorje.data.ast.Modifier$FinalModifier": "final" as const,
+  "apex.jorje.data.ast.Modifier$TransientModifier": "transient" as const,
+  "apex.jorje.data.ast.Modifier$GlobalModifier": "global" as const,
+  "apex.jorje.data.ast.Modifier$WithoutSharingModifier":
+    "without sharing" as const,
+  "apex.jorje.data.ast.Modifier$WithSharingModifier": "with sharing" as const,
+  "apex.jorje.data.ast.Modifier$InheritedSharingModifier":
+    "inherited sharing" as const,
+  "apex.jorje.data.ast.Modifier$OverrideModifier": "override" as const,
+  // This is a special case, it is actually handled in a separate method, but
+  // we still need to specify it here to satisfy Typescript exhaustive check.
+  "apex.jorje.data.ast.Modifier$Annotation": "" as const,
 };
 export const DATA_CATEGORY = {
-  DataCategoryAt: "AT" as const,
-  DataCategoryAbove: "ABOVE" as const,
-  DataCategoryBelow: "BELOW" as const,
-  DataCategoryAboveOrBelow: "ABOVE_OR_BELOW" as const,
+  "apex.jorje.data.soql.DataCategoryOperator$DataCategoryAt": "AT" as const,
+  "apex.jorje.data.soql.DataCategoryOperator$DataCategoryAbove":
+    "ABOVE" as const,
+  "apex.jorje.data.soql.DataCategoryOperator$DataCategoryBelow":
+    "BELOW" as const,
+  "apex.jorje.data.soql.DataCategoryOperator$DataCategoryAboveOrBelow":
+    "ABOVE_OR_BELOW" as const,
 };
 export const TRIGGER_USAGE = {
   BEFORE_DELETE: "before delete" as const,

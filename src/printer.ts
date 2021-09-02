@@ -680,22 +680,18 @@ function handleAnnotationValue(
   print: printFn,
 ): Doc {
   const parts: Doc[] = [];
-  switch (childClass) {
-    case "TrueAnnotationValue":
+  switch (childClass as jorje.AnnotationValue["@class"]) {
+    case "apex.jorje.data.ast.AnnotationValue$TrueAnnotationValue":
       parts.push("true");
       break;
-    case "FalseAnnotationValue":
+    case "apex.jorje.data.ast.AnnotationValue$FalseAnnotationValue":
       parts.push("false");
       break;
-    case "StringAnnotationValue":
+    case "apex.jorje.data.ast.AnnotationValue$StringAnnotationValue":
       parts.push("'");
       parts.push(path.call(print, "value"));
       parts.push("'");
       break;
-    default:
-      throw new Error(
-        `AnnotationValue ${childClass} is not supported. Please file a bug report.`,
-      );
   }
   return concat(parts);
 }
@@ -859,20 +855,20 @@ function handleStatement(
   print: printFn,
 ): Doc {
   let doc;
-  switch (childClass) {
-    case "DmlInsertStmnt":
+  switch (childClass as jorje.Stmnt["@class"]) {
+    case "apex.jorje.data.ast.Stmnt$DmlInsertStmnt":
       doc = "insert";
       break;
-    case "DmlUpdateStmnt":
+    case "apex.jorje.data.ast.Stmnt$DmlUpdateStmnt":
       doc = "update";
       break;
-    case "DmlUpsertStmnt":
+    case "apex.jorje.data.ast.Stmnt$DmlUpsertStmnt":
       doc = "upsert";
       break;
-    case "DmlDeleteStmnt":
+    case "apex.jorje.data.ast.Stmnt$DmlDeleteStmnt":
       doc = "delete";
       break;
-    case "DmlUndeleteStmnt":
+    case "apex.jorje.data.ast.Stmnt$DmlUndeleteStmnt":
       doc = "undelete";
       break;
     default:
@@ -1679,17 +1675,13 @@ function handleFindValue(
   print: printFn,
 ): Doc {
   let doc: Doc;
-  switch (childClass) {
-    case "FindString":
+  switch (childClass as jorje.FindValue["@class"]) {
+    case "apex.jorje.data.sosl.FindValue$FindString":
       doc = concat(["'", path.call(print, "value"), "'"]);
       break;
-    case "FindExpr":
+    case "apex.jorje.data.sosl.FindValue$FindExpr":
       doc = path.call(print, "expr");
       break;
-    default:
-      throw new Error(
-        `FindValue ${childClass} is not supported. Please file a bug report.`,
-      );
   }
   return doc;
 }
@@ -1717,17 +1709,13 @@ function handleDivisionValue(
   print: printFn,
 ): Doc {
   let doc: Doc;
-  switch (childClass) {
-    case "DivisionLiteral":
+  switch (childClass as jorje.DivisionValue["@class"]) {
+    case "apex.jorje.data.sosl.DivisionValue$DivisionLiteral":
       doc = concat(["'", path.call(print, "literal"), "'"]);
       break;
-    case "DivisionExpr":
+    case "apex.jorje.data.sosl.DivisionValue$DivisionExpr":
       doc = path.call(print, "expr");
       break;
-    default:
-      throw new Error(
-        `DivisionValue ${childClass} is not supported. Please file a bug report.`,
-      );
   }
   return doc;
 }
@@ -1748,8 +1736,8 @@ function handleSearchWithClauseValue(
 ): Doc {
   const parts: Doc[] = [];
   let valueDocs: Doc[];
-  switch (childClass) {
-    case "SearchWithStringValue":
+  switch (childClass as jorje.SearchWithClauseValue["@class"]) {
+    case "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithStringValue":
       valueDocs = path.map(print, "values");
       if (valueDocs.length === 1) {
         parts.push(" = ");
@@ -1763,25 +1751,21 @@ function handleSearchWithClauseValue(
         parts.push(")");
       }
       break;
-    case "SearchWithTargetValue":
+    case "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithTargetValue":
       parts.push("(");
       parts.push(path.call(print, "target"));
       parts.push(" = ");
       parts.push(path.call(print, "value"));
       parts.push(")");
       break;
-    case "SearchWithTrueValue":
+    case "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithTrueValue":
       parts.push(" = ");
       parts.push("true");
       break;
-    case "SearchWithFalseValue":
+    case "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithFalseValue":
       parts.push(" = ");
       parts.push("false");
       break;
-    default:
-      throw new Error(
-        `SearchWithClauseValue ${childClass} is not supported. Please file a bug report.`,
-      );
   }
   return groupIndentConcat(parts);
 }
@@ -2130,7 +2114,7 @@ function handleDataCategory(path: AstPath, print: printFn): Doc {
 }
 
 function handleDataCategoryOperator(childClass: string): Doc {
-  return DATA_CATEGORY[childClass as keyof typeof DATA_CATEGORY];
+  return DATA_CATEGORY[childClass as jorje.DataCategoryOperator["@class"]];
 }
 
 function handleWhereCalcExpression(path: AstPath, print: printFn): Doc {
@@ -2206,8 +2190,8 @@ function handleWhereQueryLiteral(
     grandParentNode &&
     grandParentNode.op &&
     grandParentNode.op["@class"] === APEX_TYPES.QUERY_OPERATOR_LIKE;
-  switch (childClass) {
-    case "QueryString":
+  switch (childClass as jorje.QueryLiteral["@class"]) {
+    case "apex.jorje.data.soql.QueryLiteral$QueryString":
       // #340 - Query Strings have different properties than normal Apex strings,
       // so we have to handle them separately. They also behave differently
       // depending on whether they are in a LIKE expression vs other expressions.
@@ -2217,26 +2201,29 @@ function handleWhereQueryLiteral(
         "'",
       ]);
       break;
-    case "QueryNull":
+    case "apex.jorje.data.soql.QueryLiteral$QueryNull":
       doc = "NULL";
       break;
-    case "QueryTrue":
+    case "apex.jorje.data.soql.QueryLiteral$QueryTrue":
       doc = "TRUE";
       break;
-    case "QueryFalse":
+    case "apex.jorje.data.soql.QueryLiteral$QueryFalse":
       doc = "FALSE";
       break;
-    case "QueryNumber":
+    case "apex.jorje.data.soql.QueryLiteral$QueryNumber":
       doc = path.call(print, "literal", "$");
       break;
-    case "QueryDateTime":
+    case "apex.jorje.data.soql.QueryLiteral$QueryDateTime":
       doc = options.originalText.slice(node.loc.startIndex, node.loc.endIndex);
       break;
-    case "QueryDateFormula":
+    case "apex.jorje.data.soql.QueryLiteral$QueryDateFormula":
       doc = path.call(print, "dateFormula");
       break;
-    default:
+    case "apex.jorje.data.soql.QueryLiteral$QueryDate":
+    case "apex.jorje.data.soql.QueryLiteral$QueryTime":
+    case "apex.jorje.data.soql.QueryLiteral$QueryMultiCurrency": // TODO check if this is correct
       doc = path.call(print, "literal");
+      break;
   }
   if (doc) {
     return doc;
@@ -2309,17 +2296,13 @@ function handleOrderByExpression(
 ): Doc {
   const parts: Doc[] = [];
   let expressionField;
-  switch (childClass) {
-    case "OrderByDistance":
+  switch (childClass as jorje.OrderByExpr["@class"]) {
+    case "apex.jorje.data.soql.OrderByExpr$OrderByDistance":
       expressionField = "distance";
       break;
-    case "OrderByValue":
+    case "apex.jorje.data.soql.OrderByExpr$OrderByValue":
       expressionField = "field";
       break;
-    default:
-      throw new Error(
-        `OrderBy ${childClass} is not supported. Please file a bug report.`,
-      );
   }
   parts.push(path.call(print, expressionField));
 
@@ -2344,7 +2327,7 @@ function handleOrderOperation(
 ): Doc {
   const loc = opts.locStart(path.getValue());
   if (loc) {
-    return ORDER[childClass as keyof typeof ORDER];
+    return ORDER[childClass as jorje.Order["@class"]];
   }
   return "";
 }
@@ -2357,7 +2340,7 @@ function handleNullOrderOperation(
 ): Doc {
   const loc = opts.locStart(path.getValue());
   if (loc) {
-    return ORDER_NULL[childClass as keyof typeof ORDER_NULL];
+    return ORDER_NULL[childClass as jorje.OrderNull["@class"]];
   }
   return "";
 }
@@ -2393,17 +2376,13 @@ function handleGroupByClause(path: AstPath, print: printFn): Doc {
 
 function handleGroupByType(childClass: string): Doc {
   let doc;
-  switch (childClass) {
-    case "GroupByRollUp":
+  switch (childClass as jorje.GroupByType["@class"]) {
+    case "apex.jorje.data.soql.GroupByType$GroupByRollUp":
       doc = "ROLLUP";
       break;
-    case "GroupByCube":
+    case "apex.jorje.data.soql.GroupByType$GroupByCube":
       doc = "CUBE";
       break;
-    default:
-      throw new Error(
-        `GroupByType ${childClass} is not supported. Please file a bug report.`,
-      );
   }
   return doc;
 }
@@ -2432,22 +2411,22 @@ function handleUsingExpression(
   print: printFn,
 ): Doc {
   let doc;
-  switch (childClass) {
-    case "Using":
+  switch (childClass as jorje.UsingExpr["@class"]) {
+    case "apex.jorje.data.soql.UsingExpr$Using":
       doc = concat([
         path.call(print, "name", "value"),
         " ",
         path.call(print, "field", "value"),
       ]);
       break;
-    case "UsingEquals":
+    case "apex.jorje.data.soql.UsingExpr$UsingEquals":
       doc = concat([
         path.call(print, "name", "value"),
         " = ",
         path.call(print, "field", "value"),
       ]);
       break;
-    case "UsingId":
+    case "apex.jorje.data.soql.UsingExpr$UsingId":
       doc = concat([
         path.call(print, "name"),
         "(",
@@ -2457,44 +2436,32 @@ function handleUsingExpression(
         ")",
       ]);
       break;
-    default:
-      throw new Error(
-        `UsingExpr ${childClass} is not supported. Please file a bug report.`,
-      );
   }
   return doc;
 }
 
 function handleTrackingType(childClass: string): Doc {
   let doc;
-  switch (childClass) {
-    case "ForView":
+  switch (childClass as jorje.TrackingType["@class"]) {
+    case "apex.jorje.data.soql.TrackingType$ForView":
       doc = "FOR VIEW";
       break;
-    case "ForReference":
+    case "apex.jorje.data.soql.TrackingType$ForReference":
       doc = "FOR REFERENCE";
       break;
-    default:
-      throw new Error(
-        `TrackingType ${childClass} is not supported. Please file a bug report.`,
-      );
   }
   return doc;
 }
 
 function handleQueryOption(childClass: string): Doc {
   let doc;
-  switch (childClass) {
-    case "LockRows":
+  switch (childClass as jorje.QueryOption["@class"]) {
+    case "apex.jorje.data.soql.QueryOption$LockRows":
       doc = "FOR UPDATE";
       break;
-    case "IncludeDeleted":
+    case "apex.jorje.data.soql.QueryOption$IncludeDeleted":
       doc = "ALL ROWS";
       break;
-    default:
-      throw new Error(
-        `QueryOption ${childClass} is not supported. Please file a bug report.`,
-      );
   }
   return doc;
 }
@@ -2511,17 +2478,13 @@ function handleUpdateStatsClause(path: AstPath, print: printFn): Doc {
 
 function handleUpdateStatsOption(childClass: string): Doc {
   let doc;
-  switch (childClass) {
-    case "UpdateTracking":
+  switch (childClass as jorje.UpdateStatsOption["@class"]) {
+    case "apex.jorje.data.soql.UpdateStatsOption$UpdateTracking":
       doc = "TRACKING";
       break;
-    case "UpdateViewStat":
+    case "apex.jorje.data.soql.UpdateStatsOption$UpdateViewStat":
       doc = "VIEWSTAT";
       break;
-    default:
-      throw new Error(
-        `UpdateStatsOption ${childClass} is not supported. Please file a bug report.`,
-      );
   }
   return doc;
 }
@@ -2535,7 +2498,7 @@ function handleUsingType(path: AstPath, print: printFn): Doc {
 }
 
 function handleModifier(childClass: string): Doc {
-  const modifierValue = MODIFIER[childClass as keyof typeof MODIFIER] || "";
+  const modifierValue = MODIFIER[childClass as jorje.Modifier["@class"]] || "";
   if (!modifierValue) {
     throw new Error(
       `Modifier ${childClass} is not supported. Please file a bug report.`,
@@ -2558,12 +2521,14 @@ function handlePrefixExpression(path: AstPath, print: printFn): Doc {
   return concat(parts);
 }
 
-function handlePostfixOperator(path: AstPath, print: printFn): Doc {
-  return POSTFIX[path.call(print, "$") as keyof typeof POSTFIX];
+function handlePostfixOperator(path: AstPath): Doc {
+  const node: jorje.PostfixExpr["op"] = path.getValue();
+  return POSTFIX[node.$];
 }
 
-function handlePrefixOperator(path: AstPath, print: printFn): Doc {
-  return PREFIX[path.call(print, "$") as keyof typeof PREFIX];
+function handlePrefixOperator(path: AstPath): Doc {
+  const node: jorje.PrefixExpr["op"] = path.getValue();
+  return PREFIX[node.$];
 }
 
 function handleWhileLoop(path: AstPath, print: printFn): Doc {
@@ -2722,7 +2687,7 @@ type childNodeHandler = (
   options: any,
 ) => Doc;
 
-const nodeHandler: { [key: string]: singleNodeHandler | childNodeHandler } = {};
+const nodeHandler: { [key: string]: childNodeHandler | singleNodeHandler } = {};
 nodeHandler[APEX_TYPES.IF_ELSE_BLOCK] = handleIfElseBlock;
 nodeHandler[APEX_TYPES.IF_BLOCK] = handleIfBlock;
 nodeHandler[APEX_TYPES.ELSE_BLOCK] = handleElseBlock;
@@ -2934,7 +2899,7 @@ nodeHandler[APEX_TYPES.OFFSET_VALUE] = (path: AstPath, print: printFn) =>
 nodeHandler[APEX_TYPES.OFFSET_EXPRESSION] = (path: AstPath, print: printFn) =>
   concat(["OFFSET", " ", path.call(print, "expr")]);
 nodeHandler[APEX_TYPES.QUERY_OPERATOR] = (childClass: string) =>
-  QUERY[childClass as keyof typeof QUERY];
+  QUERY[childClass as jorje.QueryOp["@class"]];
 nodeHandler[APEX_TYPES.SOQL_ORDER] = handleOrderOperation;
 nodeHandler[APEX_TYPES.SOQL_ORDER_NULL] = handleNullOrderOperation;
 nodeHandler[APEX_TYPES.TRACKING_TYPE] = handleTrackingType;
@@ -2947,7 +2912,7 @@ nodeHandler[APEX_TYPES.WHERE_CALC_EXPRESSION] = handleWhereCalcExpression;
 nodeHandler[APEX_TYPES.WHERE_CALC_OPERATOR_PLUS] = () => "+";
 nodeHandler[APEX_TYPES.WHERE_CALC_OPERATOR_MINUS] = () => "-";
 nodeHandler[APEX_TYPES.WHERE_COMPOUND_OPERATOR] = (childClass: string) =>
-  QUERY_WHERE[childClass as keyof typeof QUERY_WHERE];
+  QUERY_WHERE[childClass as jorje.WhereCompoundOp["@class"]];
 nodeHandler[APEX_TYPES.SEARCH_USING_CLAUSE] = (path: AstPath, print: printFn) =>
   concat(["USING", " ", path.call(print, "type")]);
 nodeHandler[APEX_TYPES.USING_TYPE] = handleUsingType;
@@ -3008,10 +2973,9 @@ function genericPrint(path: AstPath, options: any, print: printFn) {
   const separatorIndex = apexClass.indexOf("$");
   if (separatorIndex !== -1) {
     const parentClass = apexClass.substring(0, separatorIndex);
-    const childClass = apexClass.substring(separatorIndex + 1);
     if (parentClass in nodeHandler) {
       return (nodeHandler[parentClass] as childNodeHandler)(
-        childClass,
+        apexClass,
         path,
         print,
         options,

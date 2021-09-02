@@ -12,7 +12,9 @@
     "linebreak-style": 0,
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/no-var-requires": 0,
-    "@typescript-eslint/naming-convention": 0
+    "@typescript-eslint/naming-convention": 0,
+    "@typescript-eslint/switch-exhaustiveness-check": "error",
+    "default-case": 0
   },
   "globals": {
     "runSpec": true
