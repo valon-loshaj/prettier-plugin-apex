@@ -9,7 +9,7 @@ function read(filename: string) {
   return fs.readFileSync(filename, "utf8");
 }
 
-function prettyPrint(src: string, filename: string, options: any) {
+function prettyPrint(src: string, filename: string, options: prettier.Options) {
   return prettier.format(src, {
     filepath: filename,
     apexStandaloneParser: "built-in",
@@ -19,7 +19,7 @@ function prettyPrint(src: string, filename: string, options: any) {
   });
 }
 
-function parse(string: string, opts: any) {
+function parse(string: string, opts: prettier.Options) {
   // eslint-disable-next-line no-underscore-dangle
   return (prettier as any).__debug.parse(
     string,
@@ -33,13 +33,17 @@ function parse(string: string, opts: any) {
   ).ast;
 }
 
-function runSpec(dirname: string, parsers: any, specOptions?: any): void {
+function runSpec(
+  dirname: string,
+  parsers: string[],
+  specOptions?: prettier.Options,
+): void {
   /* instabul ignore if */
   if (!parsers || !parsers.length) {
     throw new Error(`No parsers were specified for ${dirname}`);
   }
 
-  fs.readdirSync(dirname).forEach((filename: any) => {
+  fs.readdirSync(dirname).forEach((filename: string) => {
     const path = `${dirname}/${filename}`;
     if (
       extname(filename) !== ".snap" &&
@@ -49,13 +53,17 @@ function runSpec(dirname: string, parsers: any, specOptions?: any): void {
     ) {
       const source = read(path).replace(/\r\n/g, "\n");
 
-      let options;
-      if (!Array.isArray(specOptions)) {
-        options = [specOptions];
+      let options: prettier.Options[] = [];
+      if (specOptions !== undefined) {
+        if (!Array.isArray(specOptions)) {
+          options = [specOptions];
+        } else {
+          options = specOptions;
+        }
       } else {
-        options = specOptions;
+        options.push({});
       }
-      const mergedOptions = options.map((opts) => ({
+      const mergedOptions = options.map((opts: prettier.Options) => ({
         plugins: ["."],
         ...opts,
         parser: parsers[0],

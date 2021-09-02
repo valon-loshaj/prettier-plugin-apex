@@ -350,7 +350,7 @@ function handleJavaVariableExpression(path: AstPath, print: printFn): Doc {
 function handleLiteralExpression(
   path: AstPath,
   print: printFn,
-  options: any,
+  options: prettier.ParserOptions,
 ): Doc {
   const node = path.getValue();
   const literalType: Doc = path.call(print, "type", "$");
@@ -372,7 +372,7 @@ function handleLiteralExpression(
       node.loc.startIndex,
       node.loc.endIndex,
     );
-    const lastCharacter = literal[literal.length - 1].toLowerCase();
+    const lastCharacter = literal[literal.length - 1]!.toLowerCase();
     // We handle the letters d and l at the end of Decimal and Long manually:
     // ```
     // Decimal a = 1.0D
@@ -2324,7 +2324,7 @@ function handleOrderOperation(
   childClass: string,
   path: AstPath,
   _print: printFn,
-  opts: any,
+  opts: prettier.ParserOptions,
 ): Doc {
   const loc = opts.locStart(path.getValue());
   if (loc) {
@@ -2337,7 +2337,7 @@ function handleNullOrderOperation(
   childClass: string,
   path: AstPath,
   _print: printFn,
-  opts: any,
+  opts: prettier.ParserOptions,
 ): Doc {
   const loc = opts.locStart(path.getValue());
   if (loc) {
@@ -2680,12 +2680,16 @@ function handleForInit(path: AstPath, print: printFn): Doc[] {
   return parts;
 }
 
-type singleNodeHandler = (path: AstPath, print: printFn, options: any) => Doc;
+type singleNodeHandler = (
+  path: AstPath,
+  print: printFn,
+  options: prettier.ParserOptions,
+) => Doc;
 type childNodeHandler = (
   childClass: string,
   path: AstPath,
   print: printFn,
-  options: any,
+  options: prettier.ParserOptions,
 ) => Doc;
 
 const nodeHandler: { [key: string]: childNodeHandler | singleNodeHandler } = {};
@@ -2945,7 +2949,11 @@ function handleTrailingEmptyLines(doc: Doc, node: any): Doc {
   return doc;
 }
 
-function genericPrint(path: AstPath, options: any, print: printFn) {
+function genericPrint(
+  path: AstPath,
+  options: prettier.ParserOptions,
+  print: printFn,
+) {
   const n = path.getValue();
   if (typeof n === "number" || typeof n === "boolean") {
     return n.toString();
@@ -2991,10 +2999,10 @@ function genericPrint(path: AstPath, options: any, print: printFn) {
   );
 }
 
-let options: any;
+let options: prettier.ParserOptions;
 export default function printGenerically(
   path: AstPath,
-  opts: any,
+  opts: prettier.ParserOptions,
   print: printFn,
 ): Doc {
   if (typeof opts === "object") {

@@ -1,6 +1,7 @@
 /* eslint no-param-reassign: 0 */
 import childProcess, { spawnSync } from "child_process";
 import path from "path";
+import prettier from "prettier";
 
 import {
   findNextUncommentedCharacter,
@@ -548,7 +549,7 @@ type SerializedAst = {
 export default function parse(
   sourceCode: string,
   _: any,
-  options: any,
+  options: prettier.RequiredOptions,
 ): SerializedAst | Record<string, never> {
   const lineIndexes = getLineIndexes(sourceCode);
   let serializedAst;
@@ -572,7 +573,7 @@ export default function parse(
       ast[APEX_TYPES.PARSER_OUTPUT].parseErrors.length > 0
     ) {
       const errors = ast[APEX_TYPES.PARSER_OUTPUT].parseErrors.map(
-        (err: any) => `${err.message}. ${err.detailMessage}`,
+        (err: jorje.ParseException) => `${err.message}.`,
       );
       throw new Error(errors.join("\r\n"));
     }

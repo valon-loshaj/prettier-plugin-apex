@@ -8,14 +8,14 @@ module.exports = {
   displayName: "test",
   setupFiles: ["<rootDir>/tests_config/run-spec.ts"],
   snapshotSerializers: ["jest-snapshot-serializer-raw"],
-  testPathIgnorePatterns: [],
+  testPathIgnorePatterns: ["<rootDir>/dist/"],
   collectCoverage: ENABLE_COVERAGE,
   collectCoverageFrom: [
     "src/**/*.ts",
     "dist/**/*.js",
-    "!<rootDir>/node_modules/",
-    "!src/http-client.ts",
-    "!src/http-server.ts",
+    "!**/http-client.*",
+    "!**/http-server.*",
   ],
+  coveragePathIgnorePatterns: ["/node_modules/", "/tests/", "/tests_config/"],
   transform: {},
 };

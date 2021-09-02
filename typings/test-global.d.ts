@@ -1,5 +1,5 @@
 declare function runSpec(
   dirname: string,
   parsers: string[],
-  specOptions?: any,
+  specOptions?: prettier.Options,
 ): void;

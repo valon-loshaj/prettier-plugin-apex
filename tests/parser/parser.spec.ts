@@ -2,14 +2,6 @@ import fs from "fs";
 import path from "path";
 import prettier from "prettier";
 
-declare module "prettier" {
-  interface Options {
-    apexStandaloneParser?: string;
-    apexStandalonePort?: number;
-    apexStandaloneHost?: string;
-  }
-}
-
 describe("Parser Tests", () => {
   it("runs synchronous parser on valid class correctly", () => {
     const fileName = path.join(__dirname, "ValidClass.cls");
