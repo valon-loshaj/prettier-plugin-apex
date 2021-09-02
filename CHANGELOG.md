@@ -1,5 +1,9 @@
 # Unreleased
 
+## Internal Changes
+
+- Prettier Apex has been converted to Typescript, enabling faster response time to internal jorje changes from Salesforce.
+
 ## Formatting Changes
 
 - Fix SOQL Time literals always getting printed in UTC timezone.
