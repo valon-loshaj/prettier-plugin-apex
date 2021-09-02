@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/**/*",
+    "bin/**/*",
+    "tests_config/**/*",
+    "tests/**/*",
+    "typings/global.d.ts",
+    "typings/test-global.d.ts"
+  ],
+  "compilerOptions": {
+    "sourceMap": false,
+    "inlineSourceMap": true
+  }
+}

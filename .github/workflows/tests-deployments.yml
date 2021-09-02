@@ -72,6 +72,10 @@ jobs:
         if: env.RUN_INTEGRATION_TESTS == 'true'
         run: ./tests_integration/run-integration-tests.sh
 
+      - name: Build deployment artiface
+        if: env.RUN_DEPLOYMENT == 'true'
+        run: rm -rf dist && npm run build
+
       - name: Deploy to NPM
         if: env.RUN_DEPLOYMENT == 'true'
         uses: JS-DevTools/npm-publish@v1

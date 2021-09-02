@@ -17,10 +17,11 @@
     "/vendor"
   ],
   "scripts": {
+    "build:test": "tsc -c tsconfig.test.json",
     "build": "tsc",
     "coverage": "codecov",
-    "dev": "tsc --watch",
-    "pretest": "npm run lint && npm run build",
+    "dev": "tsc -c tsconfig.test.json --watch",
+    "pretest": "npm run lint && npm run build:test",
     "test": "jest",
     "jest": "jest",
     "start-server": "ts-node bin/start-apex-server.ts",
