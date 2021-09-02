@@ -2215,14 +2215,14 @@ function handleWhereQueryLiteral(
       doc = path.call(print, "literal", "$");
       break;
     case "apex.jorje.data.soql.QueryLiteral$QueryDateTime":
+    case "apex.jorje.data.soql.QueryLiteral$QueryTime":
       doc = options.originalText.slice(node.loc.startIndex, node.loc.endIndex);
       break;
     case "apex.jorje.data.soql.QueryLiteral$QueryDateFormula":
       doc = path.call(print, "dateFormula");
       break;
     case "apex.jorje.data.soql.QueryLiteral$QueryDate":
-    case "apex.jorje.data.soql.QueryLiteral$QueryTime":
-    case "apex.jorje.data.soql.QueryLiteral$QueryMultiCurrency": // TODO check if this is correct
+    case "apex.jorje.data.soql.QueryLiteral$QueryMultiCurrency":
       doc = path.call(print, "literal");
       break;
   }
