@@ -68,6 +68,9 @@ function parseTextWithHttp(
   if (anonymous) {
     args.push("-n");
   }
+  if (!process.argv[0]) {
+    throw new Error("Failed to call http client");
+  }
   const executionResult = childProcess.spawnSync(process.argv[0], args, {
     input: text,
     maxBuffer: MAX_BUFFER,
@@ -177,7 +180,7 @@ function handleNodeEndedWithCharacter(endCharacter: string) {
 }
 
 function handleAnonymousUnitLocation(
-  location: MinimalLocation,
+  _location: MinimalLocation,
   sourceCode: string,
 ): MinimalLocation {
   return {
@@ -486,11 +489,13 @@ function resolveLineIndexes(node: any, lineIndexes: number[]) {
     }
   }
   if (nodeLoc && !("column" in nodeLoc)) {
-    nodeLoc.column =
-      nodeLoc.startIndex -
+    const nodeStartLineIndex =
       lineIndexes[
         lineIndexes.findIndex((index: number) => index > nodeLoc.startIndex) - 1
       ];
+    if (nodeStartLineIndex !== undefined) {
+      nodeLoc.column = nodeLoc.startIndex - nodeStartLineIndex;
+    }
   }
   Object.keys(node).forEach((key) => {
     if (typeof node[key] === "object") {
@@ -511,7 +516,7 @@ function getLineIndexes(sourceCode: string) {
       break;
     }
     lineIndexes[lineIndex] =
-      lineIndexes[lineIndex - 1] +
+      lineIndexes[lineIndex - 1]! +
       sourceCode.substring(characterIndex, eolIndex).length +
       1;
     characterIndex = eolIndex + 1;

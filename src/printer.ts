@@ -414,7 +414,7 @@ function handleAssignmentOperation(path: AstPath): Doc {
   return ASSIGNMENT[node.$];
 }
 
-function getDanglingCommentDocs(path: AstPath, print: printFn, options: any) {
+function getDanglingCommentDocs(path: AstPath, _print: printFn, options: any) {
   const node = path.getValue();
   if (!node.comments) {
     return [];
@@ -1074,7 +1074,7 @@ function handleVariableDeclarations(path: AstPath, print: printFn): Doc {
   if (declarationDocs.length > 1) {
     parts.push(indentConcat([join(concat([",", line]), declarationDocs)]));
     parts.push(";");
-  } else if (declarationDocs.length === 1) {
+  } else if (declarationDocs.length === 1 && declarationDocs[0] !== undefined) {
     parts.push(concat([declarationDocs[0], ";"]));
   }
   return groupConcat(parts);
@@ -1387,6 +1387,7 @@ function handleNewListInit(path: AstPath, print: printFn): Doc {
   const typeParts = path.map(print, "types") as Concat[];
   const hasLiteralNumberInitializer =
     typeParts.length &&
+    typeParts[0] !== undefined &&
     typeParts[0].parts.length < 4 &&
     node.expr?.value?.type?.$ === "INTEGER";
 
@@ -1739,7 +1740,7 @@ function handleSearchWithClauseValue(
   switch (childClass as jorje.SearchWithClauseValue["@class"]) {
     case "apex.jorje.data.sosl.SearchWithClauseValue$SearchWithStringValue":
       valueDocs = path.map(print, "values");
-      if (valueDocs.length === 1) {
+      if (valueDocs.length === 1 && valueDocs[0] !== undefined) {
         parts.push(" = ");
         parts.push(valueDocs[0]);
       } else {
@@ -2322,7 +2323,7 @@ function handleOrderByExpression(
 function handleOrderOperation(
   childClass: string,
   path: AstPath,
-  print: printFn,
+  _print: printFn,
   opts: any,
 ): Doc {
   const loc = opts.locStart(path.getValue());
@@ -2335,7 +2336,7 @@ function handleOrderOperation(
 function handleNullOrderOperation(
   childClass: string,
   path: AstPath,
-  print: printFn,
+  _print: printFn,
   opts: any,
 ): Doc {
   const loc = opts.locStart(path.getValue());
@@ -2739,8 +2740,8 @@ nodeHandler[APEX_TYPES.PROPERTY_GETTER] = handlePropertyGetterSetter("get");
 nodeHandler[APEX_TYPES.PROPERTY_SETTER] = handlePropertyGetterSetter("set");
 nodeHandler[APEX_TYPES.STRUCTURED_VERSION] = handleStructuredVersion;
 nodeHandler[APEX_TYPES.REQUEST_VERSION] = () => "Request";
-nodeHandler.int = (path: AstPath, print: printFn) => path.call(print, "$");
-nodeHandler.string = (path: AstPath, print: printFn) =>
+nodeHandler["int"] = (path: AstPath, print: printFn) => path.call(print, "$");
+nodeHandler["string"] = (path: AstPath, print: printFn) =>
   concat(["'", path.call(print, "$"), "'"]);
 
 // Operator
@@ -2929,7 +2930,10 @@ function handleTrailingEmptyLines(doc: Doc, node: any): Doc {
       if (trailingComments.length === 0) {
         insertNewLine = true;
       } else {
-        trailingComments[trailingComments.length - 1].trailingEmptyLine = true;
+        const lastComment = trailingComments[trailingComments.length - 1];
+        if (lastComment) {
+          lastComment.trailingEmptyLine = true;
+        }
       }
     } else {
       insertNewLine = true;

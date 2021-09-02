@@ -204,7 +204,11 @@ const PRECEDENCE: { [key: string]: number } = {};
 });
 
 export function getPrecedence(op: string): number {
-  return PRECEDENCE[op];
+  const precedence = PRECEDENCE[op];
+  if (precedence === undefined) {
+    throw new Error(`Failed to get precedence for operator ${op}`);
+  }
+  return precedence;
 }
 
 function doesFileExist(file: string): boolean {
