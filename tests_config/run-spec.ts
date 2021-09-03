@@ -5,11 +5,15 @@ import { wrap } from "jest-snapshot-serializer-raw";
 
 const { AST_COMPARE } = process.env;
 
-function read(filename: string) {
+function read(filename: string): string {
   return fs.readFileSync(filename, "utf8");
 }
 
-function prettyPrint(src: string, filename: string, options: prettier.Options) {
+function prettyPrint(
+  src: string,
+  filename: string,
+  options: prettier.Options,
+): string {
   return prettier.format(src, {
     filepath: filename,
     apexStandaloneParser: "built-in",
@@ -19,9 +23,9 @@ function prettyPrint(src: string, filename: string, options: prettier.Options) {
   });
 }
 
-function parse(string: string, opts: prettier.Options) {
+function parse(string: string, opts: prettier.Options): any {
   // eslint-disable-next-line no-underscore-dangle
-  return (prettier as any).__debug.parse(
+  return prettier.__debug.parse(
     string,
     {
       apexStandaloneParser: "built-in",
@@ -95,4 +99,4 @@ function runSpec(
     }
   });
 }
-(global as any).runSpec = runSpec;
+global.runSpec = runSpec;
