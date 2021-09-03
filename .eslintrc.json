@@ -24,6 +24,6 @@
     "jest": true
   },
   "parserOptions": {
-    "project": "./tsconfig.test.json"
+    "project": "./tsconfig.json"
   }
 }

@@ -74,7 +74,7 @@ jobs:
 
       - name: Build deployment artiface
         if: env.RUN_DEPLOYMENT == 'true'
-        run: rm -rf dist && npm run build
+        run: rm -rf dist && npm run build:prod
 
       - name: Deploy to NPM
         if: env.RUN_DEPLOYMENT == 'true'

@@ -10,17 +10,6 @@ module.exports = {
   snapshotSerializers: ["jest-snapshot-serializer-raw"],
   testPathIgnorePatterns: ["<rootDir>/dist/"],
   collectCoverage: ENABLE_COVERAGE,
-  collectCoverageFrom: [
-    "src/**/*.ts",
-    "dist/**/*.js",
-    "!**/http-client.*",
-    "!**/http-server.*",
-  ],
   coveragePathIgnorePatterns: ["/node_modules/", "/tests/", "/tests_config/"],
   transform: {},
-  globals: {
-    "ts-jest": {
-      tsconfig: "./tsconfig.test.json",
-    },
-  },
 };
