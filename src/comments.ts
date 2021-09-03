@@ -2,7 +2,7 @@
 
 import prettier, { AstPath, Doc, ParserOptions } from "prettier";
 
-import { GenericComment, isApexDocComment } from "./util";
+import { AnnotatedComment, GenericComment, isApexDocComment } from "./util";
 import jorje from "../vendor/apex-ast-serializer/typings/jorje";
 
 const { concat, join, lineSuffix, hardline } = prettier.doc.builders;
@@ -16,16 +16,6 @@ const {
 const constants = require("./constants");
 
 const apexTypes = constants.APEX_TYPES;
-
-export type AnnotatedGenericComment = GenericComment & {
-  trailing?: boolean;
-  leading?: boolean;
-  printed?: boolean;
-  enclosingNode?: any;
-  followingNode?: any;
-  precedingNode?: any;
-  trailingEmptyLine?: boolean;
-};
 
 /**
  * Print ApexDoc comment. This is straight from prettier handling of JSDoc
@@ -140,13 +130,11 @@ export function willPrintOwnComments(path: AstPath): boolean {
   return !node || !node["@class"] || node["@class"] === apexTypes.ANNOTATION;
 }
 
-export function getTrailingComments(node: any): AnnotatedGenericComment[] {
-  return node.comments.filter(
-    (comment: AnnotatedGenericComment) => comment.trailing,
-  );
+export function getTrailingComments(node: any): AnnotatedComment[] {
+  return node.comments.filter((comment: AnnotatedComment) => comment.trailing);
 }
 
-function handleDanglingComment(comment: AnnotatedGenericComment): boolean {
+function handleDanglingComment(comment: AnnotatedComment): boolean {
   const { enclosingNode } = comment;
   if (
     enclosingNode &&
@@ -181,7 +169,7 @@ function handleDanglingComment(comment: AnnotatedGenericComment): boolean {
  * ```
  */
 function handleInBetweenConditionalComment(
-  comment: AnnotatedGenericComment,
+  comment: AnnotatedComment,
   sourceCode: string,
 ) {
   const { enclosingNode, precedingNode, followingNode } = comment;
@@ -246,7 +234,7 @@ function handleInBetweenConditionalComment(
  * ```
  */
 function handleInBetweenTryCatchFinallyComment(
-  comment: AnnotatedGenericComment,
+  comment: AnnotatedComment,
 ): boolean {
   const { enclosingNode, precedingNode, followingNode } = comment;
   if (
@@ -295,7 +283,7 @@ function handleInBetweenTryCatchFinallyComment(
  * ```
  */
 function handleWhereExpression(
-  comment: AnnotatedGenericComment,
+  comment: AnnotatedComment,
   sourceCode: string,
 ): boolean {
   const { enclosingNode, precedingNode, followingNode } = comment;
@@ -342,7 +330,7 @@ function handleWhereExpression(
  *   .toString();
  * ```
  */
-function handleLongChainComment(comment: AnnotatedGenericComment): boolean {
+function handleLongChainComment(comment: AnnotatedComment): boolean {
   const { enclosingNode, precedingNode, followingNode } = comment;
   if (
     !enclosingNode ||
@@ -363,7 +351,7 @@ function handleLongChainComment(comment: AnnotatedGenericComment): boolean {
   return false;
 }
 
-function isPrettierIgnore(comment: AnnotatedGenericComment): boolean {
+function isPrettierIgnore(comment: AnnotatedComment): boolean {
   let content;
   if (comment.leading === false) {
     return false;
@@ -388,7 +376,7 @@ function isPrettierIgnore(comment: AnnotatedGenericComment): boolean {
  * more likely what the user wants).
  */
 function handleModifierPrettierIgnoreComment(
-  comment: AnnotatedGenericComment,
+  comment: AnnotatedComment,
 ): boolean {
   const { enclosingNode, followingNode } = comment;
   if (
@@ -415,7 +403,7 @@ function handleModifierPrettierIgnoreComment(
  * comment based on its internal heuristic.
  */
 export function handleOwnLineComment(
-  comment: AnnotatedGenericComment,
+  comment: AnnotatedComment,
   sourceCode: string,
 ): boolean {
   return (
@@ -439,7 +427,7 @@ export function handleOwnLineComment(
  * comment based on its internal heuristic.
  */
 export function handleEndOfLineComment(
-  comment: AnnotatedGenericComment,
+  comment: AnnotatedComment,
   sourceCode: string,
 ): boolean {
   return (
@@ -463,7 +451,7 @@ export function handleEndOfLineComment(
  * comment based on its internal heuristic.
  */
 export function handleRemainingComment(
-  comment: AnnotatedGenericComment,
+  comment: AnnotatedComment,
   sourceCode: string,
 ): boolean {
   return (

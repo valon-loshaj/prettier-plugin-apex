@@ -4,9 +4,38 @@ import { join } from "path";
 import { accessSync } from "fs";
 
 import jorje from "../vendor/apex-ast-serializer/typings/jorje";
-import { APEX_TYPES as apexTypes } from "./constants";
+import { APEX_TYPES, APEX_TYPES as apexTypes } from "./constants";
+
+export type SerializedAst = {
+  [APEX_TYPES.PARSER_OUTPUT]: jorje.ParserOutput;
+};
 
 export type GenericComment = jorje.HiddenToken;
+
+type AstNode = {
+  "@class": string;
+  "@id": string;
+};
+type ReferenceNode = {
+  "@reference": string;
+};
+export type Node = AstNode | ReferenceNode;
+
+export type AnnotatedAstNode = AstNode & {
+  trailingEmptyLine?: boolean;
+  isNextStatementOnSameLine?: boolean;
+  isLastNodeInArray?: boolean;
+};
+
+export type AnnotatedComment = AnnotatedAstNode &
+  GenericComment & {
+    trailing?: boolean;
+    leading?: boolean;
+    printed?: boolean;
+    enclosingNode?: any;
+    followingNode?: any;
+    precedingNode?: any;
+  };
 
 export function isBinaryish(node: jorje.Expr): boolean {
   return (

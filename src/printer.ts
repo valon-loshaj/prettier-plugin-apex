@@ -1,12 +1,12 @@
 import prettier, { AstPath, Doc } from "prettier";
 import { builders } from "prettier/doc";
 import {
-  AnnotatedGenericComment,
   getTrailingComments,
   printComment,
   printDanglingComment,
 } from "./comments";
 import {
+  AnnotatedComment,
   checkIfParentIsDottedExpression,
   getPrecedence,
   isBinaryish,
@@ -420,7 +420,7 @@ function getDanglingCommentDocs(path: AstPath, _print: printFn, options: any) {
     return [];
   }
   node.danglingComments = node.comments.filter(
-    (comment: AnnotatedGenericComment) => !comment.leading && !comment.trailing,
+    (comment: AnnotatedComment) => !comment.leading && !comment.trailing,
   );
   const danglingCommentParts: Doc[] = [];
   path.each((commentPath: AstPath) => {

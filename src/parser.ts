@@ -7,6 +7,7 @@ import {
   findNextUncommentedCharacter,
   GenericComment,
   getSerializerBinDirectory,
+  SerializedAst,
 } from "./util";
 import {
   APEX_TYPES,
@@ -541,10 +542,6 @@ function getEmptyLineLocations(sourceCode: string): number[] {
       [],
     );
 }
-
-type SerializedAst = {
-  [APEX_TYPES.PARSER_OUTPUT]: jorje.ParserOutput;
-};
 
 export default function parse(
   sourceCode: string,
