@@ -32,9 +32,6 @@ export type AnnotatedGenericComment = GenericComment & {
  * @param comment the comment to print.
  */
 function printApexDocComment(comment: jorje.BlockComment): Doc {
-  if (comment.value === undefined) {
-    return "";
-  }
   const lines = comment.value.split("\n");
   return concat([
     join(
@@ -188,12 +185,6 @@ function handleInBetweenConditionalComment(
   sourceCode: string,
 ) {
   const { enclosingNode, precedingNode, followingNode } = comment;
-  if (
-    comment.location === undefined ||
-    comment.location.startIndex === undefined
-  ) {
-    return false;
-  }
   if (
     enclosingNode &&
     precedingNode &&
@@ -375,9 +366,6 @@ function handleLongChainComment(comment: AnnotatedGenericComment): boolean {
 function isPrettierIgnore(comment: AnnotatedGenericComment): boolean {
   let content;
   if (comment.leading === false) {
-    return false;
-  }
-  if (comment.value === undefined) {
     return false;
   }
   if (comment["@class"] === apexTypes.BLOCK_COMMENT) {
