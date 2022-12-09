@@ -18,9 +18,7 @@ const {
   hasNewlineInRange,
   skipWhitespace,
 } = prettier.util;
-const constants = require("./constants");
-
-const apexTypes = constants.APEX_TYPES;
+import { APEX_TYPES as apexTypes, ALLOW_DANGLING_COMMENTS } from "./constants";
 
 /**
  * Print ApexDoc comment. This is straight from prettier handling of JSDoc
@@ -158,7 +156,7 @@ function handleDanglingComment(comment: AnnotatedComment): boolean {
   const { enclosingNode } = comment;
   if (
     enclosingNode &&
-    constants.ALLOW_DANGLING_COMMENTS.indexOf(enclosingNode["@class"]) !== -1 &&
+    ALLOW_DANGLING_COMMENTS.indexOf(enclosingNode["@class"]) !== -1 &&
     ((enclosingNode.stmnts && enclosingNode.stmnts.length === 0) ||
       (enclosingNode.members && enclosingNode.members.length === 0))
   ) {
