@@ -18,27 +18,24 @@ export default {
     exports: 'named',
     globals: {
       prettier: 'prettier',
-      path: 'path',
-      fs: 'fs',
-      child_process: 'child_process'
+      axios: 'axios'
     },
     paths: {
-      prettier: 'prettier/standalone'
+      prettier: 'prettier/standalone',
+      axios: 'node_modules/axios/dist/browser/axios.cjs'
     }
   },
-  external: ["prettier"],
+  external: ["prettier", "axios"],
   plugins: [
-    builtins(),
-    globals(),
+    // builtins(),
+    // globals(),
     nodeResolve({
       browser: true,
       preferBuiltins: true
     }),
-    commonjs(),
     json(),
-    nodePolyfills({
-      fs: true
-    }),
+    commonjs(),
+    nodePolyfills(),
     typescript({
       tsconfig: 'tsconfig.prod.json'
     }),
