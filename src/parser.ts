@@ -12,6 +12,7 @@ import {
 import {
   GenericComment,
   SerializedAst,
+  doesFileExist,
   findNextUncommentedCharacter,
   getSerializerBinDirectory,
 } from "./util.js";
@@ -21,22 +22,41 @@ type MinimalLocation = {
   endIndex: number;
 };
 
-async function parseTextWithSpawn(
-  text: string,
-  anonymous: boolean,
-): Promise<string> {
+async function getNativeExecutablePath(): Promise<string | null> {
+  const isWindows = process.platform === "win32";
+  let fileName = `apex-ast-serializer-${process.platform}-${process.arch}`;
+  if (isWindows) {
+    fileName += ".exe";
+  }
+  const filePath = path.join(getSerializerBinDirectory(), fileName);
+  if (doesFileExist(filePath)) {
+    return filePath;
+  }
+  return null;
+}
+
+async function getJavaSerializerPath(): Promise<string> {
   let serializerBin = getSerializerBinDirectory();
   if (process.platform === "win32") {
     serializerBin = path.join(serializerBin, "apex-ast-serializer.bat");
   } else {
     serializerBin = path.join(serializerBin, "apex-ast-serializer");
   }
+  return serializerBin;
+}
+
+async function parseTextWithSpawn(
+  text: string,
+  anonymous: boolean,
+): Promise<string> {
+  const executable =
+    (await getNativeExecutablePath()) ?? (await getJavaSerializerPath());
   const args = ["-f", "json", "-i"];
   if (anonymous) {
     args.push("-a");
   }
   return new Promise((resolve, reject) => {
-    const process = childProcess.spawn(serializerBin, args);
+    const process = childProcess.spawn(executable, args);
     process.stdin.write(text);
     process.stdin.end();
 

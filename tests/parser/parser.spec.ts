@@ -1,8 +1,8 @@
+import { jest } from "@jest/globals";
 import fs from "fs/promises";
 import path from "path";
-import { fileURLToPath } from "url";
 import prettier from "prettier";
-import { jest } from "@jest/globals";
+import { fileURLToPath } from "url";
 
 describe("Parser Tests", () => {
   // Synchronous parser tends to run slow on GitHub Actions
